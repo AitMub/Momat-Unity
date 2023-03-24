@@ -36,6 +36,9 @@ namespace Momat.Editor
             animationPreProcessAssetField.objectType = typeof(AnimationPreProcessAsset);
             animationPreProcessAssetField.RegisterValueChangedCallback(OnAnimationPreProcessAssetSelectionChanged);
 
+            var buildButton = rootVisualElement.Q<Button>("BuildButton");
+            buildButton.clickable.clicked += OnBuildButtonClicked;
+
             animationSetSelectDropdown = rootVisualElement.Q<DropdownField>("AnimtionSetSelectDropdown");
             animationSetSelectDropdown.RegisterValueChangedCallback(OnAnimationSetDropdownChanged);
             
@@ -78,6 +81,11 @@ namespace Momat.Editor
             }
         }
 
+        internal void OnBuildButtonClicked()
+        {
+            animationPreProcessAsset.BuildRuntimeData();
+        }
+            
         internal void UpdateCurrAnimatinoClip(ProcessingAnimationClip clip)
         {
             currAnimationClip = clip;

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c333c05d6b4f42d4985c5fa7d7961f01, type: 3}
+  m_Name: PreProcessAsset1
+  m_EditorClassIdentifier: 
+  motionAnimSet:
+  - sourceAnimClip: {fileID: -203655887218126122, guid: 764658affd570ff49b3b51edcbe91981, type: 3}
+  - sourceAnimClip: {fileID: 7400064, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+  - sourceAnimClip: {fileID: 7400000, guid: 551471f6001f64c4ca0404cc6dd4dbb9, type: 2}
+  - sourceAnimClip: {fileID: 7400000, guid: 61397ac7d44670d4da6204a53f34ddd8, type: 2}
+  - sourceAnimClip: {fileID: 7400000, guid: d94f7ac879976044fa2b58ec29dd8d2d, type: 2}
+  - sourceAnimClip: {fileID: 7400000, guid: 72b5ed80d897d574f823365bb4ec9faf, type: 2}
+  - sourceAnimClip: {fileID: 7400000, guid: f0e56107808efbc4ca517006af2b2b04, type: 2}
+  idleAnimSet:
+  - sourceAnimClip: {fileID: 7400000, guid: f5589feb81050bc4ca0def6972ffb4a7, type: 2}
+  avatar: {fileID: 9000000, guid: 6f61576e1f0e6c6438c29601f0f2def9, type: 3}
