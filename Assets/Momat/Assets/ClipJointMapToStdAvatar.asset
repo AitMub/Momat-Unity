@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2502ff0dffd771b498cbc0485a4fd021, type: 3}
+  m_Name: ClipJointMapToStdAvatar
+  m_EditorClassIdentifier: 
+  clip: {fileID: 0}
+  map:
+  - stdAvatarJointName: Hips
+    clipJointName: 
+  - stdAvatarJointName: LeftUpperLeg
+    clipJointName: 
+  - stdAvatarJointName: RightUpperLeg
+    clipJointName: 
+  - stdAvatarJointName: LeftLowerLeg
+    clipJointName: 
+  - stdAvatarJointName: RightLowerLeg
+    clipJointName: 
+  - stdAvatarJointName: LeftFoot
+    clipJointName: 
+  - stdAvatarJointName: RightFoot
+    clipJointName: 
+  - stdAvatarJointName: Spine
+    clipJointName: 
+  - stdAvatarJointName: Chest
+    clipJointName: 
+  - stdAvatarJointName: UpperChest
+    clipJointName: 
+  - stdAvatarJointName: Neck
+    clipJointName: 
+  - stdAvatarJointName: Head
+    clipJointName: 
+  - stdAvatarJointName: LeftShoulder
+    clipJointName: 
+  - stdAvatarJointName: RightShoulder
+    clipJointName: 
+  - stdAvatarJointName: LeftUpperArm
+    clipJointName: 
+  - stdAvatarJointName: RightUpperArm
+    clipJointName: 
+  - stdAvatarJointName: LeftLowerArm
+    clipJointName: 
+  - stdAvatarJointName: RightLowerArm
+    clipJointName: 
+  - stdAvatarJointName: LeftHand
+    clipJointName: 
+  - stdAvatarJointName: RightHand
+    clipJointName: 
+  - stdAvatarJointName: LeftToes
+    clipJointName: 
+  - stdAvatarJointName: RightToes
+    clipJointName: 
+  - stdAvatarJointName: LeftEye
+    clipJointName: 
+  - stdAvatarJointName: RightEye
+    clipJointName: 
+  - stdAvatarJointName: Jaw
+    clipJointName: 
+  - stdAvatarJointName: Left Thumb Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Thumb Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Thumb Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Index Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Index Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Index Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Middle Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Middle Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Middle Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Ring Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Ring Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Ring Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Little Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Little Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Little Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Thumb Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Thumb Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Thumb Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Index Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Index Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Index Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Middle Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Middle Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Middle Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Ring Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Ring Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Ring Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Little Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Little Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Little Distal
+    clipJointName: 
