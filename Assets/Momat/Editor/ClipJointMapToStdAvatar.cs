@@ -47,12 +47,12 @@ namespace Momat.Editor
             map = new List<MapFromStdAvatarJointNameToClipJointName>();
             foreach (var name in StdAvatarJointNames)
             {
-                var stdToCilp = new MapFromStdAvatarJointNameToClipJointName()
+                var stdToClip = new MapFromStdAvatarJointNameToClipJointName()
                 {
                     stdAvatarJointName = name,
                     clipJointName = ""
                 };
-                map.Add(stdToCilp);
+                map.Add(stdToClip);
             }
         }
 
@@ -66,12 +66,12 @@ namespace Momat.Editor
                     {
                         if (map[i].stdAvatarJointName == clipJointNames[j])
                         {
-                            var stdToCilp = new MapFromStdAvatarJointNameToClipJointName()
+                            var stdToClip = new MapFromStdAvatarJointNameToClipJointName()
                             {
                                 stdAvatarJointName = map[i].stdAvatarJointName,
                                 clipJointName = clipJointNames[j]
                             };
-                            map[i] = stdToCilp;
+                            map[i] = stdToClip;
                         }
                     }
                 }
@@ -133,8 +133,8 @@ namespace Momat.Editor
 
             if (GUILayout.Button("Try Auto Map"))
             {
-                var o = target as ClipJointMapToStdAvatar;
-                o.TryAutoMap();
+                var so = target as ClipJointMapToStdAvatar;
+                so.TryAutoMap();
             }
         }
     }
