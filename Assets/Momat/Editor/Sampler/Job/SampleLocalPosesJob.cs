@@ -5,6 +5,7 @@ using static Momat.Editor.AnimationCurveBake;
 using Unity.Jobs;
 using Unity.Burst;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Momat.Editor
 {
@@ -12,7 +13,7 @@ namespace Momat.Editor
     internal struct SampleLocalPosesJob : IJobParallelFor, IDisposable
     {
         [ReadOnly]
-        // public MemoryArray<TransformSampler> jointSamplers; // input proxy to local joint transforms from individual float curve
+        public MemoryArray<TransformSampler> jointSamplers; // input proxy to local joint transforms from individual float curve
         public NativeArray<AffineTransform> localPoses; // output contiguous poses
 
         // settings
@@ -24,10 +25,9 @@ namespace Momat.Editor
 
         public void Execute(int index)
         {
-            /*int frameIndex = sampleRange.startFrameIndex + index;
+            int frameIndex = sampleRange.startFrameIndex + index;
 
             int numJoints = jointSamplers.Length;
-            int numFrames = sampleRange.numFrames;
 
             MemoryArray<AffineTransform> localPose = new MemoryArray<AffineTransform>(localPoses, numJoints * index, numJoints);
 
@@ -36,7 +36,7 @@ namespace Momat.Editor
                 localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
             }
 
-            poseSamplePostProcess.Apply(localPose);*/
+            poseSamplePostProcess.Apply(localPose);
         }
 
         public void Dispose()

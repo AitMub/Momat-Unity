@@ -64,6 +64,21 @@ namespace Momat.Editor
             return string.IsNullOrEmpty(property.stringValue) ? null : property.stringValue;
         }
 
+
+        internal static string TryParseClipPropertyNameToStdAvatarJointName(string clipPropertyName)
+        {
+            // Remove prefix. e.g. 'mixamorig:'
+            int index = clipPropertyName.IndexOfAny(new char[]{':'});
+            if (index != -1)
+            {
+                clipPropertyName = clipPropertyName.Substring(index + 1);
+            }
+            
+            Debug.Log(clipPropertyName);
+            
+            return null;
+        }
+
         internal static List<T> InstantiateAllTypesDerivingFrom<T>()
         {
             List<T> instances = new List<T>();

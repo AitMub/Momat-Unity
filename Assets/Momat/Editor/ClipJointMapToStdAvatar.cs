@@ -55,29 +55,7 @@ namespace Momat.Editor
                 map.Add(stdToClip);
             }
         }
-
-        public void TryAutoMap()
-        {
-            for (int i = 0; i < map.Count; i++)
-            {
-                if (map[i].clipJointName == "")
-                {
-                    for (int j = 0; j < clipJointNames.Length; j++)
-                    {
-                        if (map[i].stdAvatarJointName == clipJointNames[j])
-                        {
-                            var stdToClip = new MapFromStdAvatarJointNameToClipJointName()
-                            {
-                                stdAvatarJointName = map[i].stdAvatarJointName,
-                                clipJointName = clipJointNames[j]
-                            };
-                            map[i] = stdToClip;
-                        }
-                    }
-                }
-            }
-        }
-
+        
         public string[] GetClipJointNames()
         {
             if (clip == null)
@@ -102,6 +80,25 @@ namespace Momat.Editor
             return names.ToArray();
         }
 
+        public string GetJointStdNameFromPath(string jointPath)
+        {
+            var clipJointName = ExtractJointNameFromPath(jointPath);
+            return GetJointStdName(clipJointName);
+        }
+
+        public string GetJointStdName(string clipJointName)
+        {
+            for (int i = 0; i < map.Count; i++)
+            {
+                if (map[i].clipJointName == clipJointName)
+                {
+                    return map[i].stdAvatarJointName;
+                }
+            }
+
+            return null;
+        }
+
         private string ExtractJointNameFromPath(string path)
         {
             string jointName = path;
@@ -121,6 +118,28 @@ namespace Momat.Editor
             }
             
             return jointName;
+        }
+        
+        public void TryAutoMap()
+        {
+            for (int i = 0; i < map.Count; i++)
+            {
+                if (map[i].clipJointName == "")
+                {
+                    for (int j = 0; j < clipJointNames.Length; j++)
+                    {
+                        if (map[i].stdAvatarJointName == clipJointNames[j])
+                        {
+                            var stdToClip = new MapFromStdAvatarJointNameToClipJointName()
+                            {
+                                stdAvatarJointName = map[i].stdAvatarJointName,
+                                clipJointName = clipJointNames[j]
+                            };
+                            map[i] = stdToClip;
+                        }
+                    }
+                }
+            }
         }
     }
     

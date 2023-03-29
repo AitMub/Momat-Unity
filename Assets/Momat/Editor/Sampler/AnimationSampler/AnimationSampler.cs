@@ -10,13 +10,14 @@ namespace Momat.Editor
 {
     internal partial class AnimationSampler : IDisposable
     {
-        AnimationRig targetRig;
-        AnimationClip animationClip;
+        private AnimationRig targetRig;
+        private AnimationClip animationClip;
+        private ClipJointMapToStdAvatar clipJointMapToStdAvatar;
 
-        KeyframeAnimation   editorAnimation;
-        KeyframeAnimation?   bakedAnimation;
+        private KeyframeAnimation   editorAnimation;
+        private KeyframeAnimation?   bakedAnimation;
 
-        PoseSamplePostProcess poseSamplePostProcess;
+        private PoseSamplePostProcess poseSamplePostProcess;
 
         public AnimationClip AnimationClip => animationClip;
 
@@ -24,15 +25,15 @@ namespace Momat.Editor
 
         public PoseSamplePostProcess PoseSamplePostProcess => poseSamplePostProcess;
 
-        internal AnimationSampler(AnimationRig targetRig, AnimationClip animationClip)
+        internal AnimationSampler(AnimationRig targetRig, AnimationClip animationClip, ClipJointMapToStdAvatar clipJointMapToStdAvatar)
         {
             this.targetRig = targetRig;
-
             this.animationClip = animationClip;
+            this.clipJointMapToStdAvatar = clipJointMapToStdAvatar;
 
             int numJoints = targetRig.NumJoints;
 
-            editorAnimation = KeyframeAnimation.Create(this, animationClip);
+            editorAnimation = KeyframeAnimation.Create(this, animationClip, clipJointMapToStdAvatar);
             bakedAnimation = null;
 
             try
@@ -102,8 +103,8 @@ namespace Momat.Editor
 
             SampleLocalPosesJob sampleLocalPosesJob = new SampleLocalPosesJob()
             {
-                // jointSamplers = new MemoryArray<TransformSampler>(bakedAnimation.Value.JointSamplers),
-                localPoses = localPoses,
+                jointSamplers = new MemoryArray<TransformSampler>(bakedAnimation.Value.JointSamplers),
+                localPoses = outTransforms,
                 sampleRange = sampleRange,
                 poseSamplePostProcess = poseSamplePostProcess.Clone()
             };
@@ -111,7 +112,7 @@ namespace Momat.Editor
             ConvertToGlobalPosesJob convertToGlobalPoseJob = new ConvertToGlobalPosesJob()
             {
                 localPoses = localPoses,
-                // globalTransforms = new MemoryArray<AffineTransform>(outTransforms),
+                globalTransforms = new MemoryArray<AffineTransform>(outTransforms),
                 numJoints = numJoints,
                 sampleRange = sampleRange,
                 poseSamplePostProcess = poseSamplePostProcess.Clone(),

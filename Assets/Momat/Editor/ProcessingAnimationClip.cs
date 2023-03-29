@@ -11,5 +11,6 @@ namespace Momat.Editor
         public string Name { get => sourceAnimClip.name; }
         
         public AnimationClip sourceAnimClip;
+        public ClipJointMapToStdAvatar clipJointMapToStdAvatar;
     }
 }

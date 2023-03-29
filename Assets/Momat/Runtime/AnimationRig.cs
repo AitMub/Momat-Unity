@@ -9,10 +9,12 @@ using Unity.Mathematics;
 using UnityEditor;
 using Unity.Collections;
 
-namespace Momat.Editor
+namespace Momat.Runtime
 {
-    internal class AnimationRig
+    [Serializable]
+    public class AnimationRig
     {
+        [Serializable]
         public struct Joint
         {
             public string name;
@@ -20,27 +22,13 @@ namespace Momat.Editor
             public AffineTransform localTransform;
         }
 
-        private Joint[] joints;
-        private string[] jointPaths;
+        public Joint[] joints;
+        public string[] jointPaths;
 
-        private int bodyJointIndex = -1;
+        public Avatar avatar;
 
-        private Avatar avatar;
-
-        public Joint[] Joints => joints;
-
-        public string[] JointPaths => jointPaths;
-
-        public int BodyJointIndex => bodyJointIndex;
-
-        public int NumJoints => Joints.Length;
-
-        public Avatar Avatar => avatar;
-
-        public static AnimationRig Create(Avatar avatar)
-        {
-            return new AnimationRig(avatar);
-        }
+        public int NumJoints => joints.Length;
+        
 
         public int GetParentJointIndex(int index)
         {
@@ -63,9 +51,9 @@ namespace Momat.Editor
 
         public int GetJointIndexFromName(string name)
         {
-            for (int i = 0; i < Joints.Length; ++i)
+            for (int i = 0; i < joints.Length; ++i)
             {
-                if (Joints[i].name == name)
+                if (joints[i].name == name)
                 {
                     return i;
                 }
@@ -76,7 +64,7 @@ namespace Momat.Editor
 
         public int GetJointIndexFromPath(string path)
         {
-            for (int i = 0; i < Joints.Length; ++i)
+            for (int i = 0; i < joints.Length; ++i)
             {
                 if (jointPaths[i] == path)
                 {
@@ -147,46 +135,6 @@ namespace Momat.Editor
             return parents;
         }
 
-        AnimationRig(Avatar avatar)
-        {
-            this.avatar = avatar;
-
-            string assetPath = AssetDatabase.GetAssetPath(avatar);
-            GameObject avatarRootObject = AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject)) as GameObject;
-            if (avatarRootObject == null)
-            {
-                throw new Exception($"Avatar {avatar.name} asset not found at path {assetPath}");
-            }
-
-            joints = avatar.GetAvatarJoints().ToArray();
-
-            GenerateJointPaths(avatarRootObject.name);
-
-            if (avatar.isHuman)
-            {
-                foreach (HumanBone humanBone in avatar.humanDescription.human)
-                {
-                    if (humanBone.humanName == "Hips")
-                    {
-                        bodyJointIndex = GetJointIndexFromName(humanBone.boneName);
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                string rootJointName = Utility.GetImporterRootJointName(assetPath);
-                if (rootJointName == null)
-                {
-                    bodyJointIndex = -1;
-                }
-                else
-                {
-                    bodyJointIndex = GetJointIndexFromName(rootJointName);
-                }
-            }
-        }
-
         internal static void CollectJointsRecursive(List<Joint> jointsList, Transform transform, int parentIndex)
         {
             int jointIndex = jointsList.Count;
@@ -224,25 +172,6 @@ namespace Momat.Editor
                     jointPaths[i] = jointPaths[parentIndex] + "/" + joints[i].name;
                 }
             }
-        }
-        
-        public Runtime.AnimationRig GenerateRuntimeRig()
-        {
-            var runtimeRig = new Runtime.AnimationRig();
-
-            runtimeRig.avatar = Avatar;
-            
-            runtimeRig.joints = new Runtime.AnimationRig.Joint[NumJoints];
-            for (int i = 0; i < NumJoints; i++)
-            {
-                runtimeRig.joints[i].name = joints[i].name;
-                runtimeRig.joints[i].parentIndex = joints[i].parentIndex;
-                runtimeRig.joints[i].localTransform = joints[i].localTransform;
-            }
-            
-            runtimeRig.jointPaths = jointPaths;
-            
-            return runtimeRig;
         }
     }
 }

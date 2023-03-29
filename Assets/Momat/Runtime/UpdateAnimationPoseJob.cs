@@ -1,23 +1,30 @@
-/*using System.Collections.Generic;
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Animations;
+using Unity.Mathematics;
+
 
 namespace Momat.Runtime
 {
     internal struct UpdateAnimationPoseJob : IAnimationJob, System.IDisposable
     {
-        NativeArray<TransformStreamHandle> transforms;
-        NativeArray<bool> boundJoints;
+        private NativeArray<TransformStreamHandle> transforms;
+        private NativeArray<bool> boundJoints;
 
-        PropertySceneHandle deltaTime;
+        private PropertySceneHandle deltaTime;
 
-        bool transformBufferValid;
+        private bool transformBufferValid;
+
+        private RuntimeAnimationData runtimeAnimationData;
+
+        public int loopTime;
         
-        public bool Setup(Animator animator, Transform[] transforms)
+        public bool Setup(Animator animator, Transform[] transforms, RuntimeAnimationData runtimeAnimationData, PropertySceneHandle deltaTimePropertyHandle)
         {
-            int numJoints = synthesizer.Binary.numJoints;
+            this.runtimeAnimationData = runtimeAnimationData;
+            int numJoints = runtimeAnimationData.rig.NumJoints;
             this.transforms = new NativeArray<TransformStreamHandle>(numJoints, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
             boundJoints = new NativeArray<bool>(numJoints, Allocator.Persistent, NativeArrayOptions.ClearMemory);
@@ -28,14 +35,19 @@ namespace Momat.Runtime
 
             for (int i = 1; i < transforms.Length; i++)
             {
-                int jointNameIndex = synthesizer.Binary.GetStringIndex(transforms[i].name);
-                int jointIndex = (jointNameIndex >= 0) ? synthesizer.Binary.animationRig.GetJointIndexForNameIndex(jointNameIndex) : -1;
+                int jointIndex = runtimeAnimationData.rig.GetJointIndexFromName(transforms[i].name);
                 if (jointIndex >= 0)
                 {
                     this.transforms[jointIndex] = animator.BindStreamTransform(transforms[i]);
                     boundJoints[jointIndex] = true;
                 }
             }
+
+            deltaTime = deltaTimePropertyHandle;
+
+            loopTime = 1;
+
+            transformBufferValid = true;
 
             return true;
         }
@@ -48,36 +60,39 @@ namespace Momat.Runtime
 
         public void ProcessRootMotion(AnimationStream stream)
         {
-            ref MotionSynthesizer synthesizer = ref this.synthesizer.Ref;
+            /*ref MotionSynthesizer synthesizer = ref this.synthesizer.Ref;
             float dt = deltaTime.GetFloat(stream);
 
             var previousTransform = synthesizer.WorldRootTransform;
             transformBufferValid = synthesizer.Update(dt);
-
-
+            
+            
             //convert the delta transform to root motion in the stream
             if (transformBufferValid && dt > 0.0f)
             {
                 WriteRootMotion(stream, dt, previousTransform, synthesizer.WorldRootTransform);
-            }
+            }*/
         }
         
         public void ProcessAnimation(AnimationStream stream)
         {
-            ref MotionSynthesizer synthesizer = ref this.synthesizer.Ref;
+            // ref MotionSynthesizer synthesizer = ref this.synthesizer.Ref;
 
             if (transformBufferValid)
             {
-                int numTransforms = synthesizer.LocalSpaceTransformBuffer.Length;
+                // int numTransforms = synthesizer.LocalSpaceTransformBuffer.Length;
+                // int numTransforms = runtimeAnimationData.transforms.Count / runtimeAnimationData.rig.NumJoints;
+                int numTransforms = 73;
                 for (int i = 1; i < numTransforms; ++i)
                 {
                     if (!boundJoints[i])
                     {
                         continue;
                     }
-
-                    transforms[i].SetLocalPosition(stream, synthesizer.LocalSpaceTransformBuffer[i].t);
-                    transforms[i].SetLocalRotation(stream, synthesizer.LocalSpaceTransformBuffer[i].q);
+                    
+                    // transforms[i].SetGlobalTR(stream, runtimeAnimationData.transforms[i].t, runtimeAnimationData.transforms[i].q, true);
+                    transforms[i].SetLocalPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * 73].t);
+                    transforms[i].SetLocalRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * 73].q);
                 }
             }
         }
@@ -94,4 +109,4 @@ namespace Momat.Runtime
             stream.angularVelocity = invDeltaTime * rootMotionAngles;
         }
     }
-}#1#*/
+}

@@ -112,7 +112,7 @@ namespace Momat.Editor
 
         internal void DeleteClipInAsset(ProcessingAnimationClip clip)
         {
-            animationPreProcessAsset.DeleteClipInAnimSet(clip, (AnimationSetEnum)animationSetSelectDropdown.index);
+            animationPreProcessAsset.RemoveClipInAnimSet(clip, (AnimationSetEnum)animationSetSelectDropdown.index);
         }
 
         private const string k_UxmlPath = "Assets/Momat/Editor/AnimationPreProcessWindow.uxml";

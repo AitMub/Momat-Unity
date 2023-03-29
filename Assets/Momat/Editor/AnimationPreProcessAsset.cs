@@ -22,14 +22,14 @@ namespace Momat.Editor
         public Avatar avatar;
 
         private AnimationRig rig;
-        private float sampleRate = 15f;
+        public float sampleRate = 30f;
         
         public void BuildRuntimeData()
         {
             var clip = motionAnimSet[0].sourceAnimClip;
+            var clipJointMapToStdAvatar = motionAnimSet[0].clipJointMapToStdAvatar;
             
             rig = AnimationRig.Create(avatar);
-            Debug.Log("Rig Created");
 
             int numJoints = rig.NumJoints;
             int numFrames = (int)math.ceil(clip.frameRate * clip.length);
@@ -37,7 +37,7 @@ namespace Momat.Editor
 
             using(NativeArray<AffineTransform> transforms = new NativeArray<AffineTransform>(numTransforms, Allocator.Persistent))
             {
-                using (AnimationSampler animSampler = new AnimationSampler(rig, clip))
+                using (AnimationSampler animSampler = new AnimationSampler(rig, clip, clipJointMapToStdAvatar))
                 {
                     float sourceSampleRate = clip.frameRate;
                     float targetSampleRate = sampleRate;
@@ -55,30 +55,22 @@ namespace Momat.Editor
                     {
                         rangeSampler.Schedule();
 
-                        while (!rangeSampler.IsComplete)
-                        {
-                            Debug.Log("Sampling");
-                        }
-                        
                         rangeSampler.Complete();
                     }
                 }
                 
-                var runtimeAsset = ScriptableObject.CreateInstance<Momat.Runtime.MomatRuntimeAnimationData>();
+                var runtimeAsset = ScriptableObject.CreateInstance<Momat.Runtime.RuntimeAnimationData>();
                 runtimeAsset.transforms = new List<AffineTransform>(transforms.Length);
                 for (int i = 0; i < transforms.Length; i++)
                 {
                     runtimeAsset.transforms.Add(transforms[i]);
-                    if (transforms[i].t.x != 0)
-                    {
-                        Debug.Log(i);
-                    }
                 }
+
+                runtimeAsset.rig = rig.GenerateRuntimeRig();
+                
                 AssetDatabase.CreateAsset(runtimeAsset, "Assets/Momat/Assets/AnimationRuntimeAsset.asset");
                 AssetDatabase.SaveAssets();
             }
-
-            Debug.Log("Transforms Generated");
         }
 
         public void AddClipsToAnimSet(List<AnimationClip> clips, AnimationSetEnum animationSetEnum)
@@ -103,7 +95,7 @@ namespace Momat.Editor
             }
         }
 
-        public void DeleteClipInAnimSet(ProcessingAnimationClip clip, AnimationSetEnum animationSetEnum)
+        public void RemoveClipInAnimSet(ProcessingAnimationClip clip, AnimationSetEnum animationSetEnum)
         {
             if (animationSetEnum == AnimationSetEnum.EMotion)
             {

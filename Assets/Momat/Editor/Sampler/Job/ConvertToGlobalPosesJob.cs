@@ -5,6 +5,7 @@ using static Momat.Editor.AnimationCurveBake;
 using Unity.Jobs;
 using Unity.Burst;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Momat.Editor
 {
@@ -12,7 +13,7 @@ namespace Momat.Editor
     internal struct ConvertToGlobalPosesJob : IJobParallelFor, IDisposable
     {
         public NativeArray<AffineTransform> localPoses; // input read/write contiguous local poses that will be converted to global
-        // public MemoryArray<AffineTransform> globalTransforms; // output global transforms interleaved array (all transforms from motion library for each joint are contiguous)
+        public MemoryArray<AffineTransform> globalTransforms; // output global transforms interleaved array (all transforms from motion library for each joint are contiguous)
 
         // settings
         [ReadOnly]
@@ -29,12 +30,10 @@ namespace Momat.Editor
 
         public void Execute(int index)
         {
-            /*int frameIndex = sampleRange.startFrameIndex + index;
-
             int numFrames = globalTransforms.Length / numJoints;
 
             MemoryArray<AffineTransform> localPose = new MemoryArray<AffineTransform>(localPoses, numJoints * index, numJoints);
-
+            
             AffineTransform trajectory = localPose[0];
 
             // convert to global
@@ -54,7 +53,7 @@ namespace Momat.Editor
             for (int jointIndex = 0; jointIndex < numJoints; ++jointIndex)
             {
                 globalTransforms[jointIndex * numFrames + destinationStartFrameIndex + index] = localPose[jointIndex];
-            }*/
+            }
         }
 
         public void Dispose()

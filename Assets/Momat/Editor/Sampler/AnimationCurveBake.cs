@@ -130,9 +130,6 @@ namespace Momat.Editor
                 for (int i = 0; i < curves.Length; i++)
                 {
                     job.curves[i] = new CurveData(curves[i], alloc);
-                    int frameCount = (int)math.ceil(frameRate * curves[i].Duration);
-                    //var outCurve = new Curve(frameCount, alloc);
-                    //outCurves[i] = outCurve;
                     job.outCurves[i] = new CurveData(outCurves[i], alloc);
                 }
 
@@ -155,7 +152,6 @@ namespace Momat.Editor
                 NativeArray<Keyframe> keys = curve.Keys;
                 NativeArray<Keyframe> outKeys = outCurve.Keys;
                 int bakedFrames = Bake(keys, frameRate, outKeys, sampleRange);
-                //  KeyframeUtilities.AlignTangentsSmooth(outKeys, sampleRange);
                 return bakedFrames;
             }
 

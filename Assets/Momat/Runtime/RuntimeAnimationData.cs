@@ -6,8 +6,10 @@ using Unity.Mathematics;
 
 namespace Momat.Runtime
 {
-    public class MomatRuntimeAnimationData : ScriptableObject
+    public class RuntimeAnimationData : ScriptableObject
     {
         public List<AffineTransform> transforms;
+
+        public AnimationRig rig;
     }
 }

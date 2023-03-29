@@ -43,7 +43,7 @@ namespace Momat.Editor
 
         public int NumFrames => numFrames;
 
-        public static KeyframeAnimation Create(AnimationSampler animSampler, AnimationClip animationClip)
+        public static KeyframeAnimation Create(AnimationSampler animSampler, AnimationClip animationClip, ClipJointMapToStdAvatar clipJointMapToStdAvatar)
         {
             KeyframeAnimation anim = new KeyframeAnimation();
             anim.InitWithRigTransforms(animSampler.TargetRig);
@@ -56,6 +56,11 @@ namespace Momat.Editor
             foreach (EditorCurveBinding binding in bindings)
             {
                 int jointIndex = animSampler.TargetRig.GetJointIndexFromPath(binding.path);
+                if (jointIndex == -1)
+                {
+                    string jointStdName = clipJointMapToStdAvatar.GetJointStdNameFromPath(binding.path);
+                    jointIndex = animSampler.TargetRig.GetJointIndexFromStdName(jointStdName);
+                }
 
                 if (jointIndex >= 0)
                 {
