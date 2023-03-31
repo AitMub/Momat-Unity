@@ -15,6 +15,9 @@ namespace Momat.Editor
         [ReadOnly]
         public MemoryArray<TransformSampler> jointSamplers; // input proxy to local joint transforms from individual float curve
         public NativeArray<AffineTransform> localPoses; // output contiguous poses
+        
+        [ReadOnly]
+        public NativeArray<JointIndexToQ> jointIndexToQs;
 
         // settings
         [ReadOnly]
@@ -33,7 +36,17 @@ namespace Momat.Editor
 
             for (int jointIndex = 0; jointIndex < numJoints; ++jointIndex)
             {
-                localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
+                if (jointIndexToQs[jointIndex].jointIndex != -1)
+                {
+                    Quaternion q = jointSamplers[jointIndex][frameIndex].q *
+                                   Quaternion.Inverse(jointIndexToQs[jointIndex].refAvatarQ) * jointIndexToQs[jointIndex].avatarQ;
+                    var affineT = new AffineTransform(jointSamplers[jointIndex][frameIndex].t, q);
+                    localPose[jointIndex] = affineT;
+                }
+                else
+                {
+                    localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
+                }
             }
 
             poseSamplePostProcess.Apply(localPose);

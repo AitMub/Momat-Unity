@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c333c05d6b4f42d4985c5fa7d7961f01, type: 3}
-  m_Name: PreProcessAsset1
+  m_Name: PreProcessAssetMarker
   m_EditorClassIdentifier: 
   motionAnimSet:
   - sourceAnimClip: {fileID: -203655887218126122, guid: 764658affd570ff49b3b51edcbe91981, type: 3}
@@ -31,4 +31,5 @@ MonoBehaviour:
   - sourceAnimClip: {fileID: 7400000, guid: f5589feb81050bc4ca0def6972ffb4a7, type: 2}
     clipJointMapToStdAvatar: {fileID: 0}
   avatar: {fileID: 9000000, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
+  refAvatar: {fileID: 9000000, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
   sampleRate: 30

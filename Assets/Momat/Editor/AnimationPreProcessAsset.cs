@@ -14,12 +14,20 @@ namespace Momat.Editor
         EIdle = 1
     };
 
+    struct JointIndexToQ
+    {
+        public int jointIndex;
+        public Quaternion refAvatarQ;
+        public Quaternion avatarQ;
+    }
+    
     [CreateAssetMenu(menuName = "Momat/Create Asset")]
     class AnimationPreProcessAsset : ScriptableObject
     {
         public List<ProcessingAnimationClip> motionAnimSet;
         public List<ProcessingAnimationClip> idleAnimSet;
         public Avatar avatar;
+        public Avatar refAvatar;
 
         private AnimationRig rig;
         public float sampleRate = 30f;
@@ -30,6 +38,7 @@ namespace Momat.Editor
             var clipJointMapToStdAvatar = motionAnimSet[0].clipJointMapToStdAvatar;
             
             rig = AnimationRig.Create(avatar);
+            AnimationRig refClipRig = AnimationRig.Create(refAvatar);
 
             int numJoints = rig.NumJoints;
             int numFrames = (int)math.ceil(clip.frameRate * clip.length);
@@ -50,13 +59,39 @@ namespace Momat.Editor
                         numFrames = numFrames
                     };
 
+                    NativeArray<JointIndexToQ> jointIndexToQs =
+                        new NativeArray<JointIndexToQ>(numJoints, Allocator.Persistent);
+                    for (int i = 0; i < numJoints; i++)
+                    {
+                        var jointIndexToQ = new JointIndexToQ();
+                        jointIndexToQ.avatarQ = rig.Joints[i].localTransform.q;
+
+                        string jointStdName = rig.GetJointStdNameFromIndex(i);
+                        int refJointIndex = refClipRig.GetJointIndexFromStdName(jointStdName);
+                        if (jointStdName == null || refJointIndex == -1)
+                        {
+                            jointIndexToQ.jointIndex = -1;
+                            jointIndexToQ.refAvatarQ = Quaternion.identity;
+                        }
+                        else
+                        {
+                            jointIndexToQ.jointIndex = i;
+                            jointIndexToQ.refAvatarQ = refClipRig.Joints[refJointIndex].localTransform.q;
+                        }
+
+                        jointIndexToQs[i] = jointIndexToQ;
+                    }
+                    
                     using (AnimationSampler.RangeSampler rangeSampler =
-                           animSampler.PrepareRangeSampler(targetSampleRate, sampleRange, 0, transforms))
+                           animSampler.PrepareRangeSampler(targetSampleRate, sampleRange, 0, 
+                               transforms, jointIndexToQs))
                     {
                         rangeSampler.Schedule();
 
                         rangeSampler.Complete();
                     }
+
+                    jointIndexToQs.Dispose();
                 }
                 
                 var runtimeAsset = ScriptableObject.CreateInstance<Momat.Runtime.RuntimeAnimationData>();

@@ -51,6 +51,7 @@ namespace Momat.Runtime
 
         private void OnDisable()
         {
+            job.Dispose();
             playableGraph.Destroy();
         }
     }

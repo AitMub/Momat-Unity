@@ -86,7 +86,7 @@ namespace Momat.Editor
             }
         }
 
-        internal RangeSampler PrepareRangeSampler(float sampleRate, SampleRange sampleRange, int destinationStartFrameIndex, NativeArray<AffineTransform> outTransforms)
+        internal RangeSampler PrepareRangeSampler(float sampleRate, SampleRange sampleRange, int destinationStartFrameIndex, NativeArray<AffineTransform> outTransforms, NativeArray<JointIndexToQ> jointIndexToQs)
         {
             AllocateBakedAnimation(sampleRate);
 
@@ -106,7 +106,8 @@ namespace Momat.Editor
                 jointSamplers = new MemoryArray<TransformSampler>(bakedAnimation.Value.JointSamplers),
                 localPoses = outTransforms,
                 sampleRange = sampleRange,
-                poseSamplePostProcess = poseSamplePostProcess.Clone()
+                poseSamplePostProcess = poseSamplePostProcess.Clone(),
+                jointIndexToQs = jointIndexToQs
             };
 
             ConvertToGlobalPosesJob convertToGlobalPoseJob = new ConvertToGlobalPosesJob()

@@ -101,6 +101,21 @@ namespace Momat.Editor
             return -1;
         }
 
+        public string GetJointStdNameFromIndex(int index)
+        {
+            string jointName = joints[index].name;
+            var humanBone = avatar.humanDescription.human;
+            for (int i = 0; i < humanBone.Length; i++)
+            {
+                if (humanBone[i].boneName == jointName)
+                {
+                    return humanBone[i].humanName;
+                }
+            }
+
+            return null;
+        }
+
         public Transform[] MapRigOnTransforms(Transform root)
         {
             Transform[] transforms = new Transform[NumJoints];

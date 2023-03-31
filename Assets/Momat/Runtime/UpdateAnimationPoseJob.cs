@@ -82,7 +82,7 @@ namespace Momat.Runtime
             {
                 // int numTransforms = synthesizer.LocalSpaceTransformBuffer.Length;
                 // int numTransforms = runtimeAnimationData.transforms.Count / runtimeAnimationData.rig.NumJoints;
-                int numTransforms = 73;
+                int numTransforms = transforms.Length;
                 for (int i = 1; i < numTransforms; ++i)
                 {
                     if (!boundJoints[i])
@@ -91,8 +91,8 @@ namespace Momat.Runtime
                     }
                     
                     // transforms[i].SetGlobalTR(stream, runtimeAnimationData.transforms[i].t, runtimeAnimationData.transforms[i].q, true);
-                    transforms[i].SetLocalPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * 73].t);
-                    transforms[i].SetLocalRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * 73].q);
+                    transforms[i].SetLocalPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].t);
+                    transforms[i].SetLocalRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].q);
                 }
             }
         }
