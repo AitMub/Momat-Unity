@@ -8,7 +8,13 @@ namespace Momat.Editor
 {
     internal struct PoseSamplePostProcess : IDisposable
     {
-        public NativeArray<int>    parentIndices;
+        public NativeArray<int> parentIndices;
+        public NativeArray<int> refParentIndices;
+        public NativeArray<AffineTransform> refRigBindMatrics;
+        public NativeArray<AffineTransform> refRigInverseBindMatrices;
+        public NativeArray<AffineTransform> targetRigBindMatrices;
+        public NativeArray<AffineTransform> targetRigInverseParentBindMatrices;
+
         public int bodyJointIndex;
         public bool isRootInTrajectorySpace;
 
@@ -24,7 +30,7 @@ namespace Momat.Editor
         public bool keepOriginalPositionXZ;
         public bool keepOriginalOrientation;
 
-        internal PoseSamplePostProcess(AnimationRig targetRig, AnimationClip animationClip, AffineTransform clipFirstFrameTrajectory)
+        internal PoseSamplePostProcess(AnimationRig targetRig, AnimationRig refRig, AnimationClip animationClip, AffineTransform clipFirstFrameTrajectory)
         {
             bodyJointIndex = targetRig.BodyJointIndex;
             isRootInTrajectorySpace = animationClip.hasMotionCurves && !animationClip.hasRootCurves;
@@ -35,6 +41,21 @@ namespace Momat.Editor
             }
 
             parentIndices = targetRig.GenerateParentIndices();
+            refParentIndices = refRig.GenerateParentIndices();
+
+            refRigBindMatrics = refRig.GenerateWorldMatrices();
+            refRigInverseBindMatrices = refRig.GenerateWorldMatrices();
+            for (int i = 0; i < refRigInverseBindMatrices.Length; i++)
+            {
+                refRigInverseBindMatrices[i] = refRigInverseBindMatrices[i].inverse();
+            }
+
+            targetRigBindMatrices = targetRig.GenerateWorldMatrices();
+            targetRigInverseParentBindMatrices = targetRig.GenerateWorldMatrices();
+            for (int i = 1; i < targetRigInverseParentBindMatrices.Length; i++)
+            {
+                targetRigInverseParentBindMatrices[i] = targetRigBindMatrices[parentIndices[i]].inverse();
+            }
 
             ModelImporterClipAnimation clipImporter = Utility.GetImporterFromClip(animationClip);
             applyRootImportOptions = animationClip.hasRootCurves && !animationClip.hasMotionCurves;
@@ -67,12 +88,26 @@ namespace Momat.Editor
         public void Dispose()
         {
             parentIndices.Dispose();
+            refParentIndices.Dispose();
+            
+            refRigInverseBindMatrices.Dispose();
+            refRigBindMatrics.Dispose();
+            targetRigBindMatrices.Dispose();
+            targetRigInverseParentBindMatrices.Dispose();
         }
 
         public PoseSamplePostProcess Clone()
         {
             PoseSamplePostProcess clone = this;
+            
             clone.parentIndices = new NativeArray<int>(parentIndices, Allocator.TempJob);
+            clone.refParentIndices = new NativeArray<int>(refParentIndices, Allocator.TempJob);
+            clone.refRigBindMatrics = new NativeArray<AffineTransform>(refRigBindMatrics, Allocator.TempJob);
+            clone.refRigInverseBindMatrices = new NativeArray<AffineTransform>(refRigInverseBindMatrices, Allocator.TempJob);
+            clone.targetRigBindMatrices = new NativeArray<AffineTransform>(targetRigBindMatrices, Allocator.TempJob);
+            clone.targetRigInverseParentBindMatrices =
+                new NativeArray<AffineTransform>(targetRigInverseParentBindMatrices, Allocator.TempJob);
+            
             return clone;
         }
 

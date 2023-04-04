@@ -1,183 +1,527 @@
 fileFormatVersion: 2
 guid: d9b2ee02710f70746b6aa2acbe11a1f7
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: AnimatedRoot
-    100002: Chest
-    100004: Foot.L
-    100006: Foot.R
-    100008: Hand.L
-    100010: Hand.R
-    100012: Head
-    100014: Hips
-    100016: IndexDistal.L
-    100018: IndexDistal.R
-    100020: IndexIntermediate.L
-    100022: IndexIntermediate.R
-    100024: IndexPalm.L
-    100026: IndexPalm.R
-    100028: IndexProximal.L
-    100030: IndexProximal.R
-    100032: LowerArm.L
-    100034: LowerArm.R
-    100036: LowerLeg.L
-    100038: LowerLeg.R
-    100040: MiddleDistal.L
-    100042: MiddleDistal.R
-    100044: MiddleIntermediate.L
-    100046: MiddleIntermediate.R
-    100048: MiddlePalm.L
-    100050: MiddlePalm.R
-    100052: MiddleProximal.L
-    100054: MiddleProximal.R
-    100056: Neck
-    100058: PinkyDistal.L
-    100060: PinkyDistal.R
-    100062: PinkyIntermediate.L
-    100064: PinkyIntermediate.R
-    100066: PinkyPalm.L
-    100068: PinkyPalm.R
-    100070: PinkyProximal.L
-    100072: PinkyProximal.R
-    100074: RingDistal.L
-    100076: RingDistal.R
-    100078: RingIntermediate.L
-    100080: RingIntermediate.R
-    100082: RingPalm.L
-    100084: RingPalm.R
-    100086: RingProximal.L
-    100088: RingProximal.R
-    100090: Shoulder.L
-    100092: Shoulder.R
-    100094: Spine
-    100096: ThumbDistal.L
-    100098: ThumbDistal.R
-    100100: ThumbIntermediate.L
-    100102: ThumbIntermediate.R
-    100104: ThumbProximal.L
-    100106: ThumbProximal.R
-    100108: Toe.L
-    100110: Toe.R
-    100112: UpperArm.L
-    100114: UpperArm.R
-    100116: UpperChest
-    100118: UpperLeg.L
-    100120: UpperLeg.R
-    100122: //RootNode
-    400000: AnimatedRoot
-    400002: Chest
-    400004: Foot.L
-    400006: Foot.R
-    400008: Hand.L
-    400010: Hand.R
-    400012: Head
-    400014: Hips
-    400016: IndexDistal.L
-    400018: IndexDistal.R
-    400020: IndexIntermediate.L
-    400022: IndexIntermediate.R
-    400024: IndexPalm.L
-    400026: IndexPalm.R
-    400028: IndexProximal.L
-    400030: IndexProximal.R
-    400032: LowerArm.L
-    400034: LowerArm.R
-    400036: LowerLeg.L
-    400038: LowerLeg.R
-    400040: MiddleDistal.L
-    400042: MiddleDistal.R
-    400044: MiddleIntermediate.L
-    400046: MiddleIntermediate.R
-    400048: MiddlePalm.L
-    400050: MiddlePalm.R
-    400052: MiddleProximal.L
-    400054: MiddleProximal.R
-    400056: Neck
-    400058: PinkyDistal.L
-    400060: PinkyDistal.R
-    400062: PinkyIntermediate.L
-    400064: PinkyIntermediate.R
-    400066: PinkyPalm.L
-    400068: PinkyPalm.R
-    400070: PinkyProximal.L
-    400072: PinkyProximal.R
-    400074: RingDistal.L
-    400076: RingDistal.R
-    400078: RingIntermediate.L
-    400080: RingIntermediate.R
-    400082: RingPalm.L
-    400084: RingPalm.R
-    400086: RingProximal.L
-    400088: RingProximal.R
-    400090: Shoulder.L
-    400092: Shoulder.R
-    400094: Spine
-    400096: ThumbDistal.L
-    400098: ThumbDistal.R
-    400100: ThumbIntermediate.L
-    400102: ThumbIntermediate.R
-    400104: ThumbProximal.L
-    400106: ThumbProximal.R
-    400108: Toe.L
-    400110: Toe.R
-    400112: UpperArm.L
-    400114: UpperArm.R
-    400116: UpperChest
-    400118: UpperLeg.L
-    400120: UpperLeg.R
-    400122: //RootNode
-    7400000: 01_IdleAndFlair_Neutral_02
-    7400002: 01_IdleLoop
-    7400004: 02_TIP_Neutral_04
-    7400006: 03_WalkStep_Neutral_02
-    7400008: 08_WalkStartStop_Neutral_03
-    7400010: 10_WalkCounterStart_Neutral_03
-    7400012: 11_WalkPlant_Neutral_05_MIRROR
-    7400014: 12_WalkCounterPlant_Neutral_04
-    7400016: 13_WalkContinue_Neutral_03
-    7400018: 24_WalkStraight_Neutral_01
-    7400020: 26_WalkSnake_Neutral_03
-    7400022: 28_29_WalkCircleSpiral_Neutral_02
-    7400024: 11_WalkPlant_Neutral_05
-    7400026: 01_IdleAndFlair_Neutral_02_MIRROR
-    7400028: 01_IdleLoop_MIRROR
-    7400030: 02_TIP_Neutral_04_MIRROR
-    7400032: 03_WalkStep_Neutral_02_MIRROR
-    7400034: 08_WalkStartStop_Neutral_03_MIRROR
-    7400036: 10_WalkCounterStart_Neutral_03_MIRROR
-    7400038: 12_WalkCounterPlant_Neutral_04_MIRROR
-    7400040: 13_WalkContinue_Neutral_03_MIRROR
-    7400042: AnimUprisingRig|24_WalkStraight_Neutral_01_FINAL_MIRROR
-    7400044: 26_WalkSnake_Neutral_03_MIRROR
-    7400046: 28_29_WalkCircleSpiral_Neutral_02_MIRROR
-    7400048: 01_IdleFlair_DustHands
-    7400050: 01_IdleFlair_DustHands_MIRROR
-    7400052: 01_IdleFlair_RollShoulderRight
-    7400054: 01_IdleFlair_RollShoulderRight_MIRROR
-    7400056: 01_IdleFlair_RollShoulderLeft
-    7400058: 01_IdleFlair_RollShoulderRight_MIRROR
-    7400060: 01_IdleFlair_StretchArms
-    7400062: 01_IdleFlair_StretchArms_MIRROR
-    7400064: 01_IdleFlair_ShuffleFeet
-    7400066: 01_IdleFlair_ShuffleFeet_MIRROR
-    7400068: 01_IdleFlair_TapToes
-    7400070: 01_IdleFlair_TapToes_MIRROR
-    7400072: 01_IdleFlair_LookRight
-    7400074: 01_IdleFlair_LookRight_MIRROR
-    7400076: 01_IdleFlair_LookLeft
-    7400078: 01_IdleFlair_LookLeft_MIRROR
-    7400080: 01_IdleFlair_FollowBird
-    7400082: 01_IdleFlair_FollowBird_MIRROR
-    7400084: 01_IdleFlair_CmonLetsGo
-    7400086: 01_IdleFlair_CmonLetsGo_MIRROR
-    7400088: 01_IdleFlair_StretchLegs
-    7400090: 01_IdleFlair_StretchLegs_MIRROR
-    9500000: //RootNode
-    2186277476908879412: ImportLogs
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: AnimatedRoot
+  - first:
+      1: 100002
+    second: Chest
+  - first:
+      1: 100004
+    second: Foot.L
+  - first:
+      1: 100006
+    second: Foot.R
+  - first:
+      1: 100008
+    second: Hand.L
+  - first:
+      1: 100010
+    second: Hand.R
+  - first:
+      1: 100012
+    second: Head
+  - first:
+      1: 100014
+    second: Hips
+  - first:
+      1: 100016
+    second: IndexDistal.L
+  - first:
+      1: 100018
+    second: IndexDistal.R
+  - first:
+      1: 100020
+    second: IndexIntermediate.L
+  - first:
+      1: 100022
+    second: IndexIntermediate.R
+  - first:
+      1: 100024
+    second: IndexPalm.L
+  - first:
+      1: 100026
+    second: IndexPalm.R
+  - first:
+      1: 100028
+    second: IndexProximal.L
+  - first:
+      1: 100030
+    second: IndexProximal.R
+  - first:
+      1: 100032
+    second: LowerArm.L
+  - first:
+      1: 100034
+    second: LowerArm.R
+  - first:
+      1: 100036
+    second: LowerLeg.L
+  - first:
+      1: 100038
+    second: LowerLeg.R
+  - first:
+      1: 100040
+    second: MiddleDistal.L
+  - first:
+      1: 100042
+    second: MiddleDistal.R
+  - first:
+      1: 100044
+    second: MiddleIntermediate.L
+  - first:
+      1: 100046
+    second: MiddleIntermediate.R
+  - first:
+      1: 100048
+    second: MiddlePalm.L
+  - first:
+      1: 100050
+    second: MiddlePalm.R
+  - first:
+      1: 100052
+    second: MiddleProximal.L
+  - first:
+      1: 100054
+    second: MiddleProximal.R
+  - first:
+      1: 100056
+    second: Neck
+  - first:
+      1: 100058
+    second: PinkyDistal.L
+  - first:
+      1: 100060
+    second: PinkyDistal.R
+  - first:
+      1: 100062
+    second: PinkyIntermediate.L
+  - first:
+      1: 100064
+    second: PinkyIntermediate.R
+  - first:
+      1: 100066
+    second: PinkyPalm.L
+  - first:
+      1: 100068
+    second: PinkyPalm.R
+  - first:
+      1: 100070
+    second: PinkyProximal.L
+  - first:
+      1: 100072
+    second: PinkyProximal.R
+  - first:
+      1: 100074
+    second: RingDistal.L
+  - first:
+      1: 100076
+    second: RingDistal.R
+  - first:
+      1: 100078
+    second: RingIntermediate.L
+  - first:
+      1: 100080
+    second: RingIntermediate.R
+  - first:
+      1: 100082
+    second: RingPalm.L
+  - first:
+      1: 100084
+    second: RingPalm.R
+  - first:
+      1: 100086
+    second: RingProximal.L
+  - first:
+      1: 100088
+    second: RingProximal.R
+  - first:
+      1: 100090
+    second: Shoulder.L
+  - first:
+      1: 100092
+    second: Shoulder.R
+  - first:
+      1: 100094
+    second: Spine
+  - first:
+      1: 100096
+    second: ThumbDistal.L
+  - first:
+      1: 100098
+    second: ThumbDistal.R
+  - first:
+      1: 100100
+    second: ThumbIntermediate.L
+  - first:
+      1: 100102
+    second: ThumbIntermediate.R
+  - first:
+      1: 100104
+    second: ThumbProximal.L
+  - first:
+      1: 100106
+    second: ThumbProximal.R
+  - first:
+      1: 100108
+    second: Toe.L
+  - first:
+      1: 100110
+    second: Toe.R
+  - first:
+      1: 100112
+    second: UpperArm.L
+  - first:
+      1: 100114
+    second: UpperArm.R
+  - first:
+      1: 100116
+    second: UpperChest
+  - first:
+      1: 100118
+    second: UpperLeg.L
+  - first:
+      1: 100120
+    second: UpperLeg.R
+  - first:
+      1: 100122
+    second: //RootNode
+  - first:
+      4: 400000
+    second: AnimatedRoot
+  - first:
+      4: 400002
+    second: Chest
+  - first:
+      4: 400004
+    second: Foot.L
+  - first:
+      4: 400006
+    second: Foot.R
+  - first:
+      4: 400008
+    second: Hand.L
+  - first:
+      4: 400010
+    second: Hand.R
+  - first:
+      4: 400012
+    second: Head
+  - first:
+      4: 400014
+    second: Hips
+  - first:
+      4: 400016
+    second: IndexDistal.L
+  - first:
+      4: 400018
+    second: IndexDistal.R
+  - first:
+      4: 400020
+    second: IndexIntermediate.L
+  - first:
+      4: 400022
+    second: IndexIntermediate.R
+  - first:
+      4: 400024
+    second: IndexPalm.L
+  - first:
+      4: 400026
+    second: IndexPalm.R
+  - first:
+      4: 400028
+    second: IndexProximal.L
+  - first:
+      4: 400030
+    second: IndexProximal.R
+  - first:
+      4: 400032
+    second: LowerArm.L
+  - first:
+      4: 400034
+    second: LowerArm.R
+  - first:
+      4: 400036
+    second: LowerLeg.L
+  - first:
+      4: 400038
+    second: LowerLeg.R
+  - first:
+      4: 400040
+    second: MiddleDistal.L
+  - first:
+      4: 400042
+    second: MiddleDistal.R
+  - first:
+      4: 400044
+    second: MiddleIntermediate.L
+  - first:
+      4: 400046
+    second: MiddleIntermediate.R
+  - first:
+      4: 400048
+    second: MiddlePalm.L
+  - first:
+      4: 400050
+    second: MiddlePalm.R
+  - first:
+      4: 400052
+    second: MiddleProximal.L
+  - first:
+      4: 400054
+    second: MiddleProximal.R
+  - first:
+      4: 400056
+    second: Neck
+  - first:
+      4: 400058
+    second: PinkyDistal.L
+  - first:
+      4: 400060
+    second: PinkyDistal.R
+  - first:
+      4: 400062
+    second: PinkyIntermediate.L
+  - first:
+      4: 400064
+    second: PinkyIntermediate.R
+  - first:
+      4: 400066
+    second: PinkyPalm.L
+  - first:
+      4: 400068
+    second: PinkyPalm.R
+  - first:
+      4: 400070
+    second: PinkyProximal.L
+  - first:
+      4: 400072
+    second: PinkyProximal.R
+  - first:
+      4: 400074
+    second: RingDistal.L
+  - first:
+      4: 400076
+    second: RingDistal.R
+  - first:
+      4: 400078
+    second: RingIntermediate.L
+  - first:
+      4: 400080
+    second: RingIntermediate.R
+  - first:
+      4: 400082
+    second: RingPalm.L
+  - first:
+      4: 400084
+    second: RingPalm.R
+  - first:
+      4: 400086
+    second: RingProximal.L
+  - first:
+      4: 400088
+    second: RingProximal.R
+  - first:
+      4: 400090
+    second: Shoulder.L
+  - first:
+      4: 400092
+    second: Shoulder.R
+  - first:
+      4: 400094
+    second: Spine
+  - first:
+      4: 400096
+    second: ThumbDistal.L
+  - first:
+      4: 400098
+    second: ThumbDistal.R
+  - first:
+      4: 400100
+    second: ThumbIntermediate.L
+  - first:
+      4: 400102
+    second: ThumbIntermediate.R
+  - first:
+      4: 400104
+    second: ThumbProximal.L
+  - first:
+      4: 400106
+    second: ThumbProximal.R
+  - first:
+      4: 400108
+    second: Toe.L
+  - first:
+      4: 400110
+    second: Toe.R
+  - first:
+      4: 400112
+    second: UpperArm.L
+  - first:
+      4: 400114
+    second: UpperArm.R
+  - first:
+      4: 400116
+    second: UpperChest
+  - first:
+      4: 400118
+    second: UpperLeg.L
+  - first:
+      4: 400120
+    second: UpperLeg.R
+  - first:
+      4: 400122
+    second: //RootNode
+  - first:
+      74: 7400000
+    second: 01_IdleAndFlair_Neutral_02
+  - first:
+      74: 7400002
+    second: 01_IdleLoop
+  - first:
+      74: 7400004
+    second: 02_TIP_Neutral_04
+  - first:
+      74: 7400006
+    second: 03_WalkStep_Neutral_02
+  - first:
+      74: 7400008
+    second: 08_WalkStartStop_Neutral_03
+  - first:
+      74: 7400010
+    second: 10_WalkCounterStart_Neutral_03
+  - first:
+      74: 7400012
+    second: 11_WalkPlant_Neutral_05_MIRROR
+  - first:
+      74: 7400014
+    second: 12_WalkCounterPlant_Neutral_04
+  - first:
+      74: 7400016
+    second: 13_WalkContinue_Neutral_03
+  - first:
+      74: 7400018
+    second: 24_WalkStraight_Neutral_01
+  - first:
+      74: 7400020
+    second: 26_WalkSnake_Neutral_03
+  - first:
+      74: 7400022
+    second: 28_29_WalkCircleSpiral_Neutral_02
+  - first:
+      74: 7400024
+    second: 11_WalkPlant_Neutral_05
+  - first:
+      74: 7400026
+    second: 01_IdleAndFlair_Neutral_02_MIRROR
+  - first:
+      74: 7400028
+    second: 01_IdleLoop_MIRROR
+  - first:
+      74: 7400030
+    second: 02_TIP_Neutral_04_MIRROR
+  - first:
+      74: 7400032
+    second: 03_WalkStep_Neutral_02_MIRROR
+  - first:
+      74: 7400034
+    second: 08_WalkStartStop_Neutral_03_MIRROR
+  - first:
+      74: 7400036
+    second: 10_WalkCounterStart_Neutral_03_MIRROR
+  - first:
+      74: 7400038
+    second: 12_WalkCounterPlant_Neutral_04_MIRROR
+  - first:
+      74: 7400040
+    second: 13_WalkContinue_Neutral_03_MIRROR
+  - first:
+      74: 7400042
+    second: AnimUprisingRig|24_WalkStraight_Neutral_01_FINAL_MIRROR
+  - first:
+      74: 7400044
+    second: 26_WalkSnake_Neutral_03_MIRROR
+  - first:
+      74: 7400046
+    second: 28_29_WalkCircleSpiral_Neutral_02_MIRROR
+  - first:
+      74: 7400048
+    second: 01_IdleFlair_DustHands
+  - first:
+      74: 7400050
+    second: 01_IdleFlair_DustHands_MIRROR
+  - first:
+      74: 7400052
+    second: 01_IdleFlair_RollShoulderRight
+  - first:
+      74: 7400054
+    second: 01_IdleFlair_RollShoulderRight_MIRROR
+  - first:
+      74: 7400056
+    second: 01_IdleFlair_RollShoulderLeft
+  - first:
+      74: 7400058
+    second: 01_IdleFlair_RollShoulderRight_MIRROR
+  - first:
+      74: 7400060
+    second: 01_IdleFlair_StretchArms
+  - first:
+      74: 7400062
+    second: 01_IdleFlair_StretchArms_MIRROR
+  - first:
+      74: 7400064
+    second: 01_IdleFlair_ShuffleFeet
+  - first:
+      74: 7400066
+    second: 01_IdleFlair_ShuffleFeet_MIRROR
+  - first:
+      74: 7400068
+    second: 01_IdleFlair_TapToes
+  - first:
+      74: 7400070
+    second: 01_IdleFlair_TapToes_MIRROR
+  - first:
+      74: 7400072
+    second: 01_IdleFlair_LookRight
+  - first:
+      74: 7400074
+    second: 01_IdleFlair_LookRight_MIRROR
+  - first:
+      74: 7400076
+    second: 01_IdleFlair_LookLeft
+  - first:
+      74: 7400078
+    second: 01_IdleFlair_LookLeft_MIRROR
+  - first:
+      74: 7400080
+    second: 01_IdleFlair_FollowBird
+  - first:
+      74: 7400082
+    second: 01_IdleFlair_FollowBird_MIRROR
+  - first:
+      74: 7400084
+    second: 01_IdleFlair_CmonLetsGo
+  - first:
+      74: 7400086
+    second: 01_IdleFlair_CmonLetsGo_MIRROR
+  - first:
+      74: 7400088
+    second: 01_IdleFlair_StretchLegs
+  - first:
+      74: 7400090
+    second: 01_IdleFlair_StretchLegs_MIRROR
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      41386430: 2186277476908879412
+    second: ImportLogs
   externalObjects: {}
   materials:
-    importMaterials: 0
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -186,24 +530,17 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: AnimatedRoot
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL'
-      has import animation warnings that might lower retargeting quality:\nNote: Activate
-      translation DOF on avatar to improve retargeting quality.\n\t'MiddlePalm.R'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'RingPalm.R'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'PinkyPalm.R'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'MiddlePalm.L'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'RingPalm.L'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'PinkyPalm.L'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -214,6 +551,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleAndFlair_Neutral_02
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 4431
       wrapMode: 0
@@ -242,6 +580,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleLoop
       takeName: AnimUprisingRig|01_IdleLoop_Final
+      internalID: 0
       firstFrame: 14
       lastFrame: 190
       wrapMode: 0
@@ -270,6 +609,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 02_TIP_Neutral_04
       takeName: AnimUprisingRig|02_TIP_Neutral_04_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1063
       wrapMode: 0
@@ -298,6 +638,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 03_WalkStep_Neutral_02
       takeName: AnimUprisingRig|03_WalkStep_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1884
       wrapMode: 0
@@ -326,6 +667,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 08_WalkStartStop_Neutral_03
       takeName: AnimUprisingRig|08_WalkStartStop_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 2074
       wrapMode: 0
@@ -354,6 +696,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 10_WalkCounterStart_Neutral_03
       takeName: AnimUprisingRig|10_WalkCounterStart_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1013
       wrapMode: 0
@@ -382,6 +725,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 11_WalkPlant_Neutral_05
       takeName: AnimUprisingRig|11_WalkPlant_Neutral_05_FINAL
+      internalID: 0
       firstFrame: 3
       lastFrame: 1079
       wrapMode: 0
@@ -410,6 +754,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 12_WalkCounterPlant_Neutral_04
       takeName: AnimUprisingRig|12_WalkCounterPlant_Neutral_04_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1000
       wrapMode: 0
@@ -438,6 +783,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 13_WalkContinue_Neutral_03
       takeName: AnimUprisingRig|13_WalkContinue_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 3
       lastFrame: 1019
       wrapMode: 0
@@ -466,6 +812,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 24_WalkStraight_Neutral_01
       takeName: AnimUprisingRig|24_WalkStraight_Neutral_01_FINAL
+      internalID: 0
       firstFrame: 114
       lastFrame: 236
       wrapMode: 0
@@ -494,6 +841,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 26_WalkSnake_Neutral_03
       takeName: AnimUprisingRig|26_WalkSnake_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 2615
       wrapMode: 0
@@ -522,6 +870,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 28_29_WalkCircleSpiral_Neutral_02
       takeName: AnimUprisingRig|28_29_WalkCircleSpiral_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 2168
       wrapMode: 0
@@ -550,6 +899,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleAndFlair_Neutral_02_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 4431
       wrapMode: 0
@@ -578,6 +928,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleLoop_MIRROR
       takeName: AnimUprisingRig|01_IdleLoop_Final
+      internalID: 0
       firstFrame: 14
       lastFrame: 190
       wrapMode: 0
@@ -606,6 +957,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 02_TIP_Neutral_04_MIRROR
       takeName: AnimUprisingRig|02_TIP_Neutral_04_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1063
       wrapMode: 0
@@ -634,6 +986,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 03_WalkStep_Neutral_02_MIRROR
       takeName: AnimUprisingRig|03_WalkStep_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1884
       wrapMode: 0
@@ -662,6 +1015,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 08_WalkStartStop_Neutral_03_MIRROR
       takeName: AnimUprisingRig|08_WalkStartStop_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 2074
       wrapMode: 0
@@ -690,6 +1044,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 10_WalkCounterStart_Neutral_03_MIRROR
       takeName: AnimUprisingRig|10_WalkCounterStart_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1013
       wrapMode: 0
@@ -718,6 +1073,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 11_WalkPlant_Neutral_05_MIRROR
       takeName: AnimUprisingRig|11_WalkPlant_Neutral_05_FINAL
+      internalID: 0
       firstFrame: 3
       lastFrame: 1079
       wrapMode: 0
@@ -746,6 +1102,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 12_WalkCounterPlant_Neutral_04_MIRROR
       takeName: AnimUprisingRig|12_WalkCounterPlant_Neutral_04_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 1000
       wrapMode: 0
@@ -774,6 +1131,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 13_WalkContinue_Neutral_03_MIRROR
       takeName: AnimUprisingRig|13_WalkContinue_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 3
       lastFrame: 1019
       wrapMode: 0
@@ -802,6 +1160,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 26_WalkSnake_Neutral_03_MIRROR
       takeName: AnimUprisingRig|26_WalkSnake_Neutral_03_FINAL
+      internalID: 0
       firstFrame: 3
       lastFrame: 2615
       wrapMode: 0
@@ -830,6 +1189,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 28_29_WalkCircleSpiral_Neutral_02_MIRROR
       takeName: AnimUprisingRig|28_29_WalkCircleSpiral_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2
       lastFrame: 2168
       wrapMode: 0
@@ -858,6 +1218,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_DustHands
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 730
       lastFrame: 1001
       wrapMode: 0
@@ -886,6 +1247,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_DustHands_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 730
       lastFrame: 1001
       wrapMode: 0
@@ -914,6 +1276,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_RollShoulderRight
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 1116
       lastFrame: 1283
       wrapMode: 0
@@ -942,6 +1305,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_RollShoulderRight_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 1116
       lastFrame: 1283
       wrapMode: 0
@@ -970,6 +1334,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_RollShoulderLeft
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 1376
       lastFrame: 1553
       wrapMode: 0
@@ -998,6 +1363,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_RollShoulderRight_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 1376
       lastFrame: 1553
       wrapMode: 0
@@ -1026,6 +1392,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_StretchArms
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 1616
       lastFrame: 1887
       wrapMode: 0
@@ -1054,6 +1421,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_StretchArms_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 1616
       lastFrame: 1887
       wrapMode: 0
@@ -1082,6 +1450,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_ShuffleFeet
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2044
       lastFrame: 2231
       wrapMode: 0
@@ -1110,6 +1479,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_ShuffleFeet_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2044
       lastFrame: 2231
       wrapMode: 0
@@ -1138,6 +1508,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_TapToes
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2336
       lastFrame: 2637
       wrapMode: 0
@@ -1166,6 +1537,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_TapToes_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2336
       lastFrame: 2637
       wrapMode: 0
@@ -1194,6 +1566,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_LookRight
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2648
       lastFrame: 2784
       wrapMode: 0
@@ -1222,6 +1595,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_LookRight_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2648
       lastFrame: 2784
       wrapMode: 0
@@ -1250,6 +1624,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_LookLeft
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2805
       lastFrame: 2899
       wrapMode: 0
@@ -1278,6 +1653,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_LookLeft_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 2805
       lastFrame: 2899
       wrapMode: 0
@@ -1306,6 +1682,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_FollowBird
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 3034
       lastFrame: 3305
       wrapMode: 0
@@ -1334,6 +1711,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_FollowBird_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 3034
       lastFrame: 3305
       wrapMode: 0
@@ -1362,6 +1740,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_CmonLetsGo
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 3378
       lastFrame: 3680
       wrapMode: 0
@@ -1390,6 +1769,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_CmonLetsGo_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 3378
       lastFrame: 3680
       wrapMode: 0
@@ -1418,6 +1798,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_StretchLegs
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 4150
       lastFrame: 4379
       wrapMode: 0
@@ -1446,6 +1827,7 @@ ModelImporter:
     - serializedVersion: 16
       name: 01_IdleFlair_StretchLegs_MIRROR
       takeName: AnimUprisingRig|01_IdleAndFlair_Neutral_02_FINAL
+      internalID: 0
       firstFrame: 4150
       lastFrame: 4379
       wrapMode: 0
@@ -1478,25 +1860,34 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 0
+    sortHierarchyByName: 1
     importVisibility: 0
     importBlendShapes: 0
     importCameras: 0
     importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -1505,427 +1896,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
-    human:
-    - boneName: Hips
-      humanName: Hips
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: UpperLeg.L
-      humanName: LeftUpperLeg
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: UpperLeg.R
-      humanName: RightUpperLeg
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: LowerLeg.L
-      humanName: LeftLowerLeg
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: LowerLeg.R
-      humanName: RightLowerLeg
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Foot.L
-      humanName: LeftFoot
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Foot.R
-      humanName: RightFoot
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Spine
-      humanName: Spine
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Chest
-      humanName: Chest
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Neck
-      humanName: Neck
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Head
-      humanName: Head
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Shoulder.L
-      humanName: LeftShoulder
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Shoulder.R
-      humanName: RightShoulder
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: UpperArm.L
-      humanName: LeftUpperArm
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: UpperArm.R
-      humanName: RightUpperArm
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: LowerArm.L
-      humanName: LeftLowerArm
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: LowerArm.R
-      humanName: RightLowerArm
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Hand.L
-      humanName: LeftHand
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Hand.R
-      humanName: RightHand
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Toe.L
-      humanName: LeftToes
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: Toe.R
-      humanName: RightToes
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: ThumbProximal.L
-      humanName: Left Thumb Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: ThumbIntermediate.L
-      humanName: Left Thumb Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: ThumbDistal.L
-      humanName: Left Thumb Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: MiddleProximal.L
-      humanName: Left Index Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: MiddleIntermediate.L
-      humanName: Left Index Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: MiddleDistal.L
-      humanName: Left Index Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: IndexProximal.L
-      humanName: Left Middle Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: IndexIntermediate.L
-      humanName: Left Middle Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: IndexDistal.L
-      humanName: Left Middle Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: RingProximal.L
-      humanName: Left Ring Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: RingIntermediate.L
-      humanName: Left Ring Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: RingDistal.L
-      humanName: Left Ring Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: ThumbProximal.R
-      humanName: Right Thumb Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: ThumbIntermediate.R
-      humanName: Right Thumb Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: ThumbDistal.R
-      humanName: Right Thumb Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: MiddleProximal.R
-      humanName: Right Index Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: MiddleIntermediate.R
-      humanName: Right Index Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: MiddleDistal.R
-      humanName: Right Index Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: IndexProximal.R
-      humanName: Right Middle Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: IndexIntermediate.R
-      humanName: Right Middle Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: IndexDistal.R
-      humanName: Right Middle Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: RingProximal.R
-      humanName: Right Ring Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: RingIntermediate.R
-      humanName: Right Ring Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: RingDistal.R
-      humanName: Right Ring Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: UpperChest
-      humanName: UpperChest
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: PinkyProximal.L
-      humanName: Left Little Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: PinkyIntermediate.L
-      humanName: Left Little Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: PinkyDistal.L
-      humanName: Left Little Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: PinkyProximal.R
-      humanName: Right Little Proximal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: PinkyIntermediate.R
-      humanName: Right Little Intermediate
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: PinkyDistal.R
-      humanName: Right Little Distal
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
+    serializedVersion: 3
+    human: []
     skeleton:
     - name: WalkingMocapSet(Clone)
       parentName: 
@@ -2244,13 +2219,18 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 3
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
   humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

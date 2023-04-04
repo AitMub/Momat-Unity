@@ -1,0 +1,126 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2502ff0dffd771b498cbc0485a4fd021, type: 3}
+  m_Name: ClipJointMapToStdAvatarMocap
+  m_EditorClassIdentifier: 
+  clip: {fileID: 7400076, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+  map:
+  - stdAvatarJointName: Hips
+    clipJointName: Hips
+  - stdAvatarJointName: LeftUpperLeg
+    clipJointName: UpperLeg.L
+  - stdAvatarJointName: RightUpperLeg
+    clipJointName: UpperLeg.R
+  - stdAvatarJointName: LeftLowerLeg
+    clipJointName: LowerLeg.L
+  - stdAvatarJointName: RightLowerLeg
+    clipJointName: LowerLeg.R
+  - stdAvatarJointName: LeftFoot
+    clipJointName: Foot.L
+  - stdAvatarJointName: RightFoot
+    clipJointName: Foot.R
+  - stdAvatarJointName: Spine
+    clipJointName: Spine
+  - stdAvatarJointName: Chest
+    clipJointName: Chest
+  - stdAvatarJointName: UpperChest
+    clipJointName: UpperChest
+  - stdAvatarJointName: Neck
+    clipJointName: Neck
+  - stdAvatarJointName: Head
+    clipJointName: Head
+  - stdAvatarJointName: LeftShoulder
+    clipJointName: Shoulder.L
+  - stdAvatarJointName: RightShoulder
+    clipJointName: Shoulder.R
+  - stdAvatarJointName: LeftUpperArm
+    clipJointName: UpperArm.L
+  - stdAvatarJointName: RightUpperArm
+    clipJointName: UpperArm.R
+  - stdAvatarJointName: LeftLowerArm
+    clipJointName: LowerArm.L
+  - stdAvatarJointName: RightLowerArm
+    clipJointName: LowerArm.R
+  - stdAvatarJointName: LeftHand
+    clipJointName: Hand.L
+  - stdAvatarJointName: RightHand
+    clipJointName: Hand.R
+  - stdAvatarJointName: LeftToes
+    clipJointName: Toe.L
+  - stdAvatarJointName: RightToes
+    clipJointName: Toe.R
+  - stdAvatarJointName: LeftEye
+    clipJointName: 
+  - stdAvatarJointName: RightEye
+    clipJointName: 
+  - stdAvatarJointName: Jaw
+    clipJointName: 
+  - stdAvatarJointName: Left Thumb Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Thumb Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Thumb Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Index Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Index Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Index Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Middle Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Middle Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Middle Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Ring Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Ring Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Ring Distal
+    clipJointName: 
+  - stdAvatarJointName: Left Little Proximal
+    clipJointName: 
+  - stdAvatarJointName: Left Little Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Left Little Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Thumb Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Thumb Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Thumb Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Index Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Index Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Index Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Middle Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Middle Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Middle Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Ring Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Ring Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Ring Distal
+    clipJointName: 
+  - stdAvatarJointName: Right Little Proximal
+    clipJointName: 
+  - stdAvatarJointName: Right Little Intermediate
+    clipJointName: 
+  - stdAvatarJointName: Right Little Distal
+    clipJointName: 

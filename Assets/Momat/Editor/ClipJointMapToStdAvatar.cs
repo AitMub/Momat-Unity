@@ -63,7 +63,7 @@ namespace Momat.Editor
                 return null;
             }
 
-            if (clipJointNames != null)
+            if (clipJointNames != null && clipJointNames.Length != 1)
             {
                 return clipJointNames;
             }

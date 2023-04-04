@@ -162,6 +162,36 @@ namespace Momat.Editor
             return parents;
         }
 
+        public NativeArray<AffineTransform> GenerateWorldMatrices()
+        {
+            NativeArray<AffineTransform> worldMatrices = new NativeArray<AffineTransform>(NumJoints, Allocator.Persistent);
+
+            worldMatrices[0] = AffineTransform.identity;
+            for (int jointIndex = 0; jointIndex < NumJoints; ++jointIndex)
+            {
+                if (joints[jointIndex].parentIndex >= 0)
+                {
+                    AffineTransform localMat =  joints[jointIndex].localTransform;
+                    worldMatrices[jointIndex] = worldMatrices[joints[jointIndex].parentIndex] * localMat;
+                }
+            }
+
+            return worldMatrices;
+        }
+        
+        public NativeArray<AffineTransform> GenerateLocalMatrices()
+        {
+            NativeArray<AffineTransform> localMatrices = new NativeArray<AffineTransform>(NumJoints, Allocator.Persistent);
+
+            localMatrices[0] = AffineTransform.identity;
+            for (int jointIndex = 0; jointIndex < NumJoints; ++jointIndex)
+            {
+                localMatrices[jointIndex] = joints[jointIndex].localTransform;
+            }
+
+            return localMatrices;
+        }
+            
         AnimationRig(Avatar avatar)
         {
             this.avatar = avatar;

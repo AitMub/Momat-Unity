@@ -21,7 +21,7 @@ namespace Momat.Editor
             {
                 return null;
             }
-
+            
             List<AnimationRig.Joint> jointsList = new List<AnimationRig.Joint>();
             jointsList.Add(new AnimationRig.Joint()
             {
@@ -33,6 +33,22 @@ namespace Momat.Editor
             foreach (Transform child in avatarRootObject.transform)
             {
                 AnimationRig.CollectJointsRecursive(jointsList, child, 0);
+            }
+
+            var skeleton = avatar.humanDescription.skeleton;
+            for (int i = 0; i < jointsList.Count; i++)
+            {
+                foreach (var bone in skeleton)
+                {
+                    if (bone.name == jointsList[i].name)
+                    {
+                        var newJoint = new AnimationRig.Joint();
+                        newJoint.name = jointsList[i].name;
+                        newJoint.parentIndex = jointsList[i].parentIndex;
+                        newJoint.localTransform = AffineTransform.Create(bone.position, bone.rotation);
+                        jointsList[i] = newJoint;
+                    }
+                }
             }
 
             return jointsList;

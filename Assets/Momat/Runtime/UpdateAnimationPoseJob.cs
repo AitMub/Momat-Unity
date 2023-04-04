@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
@@ -93,6 +94,8 @@ namespace Momat.Runtime
                     // transforms[i].SetGlobalTR(stream, runtimeAnimationData.transforms[i].t, runtimeAnimationData.transforms[i].q, true);
                     transforms[i].SetLocalPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].t);
                     transforms[i].SetLocalRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].q);
+                    //transforms[i].SetPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].t);
+                    //transforms[i].SetRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].q);
                 }
             }
         }

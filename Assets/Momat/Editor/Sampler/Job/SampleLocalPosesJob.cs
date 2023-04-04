@@ -34,14 +34,41 @@ namespace Momat.Editor
 
             MemoryArray<AffineTransform> localPose = new MemoryArray<AffineTransform>(localPoses, numJoints * index, numJoints);
 
+            localPose[0] = AffineTransform.identity;
+            
+            /*// 计算源avatar的各个joint的世界坐标
+            int refNumJoints = poseSamplePostProcess.refParentIndices.Length;
+            AffineTransform[] refWorldPose = new AffineTransform[refNumJoints];
+            refWorldPose[0] = AffineTransform.identity;
+            for (int refJointIndex = 0; refJointIndex < refNumJoints; refJointIndex++)
+            {
+                int refParentIndex = poseSamplePostProcess.refParentIndices[refJointIndex];
+                if(refParentIndex > 0)
+                
+            }*/
+            
             for (int jointIndex = 0; jointIndex < numJoints; ++jointIndex)
             {
-                if (jointIndexToQs[jointIndex].jointIndex != -1)
+                if (jointIndexToQs[jointIndex].refJointIndex != -1)
                 {
-                    Quaternion q = jointSamplers[jointIndex][frameIndex].q *
-                                   Quaternion.Inverse(jointIndexToQs[jointIndex].refAvatarQ) * jointIndexToQs[jointIndex].avatarQ;
-                    var affineT = new AffineTransform(jointSamplers[jointIndex][frameIndex].t, q);
-                    localPose[jointIndex] = affineT;
+                    localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
+                    
+                    int refIndex = jointIndexToQs[jointIndex].refJointIndex;
+
+                    int refParentIndex = poseSamplePostProcess.refParentIndices[refIndex];
+                    if (refParentIndex >= 0)
+                    {
+                        localPose[jointIndex] = poseSamplePostProcess.refRigBindMatrics[refParentIndex] * localPose[jointIndex];
+                    }
+                    
+                    var localMat = localPose[jointIndex] * poseSamplePostProcess.refRigInverseBindMatrices[refIndex];
+                    localMat = poseSamplePostProcess.targetRigInverseParentBindMatrices[jointIndex]  * localMat *
+                               poseSamplePostProcess.targetRigBindMatrices[jointIndex];
+                    
+
+                    //Debug.Log($"jointIndex: {jointIndex} refIndex: {refIndex} refParentIndex: {refParentIndex}\n" +
+                       //       $"Parent T: {poseSamplePostProcess.refRigBindMatrics[refParentIndex]} World T: {localMat.t}");
+                    localPose[jointIndex] = localMat;
                 }
                 else
                 {

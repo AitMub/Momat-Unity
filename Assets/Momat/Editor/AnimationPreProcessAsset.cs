@@ -16,7 +16,7 @@ namespace Momat.Editor
 
     struct JointIndexToQ
     {
-        public int jointIndex;
+        public int refJointIndex;
         public Quaternion refAvatarQ;
         public Quaternion avatarQ;
     }
@@ -46,7 +46,7 @@ namespace Momat.Editor
 
             using(NativeArray<AffineTransform> transforms = new NativeArray<AffineTransform>(numTransforms, Allocator.Persistent))
             {
-                using (AnimationSampler animSampler = new AnimationSampler(rig, clip, clipJointMapToStdAvatar))
+                using (AnimationSampler animSampler = new AnimationSampler(rig, refClipRig, clip, clipJointMapToStdAvatar))
                 {
                     float sourceSampleRate = clip.frameRate;
                     float targetSampleRate = sampleRate;
@@ -70,12 +70,13 @@ namespace Momat.Editor
                         int refJointIndex = refClipRig.GetJointIndexFromStdName(jointStdName);
                         if (jointStdName == null || refJointIndex == -1)
                         {
-                            jointIndexToQ.jointIndex = -1;
+                            jointIndexToQ.refJointIndex = -1;
                             jointIndexToQ.refAvatarQ = Quaternion.identity;
                         }
                         else
                         {
-                            jointIndexToQ.jointIndex = i;
+                            jointIndexToQ.refJointIndex = refJointIndex;
+                            // jointIndexToQ.refJointIndex = -1;
                             jointIndexToQ.refAvatarQ = refClipRig.Joints[refJointIndex].localTransform.q;
                         }
 
@@ -102,8 +103,9 @@ namespace Momat.Editor
                 }
 
                 runtimeAsset.rig = rig.GenerateRuntimeRig();
-                
-                AssetDatabase.CreateAsset(runtimeAsset, "Assets/Momat/Assets/AnimationRuntimeAsset.asset");
+
+                string assetName = name.Substring(name.IndexOf('t'));
+                AssetDatabase.CreateAsset(runtimeAsset, $"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
                 AssetDatabase.SaveAssets();
             }
         }

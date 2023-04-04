@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Assertions.Must;
 
 namespace Unity.Mathematics
 {
@@ -526,6 +527,20 @@ namespace Unity.Mathematics
             euler = ((Quaternion)q).eulerAngles;
         }
 
+        public AffineTransform(Matrix4x4 matrix)
+        {
+            Vector3 t_ = matrix.GetColumn(3);
+            
+            Vector3 forward = matrix.GetColumn(2);
+            Vector3 up = matrix.GetColumn(1);
+            var q_ = Quaternion.LookRotation(forward, up);
+
+            t = t_;
+            q = q_;
+
+            euler = ((Quaternion)q).eulerAngles;
+        }
+
         public static AffineTransform Create(float3 t, quaternion q)
         {
             return new AffineTransform(t, q);
@@ -602,5 +617,10 @@ namespace Unity.Mathematics
         }
 
         public float3 Forward => transformDirection(new float3(0.0f, 0.0f, 1.0f));
+
+        public Matrix4x4 GetMatrix()
+        {
+            return Matrix4x4.TRS(t, Quaternion.Normalize(q), Vector3.one);
+        }
     }
 }
