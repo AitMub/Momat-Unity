@@ -65,62 +65,62 @@ MonoBehaviour:
   - stdAvatarJointName: Jaw
     clipJointName: 
   - stdAvatarJointName: Left Thumb Proximal
-    clipJointName: 
+    clipJointName: ThumbProximal.L
   - stdAvatarJointName: Left Thumb Intermediate
-    clipJointName: 
+    clipJointName: ThumbIntermediate.L
   - stdAvatarJointName: Left Thumb Distal
-    clipJointName: 
+    clipJointName: ThumbDistal.L
   - stdAvatarJointName: Left Index Proximal
-    clipJointName: 
+    clipJointName: IndexProximal.L
   - stdAvatarJointName: Left Index Intermediate
-    clipJointName: 
+    clipJointName: IndexIntermediate.L
   - stdAvatarJointName: Left Index Distal
-    clipJointName: 
+    clipJointName: IndexDistal.L
   - stdAvatarJointName: Left Middle Proximal
-    clipJointName: 
+    clipJointName: IndexProximal.L
   - stdAvatarJointName: Left Middle Intermediate
-    clipJointName: 
+    clipJointName: IndexIntermediate.L
   - stdAvatarJointName: Left Middle Distal
-    clipJointName: 
+    clipJointName: IndexDistal.L
   - stdAvatarJointName: Left Ring Proximal
-    clipJointName: 
+    clipJointName: RingProximal.L
   - stdAvatarJointName: Left Ring Intermediate
-    clipJointName: 
+    clipJointName: RingIntermediate.L
   - stdAvatarJointName: Left Ring Distal
-    clipJointName: 
+    clipJointName: RingDistal.L
   - stdAvatarJointName: Left Little Proximal
-    clipJointName: 
+    clipJointName: PinkyProximal.L
   - stdAvatarJointName: Left Little Intermediate
-    clipJointName: 
+    clipJointName: PinkyIntermediate.L
   - stdAvatarJointName: Left Little Distal
-    clipJointName: 
+    clipJointName: PinkyDistal.L
   - stdAvatarJointName: Right Thumb Proximal
-    clipJointName: 
+    clipJointName: ThumbProximal.R
   - stdAvatarJointName: Right Thumb Intermediate
-    clipJointName: 
+    clipJointName: ThumbIntermediate.R
   - stdAvatarJointName: Right Thumb Distal
-    clipJointName: 
+    clipJointName: ThumbDistal.R
   - stdAvatarJointName: Right Index Proximal
-    clipJointName: 
+    clipJointName: IndexProximal.R
   - stdAvatarJointName: Right Index Intermediate
-    clipJointName: 
+    clipJointName: IndexIntermediate.R
   - stdAvatarJointName: Right Index Distal
-    clipJointName: 
+    clipJointName: IndexDistal.R
   - stdAvatarJointName: Right Middle Proximal
-    clipJointName: 
+    clipJointName: MiddleProximal.R
   - stdAvatarJointName: Right Middle Intermediate
-    clipJointName: 
+    clipJointName: MiddleIntermediate.R
   - stdAvatarJointName: Right Middle Distal
-    clipJointName: 
+    clipJointName: MiddleDistal.R
   - stdAvatarJointName: Right Ring Proximal
-    clipJointName: 
+    clipJointName: RingProximal.R
   - stdAvatarJointName: Right Ring Intermediate
-    clipJointName: 
+    clipJointName: RingIntermediate.R
   - stdAvatarJointName: Right Ring Distal
-    clipJointName: 
+    clipJointName: PinkyDistal.R
   - stdAvatarJointName: Right Little Proximal
-    clipJointName: 
+    clipJointName: PinkyProximal.R
   - stdAvatarJointName: Right Little Intermediate
-    clipJointName: 
+    clipJointName: PinkyIntermediate.R
   - stdAvatarJointName: Right Little Distal
-    clipJointName: 
+    clipJointName: PinkyDistal.R

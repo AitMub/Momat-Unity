@@ -76,7 +76,6 @@ namespace Momat.Editor
                         else
                         {
                             jointIndexToQ.refJointIndex = refJointIndex;
-                            // jointIndexToQ.refJointIndex = -1;
                             jointIndexToQ.refAvatarQ = refClipRig.Joints[refJointIndex].localTransform.q;
                         }
 
