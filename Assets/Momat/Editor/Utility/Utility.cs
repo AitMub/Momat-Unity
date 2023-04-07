@@ -64,7 +64,6 @@ namespace Momat.Editor
             return string.IsNullOrEmpty(property.stringValue) ? null : property.stringValue;
         }
 
-
         internal static string TryParseClipPropertyNameToStdAvatarJointName(string clipPropertyName)
         {
             // Remove prefix. e.g. 'mixamorig:'
@@ -101,6 +100,34 @@ namespace Momat.Editor
         internal static EventModifiers GetMultiSelectModifier()
         {
             return Application.platform == RuntimePlatform.OSXEditor ? EventModifiers.Command : EventModifiers.Control;
+        }
+
+        internal static int LongestCommonSubstrLength(string s1, string s2)
+        {
+            int[,] lengths = new int[s1.Length + 1, s2.Length + 1];
+            
+            int maxLength = 0;
+
+            for (int i = 1; i <= s1.Length; i++)
+            {
+                for (int j = 1; j <= s2.Length; j++)
+                {
+                    if (s1[i - 1] == s2[j - 1])
+                    {
+                        lengths[i, j] = lengths[i - 1, j - 1] + 1;
+                        if (lengths[i, j] > maxLength)
+                        {
+                            maxLength = lengths[i, j];
+                        }
+                    }
+                    else
+                    {
+                        lengths[i, j] = Math.Max(lengths[i - 1, j], lengths[i, j - 1]);
+                    }
+                }
+            }
+
+            return maxLength;
         }
     }
 }
