@@ -43,7 +43,7 @@ namespace Momat.Editor
 
         public int NumFrames => numFrames;
 
-        public static KeyframeAnimation Create(AnimationSampler animSampler, AnimationClip animationClip, ClipJointMapToStdAvatar clipJointMapToStdAvatar)
+        public static KeyframeAnimation Create(AnimationSampler animSampler, AnimationClip animationClip, AvatarRetargetMap avatarRetargetMap)
         {
             KeyframeAnimation anim = new KeyframeAnimation();
             anim.InitWithRigTransforms(animSampler.TargetRig);
@@ -58,8 +58,15 @@ namespace Momat.Editor
                 int jointIndex = animSampler.TargetRig.GetJointIndexFromPath(binding.path);
                 if (jointIndex == -1)
                 {
-                    string jointStdName = clipJointMapToStdAvatar.GetJointStdNameFromPath(binding.path);
-                    jointIndex = animSampler.TargetRig.GetJointIndexFromStdName(jointStdName);
+                    string jointNameInClip = binding.path;
+                    int index = binding.path.LastIndexOf('/');
+                    if (index != -1)
+                    {
+                        jointNameInClip = binding.path.Substring(index + 1);
+                    }
+                    
+                    string jointName = avatarRetargetMap.FindTargetNameBySourceName(jointNameInClip);
+                    jointIndex = animSampler.TargetRig.GetJointIndexFromName(jointName);
                 }
 
                 if (jointIndex >= 0)

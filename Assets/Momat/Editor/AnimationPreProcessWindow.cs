@@ -86,7 +86,7 @@ namespace Momat.Editor
             animationPreProcessAsset.BuildRuntimeData();
         }
             
-        internal void UpdateCurrAnimatinoClip(ProcessingAnimationClip clip)
+        internal void UpdateCurrAnimationClip(ProcessingAnimationClip clip)
         {
             currAnimationClip = clip;
 

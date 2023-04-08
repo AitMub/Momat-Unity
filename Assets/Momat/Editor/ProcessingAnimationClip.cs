@@ -8,9 +8,10 @@ namespace Momat.Editor
     [Serializable]
     class ProcessingAnimationClip
     {
-        public string Name { get => sourceAnimClip.name; }
-        
         public AnimationClip sourceAnimClip;
-        public ClipJointMapToStdAvatar clipJointMapToStdAvatar;
+        public AvatarRetargetMap avatarRetargetMap;
+        
+        public string Name { get => sourceAnimClip.name; }
+
     }
 }

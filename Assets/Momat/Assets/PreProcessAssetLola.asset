@@ -12,24 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333c05d6b4f42d4985c5fa7d7961f01, type: 3}
   m_Name: PreProcessAssetLola
   m_EditorClassIdentifier: 
-  motionAnimSet:
-  - sourceAnimClip: {fileID: -203655887218126122, guid: 764658affd570ff49b3b51edcbe91981, type: 3}
-    clipJointMapToStdAvatar: {fileID: 11400000, guid: 3e999c1dbc36eb34e97d7843092ebc36, type: 2}
-  - sourceAnimClip: {fileID: 7400086, guid: 309af69b5650d5a46989017668cf39a9, type: 3}
-    clipJointMapToStdAvatar: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400064, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
-    clipJointMapToStdAvatar: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: 551471f6001f64c4ca0404cc6dd4dbb9, type: 2}
-    clipJointMapToStdAvatar: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: 61397ac7d44670d4da6204a53f34ddd8, type: 2}
-    clipJointMapToStdAvatar: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: d94f7ac879976044fa2b58ec29dd8d2d, type: 2}
-    clipJointMapToStdAvatar: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: 72b5ed80d897d574f823365bb4ec9faf, type: 2}
-    clipJointMapToStdAvatar: {fileID: 0}
-  idleAnimSet:
-  - sourceAnimClip: {fileID: 7400000, guid: f5589feb81050bc4ca0def6972ffb4a7, type: 2}
-    clipJointMapToStdAvatar: {fileID: 0}
   avatar: {fileID: 9000000, guid: 9ea42fb558f7f2741a5462188dcce6b6, type: 3}
-  refAvatar: {fileID: 9000000, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
+  motionAnimSet: []
+  idleAnimSet: []
   sampleRate: 30

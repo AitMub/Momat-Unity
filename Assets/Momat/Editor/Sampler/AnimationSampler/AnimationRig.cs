@@ -166,7 +166,7 @@ namespace Momat.Editor
         {
             NativeArray<AffineTransform> worldMatrices = new NativeArray<AffineTransform>(NumJoints, Allocator.Persistent);
 
-            worldMatrices[0] = AffineTransform.identity;
+            worldMatrices[0] = joints[0].localTransform;
             for (int jointIndex = 0; jointIndex < NumJoints; ++jointIndex)
             {
                 if (joints[jointIndex].parentIndex >= 0)

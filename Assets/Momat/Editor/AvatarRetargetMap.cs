@@ -38,6 +38,29 @@ namespace Momat.Editor
             }
         }
 
+        public string FindTargetNameBySourceName(string name)
+        {
+            for (int i = 0; i < sourceJoints.Length; i++)
+            {
+                if (sourceJoints[i] == name)
+                {
+                    return targetJoints[sourceToTargetIndices[i]];
+                }
+            }
+
+            return null;
+        }
+
+        public string FindTargetNameBySourceIndex(int index)
+        {
+            if (sourceToTargetIndices[index] > 0)
+            {
+                return targetJoints[sourceToTargetIndices[index]];
+            }
+
+            return null;
+        }
+
         private void UpdateSource()
         {
             if (sourceAvatar != null)

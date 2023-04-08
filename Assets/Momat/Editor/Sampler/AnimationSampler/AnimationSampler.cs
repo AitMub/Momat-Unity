@@ -12,7 +12,7 @@ namespace Momat.Editor
     {
         private AnimationRig targetRig;
         private AnimationClip animationClip;
-        private ClipJointMapToStdAvatar clipJointMapToStdAvatar;
+        private AvatarRetargetMap avatarRetargetMap;
 
         private KeyframeAnimation   editorAnimation;
         private KeyframeAnimation?   bakedAnimation;
@@ -25,20 +25,20 @@ namespace Momat.Editor
 
         public PoseSamplePostProcess PoseSamplePostProcess => poseSamplePostProcess;
 
-        internal AnimationSampler(AnimationRig targetRig, AnimationRig refRig, AnimationClip animationClip, ClipJointMapToStdAvatar clipJointMapToStdAvatar)
+        internal AnimationSampler(AnimationRig targetRig, AnimationRig sourceRig, AnimationClip animationClip, AvatarRetargetMap avatarRetargetMap)
         {
             this.targetRig = targetRig;
             this.animationClip = animationClip;
-            this.clipJointMapToStdAvatar = clipJointMapToStdAvatar;
+            this.avatarRetargetMap = avatarRetargetMap;
 
             int numJoints = targetRig.NumJoints;
 
-            editorAnimation = KeyframeAnimation.Create(this, animationClip, clipJointMapToStdAvatar);
+            editorAnimation = KeyframeAnimation.Create(this, animationClip, avatarRetargetMap);
             bakedAnimation = null;
 
             try
             {
-                poseSamplePostProcess = new PoseSamplePostProcess(targetRig, refRig, animationClip, editorAnimation.JointSamplers[0][0]);
+                poseSamplePostProcess = new PoseSamplePostProcess(targetRig, sourceRig, animationClip, editorAnimation.JointSamplers[0][0]);
             }
             catch (Exception e)
             {

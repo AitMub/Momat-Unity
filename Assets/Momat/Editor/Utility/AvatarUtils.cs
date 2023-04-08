@@ -80,7 +80,7 @@ namespace Momat.Editor
             {
                 name = avatarRootObject.transform.name,
                 parentIndex = -1,
-                localTransform = AffineTransform.identity,
+                localTransform = AffineTransform.Create(avatarRootObject.transform.localPosition, avatarRootObject.transform.localRotation),
             });
             
             foreach (Transform child in avatarRootObject.transform)

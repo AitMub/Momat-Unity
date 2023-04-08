@@ -43,7 +43,7 @@ namespace Momat.Editor
         void OnAnimationClipSelectionChanged(IEnumerable<object> animationClips)
         {
             // only one clip could be selected
-            mainWindow.UpdateCurrAnimatinoClip(animationClips.FirstOrDefault() as ProcessingAnimationClip);
+            mainWindow.UpdateCurrAnimationClip(animationClips.FirstOrDefault() as ProcessingAnimationClip);
         }
 
         void OnDragUpdate(DragUpdatedEvent evt)

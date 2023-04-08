@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -24,21 +25,22 @@ namespace Momat.Editor
     [CreateAssetMenu(menuName = "Momat/Create Asset")]
     class AnimationPreProcessAsset : ScriptableObject
     {
+        public Avatar avatar;
+
         public List<ProcessingAnimationClip> motionAnimSet;
         public List<ProcessingAnimationClip> idleAnimSet;
-        public Avatar avatar;
-        public Avatar refAvatar;
+        
+        public float sampleRate = 30f;
 
         private AnimationRig rig;
-        public float sampleRate = 30f;
         
         public void BuildRuntimeData()
         {
             var clip = motionAnimSet[0].sourceAnimClip;
-            var clipJointMapToStdAvatar = motionAnimSet[0].clipJointMapToStdAvatar;
-            
+            var avatarRetargetMap = motionAnimSet[0].avatarRetargetMap;
+
             rig = AnimationRig.Create(avatar);
-            AnimationRig refClipRig = AnimationRig.Create(refAvatar);
+            AnimationRig sourceRig = AnimationRig.Create(avatarRetargetMap.sourceAvatar);
 
             int numJoints = rig.NumJoints;
             int numFrames = (int)math.ceil(clip.frameRate * clip.length);
@@ -46,7 +48,7 @@ namespace Momat.Editor
 
             using(NativeArray<AffineTransform> transforms = new NativeArray<AffineTransform>(numTransforms, Allocator.Persistent))
             {
-                using (AnimationSampler animSampler = new AnimationSampler(rig, refClipRig, clip, clipJointMapToStdAvatar))
+                using (AnimationSampler animSampler = new AnimationSampler(rig, sourceRig, clip, avatarRetargetMap))
                 {
                     float sourceSampleRate = clip.frameRate;
                     float targetSampleRate = sampleRate;
@@ -61,25 +63,23 @@ namespace Momat.Editor
 
                     NativeArray<JointIndexToQ> jointIndexToQs =
                         new NativeArray<JointIndexToQ>(numJoints, Allocator.Persistent);
-                    for (int i = 0; i < numJoints; i++)
+                    for (int i = 0; i < jointIndexToQs.Length; i++)
                     {
                         var jointIndexToQ = new JointIndexToQ();
-                        jointIndexToQ.avatarQ = rig.Joints[i].localTransform.q;
-
-                        string jointStdName = rig.GetJointStdNameFromIndex(i);
-                        int refJointIndex = refClipRig.GetJointIndexFromStdName(jointStdName);
-                        if (jointStdName == null || refJointIndex == -1)
-                        {
-                            jointIndexToQ.refJointIndex = -1;
-                            jointIndexToQ.refAvatarQ = Quaternion.identity;
-                        }
-                        else
-                        {
-                            jointIndexToQ.refJointIndex = refJointIndex;
-                            jointIndexToQ.refAvatarQ = refClipRig.Joints[refJointIndex].localTransform.q;
-                        }
-
+                        jointIndexToQ.refJointIndex = -1;
                         jointIndexToQs[i] = jointIndexToQ;
+                    }
+                    for (int i = 0; i < avatarRetargetMap.sourceToTargetIndices.Length; i++)
+                    {
+                        var targetJointName = avatarRetargetMap.FindTargetNameBySourceIndex(i);
+                        int targetIndex = rig.GetJointIndexFromName(targetJointName);
+
+                        if (targetIndex >= 0)
+                        {
+                            var jointIndexToQ = new JointIndexToQ();
+                            jointIndexToQ.refJointIndex = i;
+                            jointIndexToQs[targetIndex] = jointIndexToQ;
+                        }
                     }
                     
                     using (AnimationSampler.RangeSampler rangeSampler =
