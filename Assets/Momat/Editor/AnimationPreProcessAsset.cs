@@ -31,82 +31,92 @@ namespace Momat.Editor
         public List<ProcessingAnimationClip> idleAnimSet;
         
         public float sampleRate = 30f;
-
-        private AnimationRig rig;
         
         public void BuildRuntimeData()
         {
             var clip = motionAnimSet[0].sourceAnimClip;
             var avatarRetargetMap = motionAnimSet[0].avatarRetargetMap;
 
-            rig = AnimationRig.Create(avatar);
-            AnimationRig sourceRig = AnimationRig.Create(avatarRetargetMap.sourceAvatar);
-
-            int numJoints = rig.NumJoints;
-            int numFrames = (int)math.ceil(clip.frameRate * clip.length);
-            int numTransforms = numFrames * numJoints;
-
-            using(NativeArray<AffineTransform> transforms = new NativeArray<AffineTransform>(numTransforms, Allocator.Persistent))
+            if (avatarRetargetMap != null)
             {
-                using (AnimationSampler animSampler = new AnimationSampler(rig, sourceRig, clip, avatarRetargetMap))
+                var targetRig = AnimationRig.Create(avatar);
+                var sourceRig = AnimationRig.Create(avatarRetargetMap.sourceAvatar);
+
+                int numJoints = targetRig.NumJoints;
+                int numFrames = (int)math.ceil(clip.frameRate * clip.length);
+                int numTransforms = numFrames * numJoints;
+
+                using (var jointTransforms = new NativeArray<AffineTransform>(numTransforms, Allocator.Persistent))
                 {
-                    float sourceSampleRate = clip.frameRate;
-                    float targetSampleRate = sampleRate;
-                    float sampleRateRatio = sourceSampleRate / targetSampleRate;
-                    int numFrameResampledClip = (int)math.ceil(targetSampleRate * clip.length);
-                    
-                    var sampleRange = new AnimationCurveBake.SampleRange()
+                    using (var animSampler = new AnimationSampler(clip, sourceRig))
                     {
-                        startFrameIndex = 0,
-                        numFrames = numFrames
-                    };
+                        animSampler.RetargetAnimation(targetRig, avatarRetargetMap);
+                        
+                        float sourceSampleRate = clip.frameRate;
+                        float targetSampleRate = sampleRate;
+                        float sampleRateRatio = sourceSampleRate / targetSampleRate;
+                        int numFrameResampledClip = (int)math.ceil(targetSampleRate * clip.length);
 
-                    NativeArray<JointIndexToQ> jointIndexToQs =
-                        new NativeArray<JointIndexToQ>(numJoints, Allocator.Persistent);
-                    for (int i = 0; i < jointIndexToQs.Length; i++)
-                    {
-                        var jointIndexToQ = new JointIndexToQ();
-                        jointIndexToQ.refJointIndex = -1;
-                        jointIndexToQs[i] = jointIndexToQ;
-                    }
-                    for (int i = 0; i < avatarRetargetMap.sourceToTargetIndices.Length; i++)
-                    {
-                        var targetJointName = avatarRetargetMap.FindTargetNameBySourceIndex(i);
-                        int targetIndex = rig.GetJointIndexFromName(targetJointName);
+                        var sampleRange = new AnimationCurveBake.SampleRange()
+                        {
+                            startFrameIndex = 0,
+                            numFrames = numFrames
+                        };
 
-                        if (targetIndex >= 0)
+                        // target to source index
+                        NativeArray<JointIndexToQ> jointIndexToQs =
+                            new NativeArray<JointIndexToQ>(numJoints, Allocator.Persistent);
+                        for (int i = 0; i < jointIndexToQs.Length; i++)
                         {
                             var jointIndexToQ = new JointIndexToQ();
-                            jointIndexToQ.refJointIndex = i;
-                            jointIndexToQs[targetIndex] = jointIndexToQ;
+                            jointIndexToQ.refJointIndex = -1;
+                            jointIndexToQs[i] = jointIndexToQ;
                         }
+
+                        for (int i = 0; i < avatarRetargetMap.sourceToTargetIndices.Length; i++)
+                        {
+                            var targetJointName = avatarRetargetMap.FindTargetNameBySourceIndex(i);
+                            int targetIndex = targetRig.GetJointIndexFromName(targetJointName);
+
+                            if (targetIndex >= 0)
+                            {
+                                var jointIndexToQ = new JointIndexToQ();
+                                jointIndexToQ.refJointIndex = i;
+                                jointIndexToQs[targetIndex] = jointIndexToQ;
+                            }
+                        }
+
+                        using (var rangeSampler = animSampler.PrepareRangeSampler(targetSampleRate, sampleRange,
+                                   0, jointTransforms, jointIndexToQs))
+                        {
+                            rangeSampler.Schedule();
+
+                            rangeSampler.Complete();
+                        }
+
+                        jointIndexToQs.Dispose();
                     }
-                    
-                    using (AnimationSampler.RangeSampler rangeSampler =
-                           animSampler.PrepareRangeSampler(targetSampleRate, sampleRange, 0, 
-                               transforms, jointIndexToQs))
+
+                    var runtimeAsset = ScriptableObject.CreateInstance<Momat.Runtime.RuntimeAnimationData>();
+                    runtimeAsset.transforms = new List<AffineTransform>(jointTransforms.Length);
+                    for (int i = 0; i < jointTransforms.Length; i++)
                     {
-                        rangeSampler.Schedule();
-
-                        rangeSampler.Complete();
+                        runtimeAsset.transforms.Add(jointTransforms[i]);
                     }
 
-                    jointIndexToQs.Dispose();
-                }
-                
-                var runtimeAsset = ScriptableObject.CreateInstance<Momat.Runtime.RuntimeAnimationData>();
-                runtimeAsset.transforms = new List<AffineTransform>(transforms.Length);
-                for (int i = 0; i < transforms.Length; i++)
-                {
-                    runtimeAsset.transforms.Add(transforms[i]);
-                }
+                    runtimeAsset.rig = targetRig.GenerateRuntimeRig();
 
-                runtimeAsset.rig = rig.GenerateRuntimeRig();
-
-                string assetName = name.Substring(name.IndexOf('t'));
-                AssetDatabase.CreateAsset(runtimeAsset, $"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
-                AssetDatabase.SaveAssets();
+                    string assetName = name.Substring(name.IndexOf('t'));
+                    AssetDatabase.CreateAsset(runtimeAsset,
+                        $"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
+                    AssetDatabase.SaveAssets();
+                }
             }
+        }
+
+        public void BuildRuntimeDataForMotionClip(ProcessingAnimationClip motionAnimClip)
+        {
+            
         }
 
         public void AddClipsToAnimSet(List<AnimationClip> clips, AnimationSetEnum animationSetEnum)

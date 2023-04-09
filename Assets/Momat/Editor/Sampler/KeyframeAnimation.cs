@@ -12,7 +12,7 @@ namespace Momat.Editor
 {
     internal struct KeyframeAnimation : IDisposable
     {
-        struct CurveInfo
+        public struct CurveInfo
         {
             public Curve curve;
             public int jointIndex;
@@ -30,92 +30,77 @@ namespace Momat.Editor
             }
         }
         
-        List<CurveInfo> animationCurves; // curves from animation that are actually animated
-        NativeArray<TransformSampler> jointSamplers; // will return the animated curves for that joint if any, or default rig transform
-        float duration;
-        int numFrames; // only set for fixed framerate anim
+        private List<CurveInfo> animationCurveInfos;
+        private NativeArray<TransformSampler> jointTransformSamplers;
+        private float duration;
+        private int numFrames;
 
-        public float Duration => duration;
-
-        public Curve[] AnimationCurves => animationCurves.Select(c => c.curve).ToArray();
-
-        public NativeArray<TransformSampler> JointSamplers => jointSamplers;
-
+        public Curve[] AnimationCurves => animationCurveInfos.Select(c => c.curve).ToArray();
+        public List<CurveInfo> AnimationCurveInfos => animationCurveInfos;
+        public NativeArray<TransformSampler> JointTransformSamplers => jointTransformSamplers;
         public int NumFrames => numFrames;
 
-        public static KeyframeAnimation Create(AnimationSampler animSampler, AnimationClip animationClip, AvatarRetargetMap avatarRetargetMap)
+        public static KeyframeAnimation Create(AnimationClip animClip, AnimationRig animatedRig)
         {
             KeyframeAnimation anim = new KeyframeAnimation();
-            anim.InitWithRigTransforms(animSampler.TargetRig);
-            anim.duration = animationClip.length;
-            // anim.duration = Utility.ComputeAccurateClipDuration(animationClip); // 这个函数说当clip长度大于5分钟时, 时长会有错误, 需要重现计算
+            // animatedRig is the rig that animClip actually animated
+            anim.InitWithRigTransforms(animatedRig);
+            anim.duration = animClip.length;
             anim.numFrames = 0;
 
-            var bindings = AnimationUtility.GetCurveBindings(animationClip);
+            var curveBindings = AnimationUtility.GetCurveBindings(animClip);
 
-            foreach (EditorCurveBinding binding in bindings)
+            foreach (var curveBinding in curveBindings)
             {
-                int jointIndex = animSampler.TargetRig.GetJointIndexFromPath(binding.path);
-                if (jointIndex == -1)
-                {
-                    string jointNameInClip = binding.path;
-                    int index = binding.path.LastIndexOf('/');
-                    if (index != -1)
-                    {
-                        jointNameInClip = binding.path.Substring(index + 1);
-                    }
-                    
-                    string jointName = avatarRetargetMap.FindTargetNameBySourceName(jointNameInClip);
-                    jointIndex = animSampler.TargetRig.GetJointIndexFromName(jointName);
-                }
+                int jointIndex = animatedRig.GetJointIndexFromPath(curveBinding.path);
 
                 if (jointIndex >= 0)
                 {
-                    var curve = AnimationUtility.GetEditorCurve(animationClip, binding);
+                    var curve = AnimationUtility.GetEditorCurve(animClip, curveBinding);
 
-                    if (jointIndex == 0 && animationClip.hasMotionCurves)
+                    if (jointIndex == 0 && animClip.hasMotionCurves)
                     {
-                        if (binding.propertyName.Contains("Motion"))
+                        if (curveBinding.propertyName.Contains("Motion"))
                         {
-                            anim.MapEditorCurve(jointIndex, binding.propertyName, "MotionT", "MotionQ", curve);
+                            anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", curve);
                         }
                     }
-                    else if (jointIndex == 0 && animationClip.hasRootCurves)
+                    else if (jointIndex == 0 && animClip.hasRootCurves)
                     {
-                        if (binding.propertyName.Contains("Root"))
+                        if (curveBinding.propertyName.Contains("Root"))
                         {
-                            anim.MapEditorCurve(jointIndex, binding.propertyName, "RootT", "RootQ", curve);
+                            anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "RootT", "RootQ", curve);
                         }
                     }
                     else
                     {
-                        anim.MapEditorCurve(jointIndex, binding.propertyName, "m_LocalPosition", "m_LocalRotation", curve);
+                        anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "m_LocalPosition", "m_LocalRotation", curve);
                     }
                 }
             }
 
-            anim.animationCurves.Sort((x, y) => x.CompareTo(y));
+            anim.animationCurveInfos.Sort((x, y) => x.CompareTo(y));
 
             return anim;
         }
 
         public AffineTransform SampleLocalJoint(int jointIndex, float sampleTimeInSeconds)
         {
-            return jointSamplers[jointIndex].Evaluate(sampleTimeInSeconds);
+            return jointTransformSamplers[jointIndex].Evaluate(sampleTimeInSeconds);
         }
 
         public KeyframeAnimation AllocateCopyAtFixedSampleRate(float sampleRate)
         {
-            int numJoints = jointSamplers.Length;
+            int numJoints = jointTransformSamplers.Length;
 
             KeyframeAnimation anim = new KeyframeAnimation();
-            anim.animationCurves = new List<CurveInfo>(animationCurves.Count);
-            anim.jointSamplers = new NativeArray<TransformSampler>(numJoints, Allocator.Persistent);
+            anim.animationCurveInfos = new List<CurveInfo>(animationCurveInfos.Count);
+            anim.jointTransformSamplers = new NativeArray<TransformSampler>(numJoints, Allocator.Persistent);
             anim.numFrames = (int)math.ceil(sampleRate * duration);
 
             for (int jointIndex = 0; jointIndex < numJoints; ++jointIndex)
             {
-                TransformSampler sourceSampler = jointSamplers[jointIndex];
+                TransformSampler sourceSampler = jointTransformSamplers[jointIndex];
                 TransformSampler destinationSampler = TransformSampler.CreateEmpty(sourceSampler.DefaultTransform);
 
                 for (int curveIndex = 0; curveIndex < TransformSampler.NumCurves; ++curveIndex)
@@ -123,7 +108,7 @@ namespace Momat.Editor
                     if (sourceSampler.GetCurveProxy(curveIndex).HasCurve)
                     {
                         Curve curve = new Curve(anim.numFrames, Allocator.Persistent); // fixed framerate curve
-                        anim.animationCurves.Add(new CurveInfo()
+                        anim.animationCurveInfos.Add(new CurveInfo()
                         {
                             curve = curve,
                             jointIndex = jointIndex,
@@ -133,7 +118,7 @@ namespace Momat.Editor
                     }
                 }
 
-                anim.jointSamplers[jointIndex] = destinationSampler;
+                anim.jointTransformSamplers[jointIndex] = destinationSampler;
             }
 
             return anim;
@@ -141,35 +126,85 @@ namespace Momat.Editor
 
         public void Dispose()
         {
-            foreach (CurveInfo curveInfo in animationCurves)
+            foreach (CurveInfo curveInfo in animationCurveInfos)
             {
                 curveInfo.curve.Dispose();
             }
 
-            jointSamplers.Dispose();
+            jointTransformSamplers.Dispose();
         }
 
-        void InitWithRigTransforms(AnimationRig targetRig)
+        public void InitWithRigTransforms(AnimationRig targetRig)
         {
-            animationCurves = new List<CurveInfo>();
-            jointSamplers = new NativeArray<TransformSampler>(targetRig.NumJoints, Allocator.Persistent);
+            animationCurveInfos = new List<CurveInfo>();
+            jointTransformSamplers = new NativeArray<TransformSampler>(targetRig.NumJoints, Allocator.Persistent);
 
             for (int i = 0; i < targetRig.NumJoints; ++i)
             {
-                jointSamplers[i] = TransformSampler.CreateEmpty(targetRig.Joints[i].localTransform);
+                jointTransformSamplers[i] = TransformSampler.CreateEmpty(targetRig.Joints[i].localTransform);
             }
         }
 
-        void MapEditorCurve(int jointIndex, string curveName, string posCurvePrefix, string rotCurvePrefix, AnimationCurve editorCurve)
+        public int FindCurveRangeEndForJoint(int rangeBegin)
+        {
+            int rangeEnd = rangeBegin + 1;
+            while (rangeEnd < animationCurveInfos.Count)
+            {
+                if (animationCurveInfos[rangeEnd].jointIndex != 
+                    animationCurveInfos[rangeEnd - 1].jointIndex)
+                {
+                    break;
+                }
+            }
+
+            return rangeEnd;
+        }
+
+        public (int,int) GetPositionCurveRangeIn(int rangeBegin, int rangeEnd)
+        {
+            int rangeEndForPosition = -1;
+            for (int i = rangeBegin; i < rangeEnd; i++)
+            {
+                if (animationCurveInfos[i].curveIndex >= 0 &&
+                    animationCurveInfos[i].curveIndex <= 2)
+                {
+                    rangeEndForPosition = i;
+                }
+            }
+
+            if (rangeEndForPosition != -1)
+            {
+                return (rangeBegin, rangeEndForPosition + 1);
+            }
+            else
+            {                
+                return (-1, -1);
+            }
+        }
+        
+        public (int,int) GetRotationCurveRangeIn(int rangeBegin, int rangeEnd)
+        {
+            var range = GetPositionCurveRangeIn(rangeBegin, rangeEnd);
+            if (range.Item2 != -1)
+            {
+                return (range.Item2, rangeEnd);
+            }
+            else
+            {
+                return (-1, -1);
+            }
+        }
+
+        private void MapEditorCurve(int jointIndex, string curveName, string posCurvePrefix, string rotCurvePrefix, AnimationCurve editorCurve)
         {
             int curveIndex;
-            TransformSampler sampler = jointSamplers[jointIndex];
+            TransformSampler sampler = jointTransformSamplers[jointIndex];
             Curve? curve = sampler.MapEditorCurve(curveName, posCurvePrefix, rotCurvePrefix, editorCurve, out curveIndex);
-            jointSamplers[jointIndex] = sampler;
+            jointTransformSamplers[jointIndex] = sampler;
 
             if (curve.HasValue)
             {
-                animationCurves.Add(new CurveInfo()
+                animationCurveInfos.Add(new CurveInfo()
                 {
                     curve = curve.Value,
                     jointIndex = jointIndex,

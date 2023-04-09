@@ -10,41 +10,44 @@ namespace Momat.Editor
 {
     internal partial class AnimationSampler : IDisposable
     {
-        private AnimationRig targetRig;
+        private AnimationRig rig;
         private AnimationClip animationClip;
-        private AvatarRetargetMap avatarRetargetMap;
 
-        private KeyframeAnimation   editorAnimation;
-        private KeyframeAnimation?   bakedAnimation;
+        private KeyframeAnimation editorAnimation;
+        private KeyframeAnimation? bakedAnimation;
 
         private PoseSamplePostProcess poseSamplePostProcess;
 
-        public AnimationClip AnimationClip => animationClip;
-
-        public AnimationRig TargetRig => targetRig;
-
-        public PoseSamplePostProcess PoseSamplePostProcess => poseSamplePostProcess;
-
-        internal AnimationSampler(AnimationRig targetRig, AnimationRig sourceRig, AnimationClip animationClip, AvatarRetargetMap avatarRetargetMap)
+        internal AnimationSampler(AnimationClip animationClip, AnimationRig rig)
         {
-            this.targetRig = targetRig;
             this.animationClip = animationClip;
-            this.avatarRetargetMap = avatarRetargetMap;
-
-            int numJoints = targetRig.NumJoints;
-
-            editorAnimation = KeyframeAnimation.Create(this, animationClip, avatarRetargetMap);
+            this.rig = rig;
+            
+            editorAnimation = KeyframeAnimation.Create(animationClip,rig);
             bakedAnimation = null;
-
+            
             try
             {
-                poseSamplePostProcess = new PoseSamplePostProcess(targetRig, sourceRig, animationClip, editorAnimation.JointSamplers[0][0]);
+                // 这边第二个参数暂时用rig代替一下, 重构完是要删除的, 现在先不管PostProcess
+                poseSamplePostProcess = new PoseSamplePostProcess(rig, rig, animationClip, editorAnimation.JointTransformSamplers[0][0]);
             }
             catch (Exception e)
             {
                 editorAnimation.Dispose();
                 throw e;
             }
+        }
+
+        internal void RetargetAnimation(AnimationRig targetRig, AvatarRetargetMap avatarRetargetMap)
+        {
+            if (bakedAnimation != null)
+            {
+                throw new Exception("Retarget is only allowed before Range Sampler is prepared");
+            }
+
+            editorAnimation = KeyframeAnimationRetargeter.CreateRetargetAnimation(
+                this.rig, targetRig, editorAnimation, avatarRetargetMap);
+            this.rig = targetRig;
         }
 
         public void Dispose()
@@ -75,7 +78,7 @@ namespace Momat.Editor
 
         public AffineTransform SampleTrajectory(float sampleTimeInSeconds)
         {
-            return editorAnimation.JointSamplers[0].Evaluate(sampleTimeInSeconds);
+            return editorAnimation.JointTransformSamplers[0].Evaluate(sampleTimeInSeconds);
         }
 
         internal void AllocateBakedAnimation(float sampleRate)
@@ -95,7 +98,7 @@ namespace Momat.Editor
                 throw new ArgumentException($"Trying to sample {sampleRange.startFrameIndex + sampleRange.numFrames - 1} frame from {animationClip.name} whose last frame is {bakedAnimation.Value.NumFrames - 1} (resampled at {sampleRate} fps)", "sampleRange");
             }
 
-            int numJoints = editorAnimation.JointSamplers.Length;
+            int numJoints = editorAnimation.JointTransformSamplers.Length;
 
             NativeArray<AffineTransform> localPoses = new NativeArray<AffineTransform>(sampleRange.numFrames * numJoints, Allocator.Persistent);
 
@@ -103,7 +106,7 @@ namespace Momat.Editor
 
             SampleLocalPosesJob sampleLocalPosesJob = new SampleLocalPosesJob()
             {
-                jointSamplers = new MemoryArray<TransformSampler>(bakedAnimation.Value.JointSamplers),
+                jointSamplers = new MemoryArray<TransformSampler>(bakedAnimation.Value.JointTransformSamplers),
                 localPoses = outTransforms,
                 sampleRange = sampleRange,
                 poseSamplePostProcess = poseSamplePostProcess.Clone(),

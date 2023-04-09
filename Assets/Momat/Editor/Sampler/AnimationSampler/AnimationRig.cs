@@ -82,6 +82,16 @@ namespace Momat.Editor
                 {
                     return i;
                 }
+                
+                if (jointPaths[i].Length > path.Length)
+                {
+                    if (string.Compare(
+                            jointPaths[i], jointPaths[i].Length - path.Length,
+                            path, 0, path.Length) == 0)
+                    {
+                        return i;
+                    }
+                }
             }
 
             return -1;
@@ -150,7 +160,7 @@ namespace Momat.Editor
             return transforms;
         }
 
-        public NativeArray<int> GenerateParentIndices()
+        public NativeArray<int> GenerateParentIndicesNA()
         {
             NativeArray<int> parents = new NativeArray<int>(NumJoints, Allocator.Persistent);
 
@@ -161,10 +171,22 @@ namespace Momat.Editor
 
             return parents;
         }
-
-        public NativeArray<AffineTransform> GenerateWorldMatrices()
+        
+        public int[] GenerateParentIndices()
         {
-            NativeArray<AffineTransform> worldMatrices = new NativeArray<AffineTransform>(NumJoints, Allocator.Persistent);
+            int[] parents = new int[NumJoints];
+
+            for (int jointIndex = 0; jointIndex < NumJoints; ++jointIndex)
+            {
+                parents[jointIndex] = joints[jointIndex].parentIndex;
+            }
+
+            return parents;
+        }
+
+        public AffineTransform[] GenerateWorldMatrices()
+        {
+            AffineTransform[] worldMatrices = new AffineTransform[NumJoints];
 
             worldMatrices[0] = joints[0].localTransform;
             for (int jointIndex = 0; jointIndex < NumJoints; ++jointIndex)

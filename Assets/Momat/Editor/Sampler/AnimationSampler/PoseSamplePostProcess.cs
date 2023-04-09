@@ -40,10 +40,10 @@ namespace Momat.Editor
                 throw new Exception($"Animation clip {AssetDatabase.GetAssetPath(animationClip)} requires root bone, please setup root node in avatar {AssetDatabase.GetAssetPath(targetRig.Avatar)}");
             }
 
-            parentIndices = targetRig.GenerateParentIndices();
-            refParentIndices = refRig.GenerateParentIndices();
+            parentIndices = targetRig.GenerateParentIndicesNA();
+            refParentIndices = refRig.GenerateParentIndicesNA();
 
-            refRigBindMatrics = refRig.GenerateWorldMatrices();
+            /*refRigBindMatrics = refRig.GenerateWorldMatrices();
             refRigInverseBindMatrices = refRig.GenerateWorldMatrices();
             for (int i = 0; i < refRigInverseBindMatrices.Length; i++)
             {
@@ -55,7 +55,12 @@ namespace Momat.Editor
             for (int i = 1; i < targetRigInverseParentBindMatrices.Length; i++)
             {
                 targetRigInverseParentBindMatrices[i] = targetRigBindMatrices[parentIndices[i]].inverse();
-            }
+            }*/
+
+            refRigBindMatrics = new NativeArray<AffineTransform>();
+            refRigInverseBindMatrices = new NativeArray<AffineTransform>();
+            targetRigBindMatrices = new NativeArray<AffineTransform>();
+            targetRigInverseParentBindMatrices = new NativeArray<AffineTransform>();
 
             ModelImporterClipAnimation clipImporter = Utility.GetImporterFromClip(animationClip);
             applyRootImportOptions = animationClip.hasRootCurves && !animationClip.hasMotionCurves;
