@@ -57,15 +57,16 @@ namespace Momat.Editor
                 if (jointIndex >= 0)
                 {
                     var curve = AnimationUtility.GetEditorCurve(animClip, curveBinding);
-
-                    if (jointIndex == 0 && animClip.hasMotionCurves)
+                    
+                    // 暂时忽略motion curve
+                    /*if (jointIndex == 0 && animClip.hasMotionCurves)
                     {
                         if (curveBinding.propertyName.Contains("Motion"))
                         {
                             anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", curve);
                         }
-                    }
-                    else if (jointIndex == 0 && animClip.hasRootCurves)
+                    }*/
+                    if (jointIndex == 0 && animClip.hasRootCurves)
                     {
                         if (curveBinding.propertyName.Contains("Root"))
                         {
@@ -84,6 +85,36 @@ namespace Momat.Editor
             return anim;
         }
 
+        public KeyframeAnimation RetargetAnimation
+            (AnimationRig sourceRig, AnimationRig targetRig, AvatarRetargetMap avatarRetargetMap)
+        {
+            var targetAnim = KeyframeAnimationRetargeter.CreateRetargetAnimation
+                (sourceRig, targetRig, this, avatarRetargetMap);
+
+            targetAnim.duration = duration;
+            targetAnim.numFrames = numFrames;
+            
+            targetAnim.animationCurveInfos.Sort((x, y) => x.CompareTo(y));
+            int jointIndex = 0, allCurveIndex = 0;
+            while (jointIndex < targetRig.NumJoints)
+            {
+                while (allCurveIndex < targetAnim.animationCurveInfos.Count &&
+                       targetAnim.animationCurveInfos[allCurveIndex].jointIndex == jointIndex)
+                {
+                    var sampler = targetAnim.jointTransformSamplers[jointIndex];
+                    sampler.SetCurve(targetAnim.animationCurveInfos[allCurveIndex].curveIndex,
+                        targetAnim.animationCurveInfos[allCurveIndex].curve);
+                    targetAnim.jointTransformSamplers[jointIndex] = sampler;
+                    
+                    allCurveIndex++;
+                }
+
+                jointIndex++;
+            }
+
+            return targetAnim;
+        }
+        
         public AffineTransform SampleLocalJoint(int jointIndex, float sampleTimeInSeconds)
         {
             return jointTransformSamplers[jointIndex].Evaluate(sampleTimeInSeconds);
@@ -155,6 +186,8 @@ namespace Momat.Editor
                 {
                     break;
                 }
+
+                rangeEnd++;
             }
 
             return rangeEnd;
@@ -195,11 +228,14 @@ namespace Momat.Editor
             }
         }
 
-        private void MapEditorCurve(int jointIndex, string curveName, string posCurvePrefix, string rotCurvePrefix, AnimationCurve editorCurve)
+        private void MapEditorCurve
+            (int jointIndex, string curveName, 
+                string posCurvePrefix, string rotCurvePrefix, AnimationCurve editorCurve)
         {
             int curveIndex;
             TransformSampler sampler = jointTransformSamplers[jointIndex];
-            Curve? curve = sampler.MapEditorCurve(curveName, posCurvePrefix, rotCurvePrefix, editorCurve, out curveIndex);
+            Curve? curve = sampler.MapEditorCurve
+                (curveName, posCurvePrefix, rotCurvePrefix, editorCurve, out curveIndex);
             jointTransformSamplers[jointIndex] = sampler;
 
             if (curve.HasValue)

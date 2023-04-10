@@ -28,8 +28,8 @@ namespace Momat.Editor
             
             try
             {
-                // 这边第二个参数暂时用rig代替一下, 重构完是要删除的, 现在先不管PostProcess
-                poseSamplePostProcess = new PoseSamplePostProcess(rig, rig, animationClip, editorAnimation.JointTransformSamplers[0][0]);
+                poseSamplePostProcess = new PoseSamplePostProcess
+                    (rig, animationClip, editorAnimation.JointTransformSamplers[0][0]);
             }
             catch (Exception e)
             {
@@ -45,8 +45,22 @@ namespace Momat.Editor
                 throw new Exception("Retarget is only allowed before Range Sampler is prepared");
             }
 
-            editorAnimation = KeyframeAnimationRetargeter.CreateRetargetAnimation(
-                this.rig, targetRig, editorAnimation, avatarRetargetMap);
+            var oriEditorAnimation = editorAnimation;
+            editorAnimation = editorAnimation.RetargetAnimation(
+                this.rig, targetRig, avatarRetargetMap);
+            oriEditorAnimation.Dispose();
+            
+            try
+            {
+                poseSamplePostProcess = new PoseSamplePostProcess
+                    (targetRig, animationClip, editorAnimation.JointTransformSamplers[0][0]);
+            }
+            catch (Exception e)
+            {
+                editorAnimation.Dispose();
+                throw e;
+            }
+            
             this.rig = targetRig;
         }
 
@@ -89,7 +103,8 @@ namespace Momat.Editor
             }
         }
 
-        internal RangeSampler PrepareRangeSampler(float sampleRate, SampleRange sampleRange, int destinationStartFrameIndex, NativeArray<AffineTransform> outTransforms, NativeArray<JointIndexToQ> jointIndexToQs)
+        internal RangeSampler PrepareRangeSampler
+            (float sampleRate, SampleRange sampleRange, int destinationStartFrameIndex, NativeArray<AffineTransform> outTransforms)
         {
             AllocateBakedAnimation(sampleRate);
 
@@ -110,7 +125,6 @@ namespace Momat.Editor
                 localPoses = outTransforms,
                 sampleRange = sampleRange,
                 poseSamplePostProcess = poseSamplePostProcess.Clone(),
-                jointIndexToQs = jointIndexToQs
             };
 
             ConvertToGlobalPosesJob convertToGlobalPoseJob = new ConvertToGlobalPosesJob()

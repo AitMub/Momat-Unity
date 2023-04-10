@@ -16,9 +16,6 @@ namespace Momat.Editor
         [ReadOnly]
         public MemoryArray<TransformSampler> jointSamplers; // input proxy to local joint transforms from individual float curve
         public NativeArray<AffineTransform> localPoses; // output contiguous poses
-        
-        [ReadOnly]
-        public NativeArray<JointIndexToQ> jointIndexToQs;
 
         // settings
         [ReadOnly]
@@ -39,28 +36,7 @@ namespace Momat.Editor
 
             for (int jointIndex = 0; jointIndex < numJoints; ++jointIndex)
             {
-                if (jointIndexToQs[jointIndex].refJointIndex != -1)
-                {
-                    localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
-                    
-                    int refIndex = jointIndexToQs[jointIndex].refJointIndex;
-
-                    int refParentIndex = poseSamplePostProcess.refParentIndices[refIndex];
-                    if (refParentIndex >= 0)
-                    {
-                        localPose[jointIndex] = poseSamplePostProcess.refRigBindMatrics[refParentIndex] * localPose[jointIndex];
-                    }
-                    
-                    var localMat = localPose[jointIndex] * poseSamplePostProcess.refRigInverseBindMatrices[refIndex];
-                    localMat = poseSamplePostProcess.targetRigInverseParentBindMatrices[jointIndex]  * localMat *
-                               poseSamplePostProcess.targetRigBindMatrices[jointIndex];
-
-                    localPose[jointIndex] = localMat;
-                }
-                else
-                {
-                    localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
-                }
+                localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
             }
 
             poseSamplePostProcess.Apply(localPose);

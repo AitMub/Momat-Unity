@@ -18,6 +18,7 @@ namespace Momat.Editor
 
         public string[] sourceJoints;
         public string[] targetJoints;
+        
         public int[] sourceToTargetIndices;
         
         public void OnAvatarChanged()
@@ -36,6 +37,22 @@ namespace Momat.Editor
             {
                 MapByFindingClosestName();
             }
+        }
+
+        public int GetTargetIndexBySourceIndex(int sourceIndex)
+        {
+            if (sourceIndex == 0)
+            {
+                return 0;
+            }
+
+            var targetIndex = sourceToTargetIndices[sourceIndex];
+            if (targetIndex == 0)
+            {
+                return -1;
+            }
+
+            return targetIndex;
         }
 
         public string FindTargetNameBySourceName(string name)

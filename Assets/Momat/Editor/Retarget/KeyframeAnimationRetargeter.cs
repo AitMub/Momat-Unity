@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace Momat.Editor
             KeyframeAnimation sourceAnim, AvatarRetargetMap avatarRetargetMap)
         {
             InitRetargeter(sourceRig, targetRig, avatarRetargetMap);
-            
+
             var targetAnim = new KeyframeAnimation();
             targetAnim.InitWithRigTransforms(targetRig);
 
@@ -38,11 +39,17 @@ namespace Momat.Editor
                 
                 var positionCurveRange = sourceAnim.GetPositionCurveRangeIn(i, sameJointCurveEnd);
                 var retargetedPosCurve = RetargetJointPositionCurve(sourceAnim, positionCurveRange.Item1);
-                targetAnim.AnimationCurveInfos.AddRange(retargetedPosCurve);
+                if (retargetedPosCurve != null)
+                {
+                    targetAnim.AnimationCurveInfos.AddRange(retargetedPosCurve);
+                }
                 
                 var rotationCurveRange = sourceAnim.GetRotationCurveRangeIn(i, sameJointCurveEnd);
                 var retargetedRotCurve = RetargetJointRotationCurve(sourceAnim, rotationCurveRange.Item1);
-                targetAnim.AnimationCurveInfos.AddRange(retargetedRotCurve);
+                if (retargetedRotCurve != null)
+                {
+                    targetAnim.AnimationCurveInfos.AddRange(retargetedRotCurve);
+                }
 
                 i = sameJointCurveEnd;
             }
@@ -51,19 +58,27 @@ namespace Momat.Editor
         }
 
         private static CurveInfo[] RetargetJointPositionCurve(KeyframeAnimation sourceAnim, int posBeginIndex)
-        {            
-            var targetPositionCurves = new AnimationCurve[3];
-
+        {
             var sourceCurveInfos = sourceAnim.AnimationCurveInfos;
             var curveInfoX = sourceCurveInfos[posBeginIndex];
+            
+            var sourceJointIndex = curveInfoX.jointIndex;
+            var targetJointIndex = avatarRetargetMap.GetTargetIndexBySourceIndex(sourceJointIndex);
+            if (targetJointIndex < 0)
+            {
+                Debug.LogWarning($"Target rig does not have mapped joint " +
+                                 $"for animated joint {sourceJointIndex} in source animation");
+                return null;
+            }
+            
+            // init array and elements in it
+            var targetPositionCurves = 
+                Enumerable.Range(1, 3).Select(i => new AnimationCurve()).ToArray();
 
             // Ensure that all three retargeted XYZ curves have the same number of keyframes
             // in order to calculate retargeted transform all at once
             var retargetedKeyCnt = curveInfoX.curve.Keys.Length;
             
-            var sourceJointIndex = curveInfoX.jointIndex;
-            var targetJointIndex = GetTargetJointIndexBySourceIndex(sourceJointIndex);
-
             for (int i = 0; i < retargetedKeyCnt; i++)
             {
                 var time = curveInfoX.curve.Keys[i].time;
@@ -95,17 +110,25 @@ namespace Momat.Editor
         
         private static CurveInfo[] RetargetJointRotationCurve(KeyframeAnimation sourceAnim, int rotBeginIndex)
         {
-            var targetRotationCurves = new AnimationCurve[3];
-
             var sourceCurveInfos = sourceAnim.AnimationCurveInfos;
             var curveInfoX = sourceCurveInfos[rotBeginIndex];
+                        
+            var sourceJointIndex = curveInfoX.jointIndex;
+            var targetJointIndex = avatarRetargetMap.GetTargetIndexBySourceIndex(sourceJointIndex);
+            if (targetJointIndex < 0)
+            {
+                Debug.LogWarning($"Target rig does not have mapped joint " +
+                                 $"for animated joint {sourceJointIndex} in source animation");
+
+                return null;
+            }
+            
+            var targetRotationCurves =                 
+                Enumerable.Range(1, 4).Select(i => new AnimationCurve()).ToArray();
 
             // Ensure that all three retargeted XYZW curves have the same number of keyframes
             // in order to calculate retargeted transform all at once
             var retargetedKeyCnt = curveInfoX.curve.Keys.Length;
-            
-            var sourceJointIndex = curveInfoX.jointIndex;
-            var targetJointIndex = GetTargetJointIndexBySourceIndex(sourceJointIndex);
 
             for (int i = 0; i < retargetedKeyCnt; i++)
             {
@@ -121,7 +144,7 @@ namespace Momat.Editor
                 }
             }
 
-            var targetCurveInfos = new CurveInfo[3];
+            var targetCurveInfos = new CurveInfo[4];
 
             for (int i = 0; i < 4; i++)
             {
@@ -129,7 +152,7 @@ namespace Momat.Editor
                 {
                     curve = new Curve(targetRotationCurves[i], Allocator.Persistent),
                     jointIndex = targetJointIndex,
-                    curveIndex = i
+                    curveIndex = i + 3
                 };
             }
 
@@ -141,19 +164,32 @@ namespace Momat.Editor
         {
             int sourceParentIndex = sourceParentIndices[sourceJointIndex];
             
-            AffineTransform sJointWorldTransformInAnim = 
-                sourceRigBindTransforms[sourceParentIndex] * sourceTransform;
+            if (sourceParentIndex >= 0)
+            {
+                AffineTransform sJointWorldTransformInAnim = 
+                    sourceRigBindTransforms[sourceParentIndex] * sourceTransform;
             
-            AffineTransform sJointRelativeTransformWorldSpace =
-                sJointWorldTransformInAnim * sourceRigInverseBindTransforms[sourceJointIndex];
+                AffineTransform sJointRelativeTransformWorldSpace =
+                    sJointWorldTransformInAnim * sourceRigInverseBindTransforms[sourceJointIndex];
 
-            AffineTransform tJointWorldTransformInAnim =
-                sJointRelativeTransformWorldSpace * targetRigBindTransforms[targetJointIndex];
+                AffineTransform tJointWorldTransformInAnim =
+                    sJointRelativeTransformWorldSpace * targetRigBindTransforms[targetJointIndex];
 
-            AffineTransform tJointLocalTransformInAnim =
-                targetRigParentInverseBindTransforms[targetJointIndex] * tJointWorldTransformInAnim;
+                AffineTransform tJointLocalTransformInAnim =
+                    targetRigParentInverseBindTransforms[targetJointIndex] * tJointWorldTransformInAnim;
 
-            return tJointLocalTransformInAnim;
+                return tJointLocalTransformInAnim;
+            }
+            else
+            {
+                AffineTransform sJointRelativeTransformWorldSpace =
+                    sourceTransform * sourceRigInverseBindTransforms[0];
+                
+                AffineTransform tJointWorldTransformInAnim = 
+                    sJointRelativeTransformWorldSpace * targetRigBindTransforms[targetJointIndex];
+
+                return tJointWorldTransformInAnim;
+            }
         }
 
         private static void InitRetargeter
@@ -177,11 +213,6 @@ namespace Momat.Editor
                 targetRigParentInverseBindTransforms[i] =
                     targetRigBindTransforms[targetRig.Joints[i].parentIndex].inverse();
             }
-        }
-
-        private static int GetTargetJointIndexBySourceIndex(int sourceIndex)
-        {
-            return avatarRetargetMap.sourceToTargetIndices[sourceIndex];
         }
     }
     

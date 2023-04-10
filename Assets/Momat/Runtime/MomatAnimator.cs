@@ -11,14 +11,14 @@ namespace Momat.Runtime
 {
     public class MomatAnimator : MonoBehaviour
     {
-        [SerializeField] private float updateInterval = 0.1f;
+        // [SerializeField] private float updateInterval = 0.1f;
         [SerializeField] private RuntimeAnimationData runtimeAnimationData;
         protected Animator animator;
         protected PlayableGraph playableGraph;
         private UpdateAnimationPoseJob job;
         public float deltaTime;
         public static int t = 0;
-        [Range(0,65)]
+        [Range(0,90)]
         public int t1;
 
         public Transform target;

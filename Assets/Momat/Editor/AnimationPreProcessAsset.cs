@@ -63,41 +63,16 @@ namespace Momat.Editor
                             numFrames = numFrames
                         };
 
-                        // target to source index
-                        NativeArray<JointIndexToQ> jointIndexToQs =
-                            new NativeArray<JointIndexToQ>(numJoints, Allocator.Persistent);
-                        for (int i = 0; i < jointIndexToQs.Length; i++)
-                        {
-                            var jointIndexToQ = new JointIndexToQ();
-                            jointIndexToQ.refJointIndex = -1;
-                            jointIndexToQs[i] = jointIndexToQ;
-                        }
-
-                        for (int i = 0; i < avatarRetargetMap.sourceToTargetIndices.Length; i++)
-                        {
-                            var targetJointName = avatarRetargetMap.FindTargetNameBySourceIndex(i);
-                            int targetIndex = targetRig.GetJointIndexFromName(targetJointName);
-
-                            if (targetIndex >= 0)
-                            {
-                                var jointIndexToQ = new JointIndexToQ();
-                                jointIndexToQ.refJointIndex = i;
-                                jointIndexToQs[targetIndex] = jointIndexToQ;
-                            }
-                        }
-
-                        using (var rangeSampler = animSampler.PrepareRangeSampler(targetSampleRate, sampleRange,
-                                   0, jointTransforms, jointIndexToQs))
+                        using (var rangeSampler = animSampler.PrepareRangeSampler
+                               (targetSampleRate, sampleRange, 0, jointTransforms))
                         {
                             rangeSampler.Schedule();
 
                             rangeSampler.Complete();
                         }
-
-                        jointIndexToQs.Dispose();
                     }
 
-                    var runtimeAsset = ScriptableObject.CreateInstance<Momat.Runtime.RuntimeAnimationData>();
+                    var runtimeAsset = CreateInstance<Runtime.RuntimeAnimationData>();
                     runtimeAsset.transforms = new List<AffineTransform>(jointTransforms.Length);
                     for (int i = 0; i < jointTransforms.Length; i++)
                     {
