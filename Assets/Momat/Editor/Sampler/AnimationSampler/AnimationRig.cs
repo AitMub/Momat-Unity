@@ -229,28 +229,33 @@ namespace Momat.Editor
 
             GenerateJointPaths(avatarRootObject.name);
 
+            bodyJointIndex = FindJointBodyIndex(avatar);
+        }
+
+        internal int FindJointBodyIndex(Avatar avatar)
+        {
             if (avatar.isHuman)
             {
                 foreach (HumanBone humanBone in avatar.humanDescription.human)
                 {
                     if (humanBone.humanName == "Hips")
                     {
-                        bodyJointIndex = GetJointIndexFromName(humanBone.boneName);
-                        break;
+                        return GetJointIndexFromName(humanBone.boneName);
                     }
                 }
+
+                return -1;
             }
             else
             {
+                string assetPath = AssetDatabase.GetAssetPath(avatar);
                 string rootJointName = Utility.GetImporterRootJointName(assetPath);
                 if (rootJointName == null)
                 {
-                    bodyJointIndex = -1;
+                    return -1;
                 }
-                else
-                {
-                    bodyJointIndex = GetJointIndexFromName(rootJointName);
-                }
+                
+                return GetJointIndexFromName(rootJointName);
             }
         }
 

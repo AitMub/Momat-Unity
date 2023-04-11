@@ -517,14 +517,10 @@ namespace Unity.Mathematics
         public float3 t;
         public quaternion q;
 
-        public float3 euler;
-
         public AffineTransform(float3 t_, quaternion q_)
         {
             t = t_;
             q = q_;
-
-            euler = ((Quaternion)q).eulerAngles;
         }
 
         public AffineTransform(Matrix4x4 matrix)
@@ -537,8 +533,6 @@ namespace Unity.Mathematics
 
             t = t_;
             q = q_;
-
-            euler = ((Quaternion)q).eulerAngles;
         }
 
         public static AffineTransform Create(float3 t, quaternion q)

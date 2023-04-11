@@ -67,7 +67,8 @@ namespace Momat.Editor
             if (targetJointIndex < 0)
             {
                 Debug.LogWarning($"Target rig does not have mapped joint " +
-                                 $"for animated joint {sourceJointIndex} in source animation");
+                                 $"for animated joint {sourceJointIndex} in source animation. " +
+                                 $"Animation for this joint will not be retargeted");
                 return null;
             }
             
@@ -118,7 +119,8 @@ namespace Momat.Editor
             if (targetJointIndex < 0)
             {
                 Debug.LogWarning($"Target rig does not have mapped joint " +
-                                 $"for animated joint {sourceJointIndex} in source animation");
+                                 $"for animated joint {sourceJointIndex} in source animation. " +
+                                 $"Animation for this joint will not be retargeted");
 
                 return null;
             }
@@ -180,16 +182,8 @@ namespace Momat.Editor
 
                 return tJointLocalTransformInAnim;
             }
-            else
-            {
-                AffineTransform sJointRelativeTransformWorldSpace =
-                    sourceTransform * sourceRigInverseBindTransforms[0];
-                
-                AffineTransform tJointWorldTransformInAnim = 
-                    sJointRelativeTransformWorldSpace * targetRigBindTransforms[targetJointIndex];
 
-                return tJointWorldTransformInAnim;
-            }
+            return sourceTransform; // root transform can apply to target directly
         }
 
         private static void InitRetargeter

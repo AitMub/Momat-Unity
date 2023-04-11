@@ -43,7 +43,7 @@ namespace Momat.Editor
         public static KeyframeAnimation Create(AnimationClip animClip, AnimationRig animatedRig)
         {
             KeyframeAnimation anim = new KeyframeAnimation();
-            // animatedRig is the rig that animClip actually animated
+
             anim.InitWithRigTransforms(animatedRig);
             anim.duration = animClip.length;
             anim.numFrames = 0;
@@ -58,21 +58,21 @@ namespace Momat.Editor
                 {
                     var curve = AnimationUtility.GetEditorCurve(animClip, curveBinding);
                     
-                    // 暂时忽略motion curve
-                    /*if (jointIndex == 0 && animClip.hasMotionCurves)
+                    if (jointIndex == 0 && animClip.hasMotionCurves)
                     {
                         if (curveBinding.propertyName.Contains("Motion"))
                         {
                             anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", curve);
                         }
-                    }*/
-                    if (jointIndex == 0 && animClip.hasRootCurves)
+                    }
+                    // 暂时忽略root curve
+                    /*if (jointIndex == 0 && animClip.hasRootCurves)
                     {
                         if (curveBinding.propertyName.Contains("Root"))
                         {
                             anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "RootT", "RootQ", curve);
                         }
-                    }
+                    }*/
                     else
                     {
                         anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "m_LocalPosition", "m_LocalRotation", curve);

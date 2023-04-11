@@ -77,12 +77,8 @@ namespace Momat.Runtime
         
         public void ProcessAnimation(AnimationStream stream)
         {
-            // ref MotionSynthesizer synthesizer = ref this.synthesizer.Ref;
-
             if (transformBufferValid)
             {
-                // int numTransforms = synthesizer.LocalSpaceTransformBuffer.Length;
-                // int numTransforms = runtimeAnimationData.transforms.Count / runtimeAnimationData.rig.NumJoints;
                 int numTransforms = transforms.Length;
                 for (int i = 1; i < numTransforms; ++i)
                 {
@@ -91,11 +87,8 @@ namespace Momat.Runtime
                         continue;
                     }
                     
-                    // transforms[i].SetGlobalTR(stream, runtimeAnimationData.transforms[i].t, runtimeAnimationData.transforms[i].q, true);
                     transforms[i].SetLocalPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].t);
                     transforms[i].SetLocalRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].q);
-                    //transforms[i].SetPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].t);
-                    //transforms[i].SetRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].q);
                 }
             }
         }

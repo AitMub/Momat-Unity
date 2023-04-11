@@ -38,8 +38,6 @@ namespace Momat.Editor
             {
                 localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
             }
-
-            poseSamplePostProcess.Apply(localPose);
         }
 
         public void Dispose()

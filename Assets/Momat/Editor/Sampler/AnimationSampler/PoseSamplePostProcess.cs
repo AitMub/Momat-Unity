@@ -32,7 +32,8 @@ namespace Momat.Editor
 
             if (!isRootInTrajectorySpace && bodyJointIndex < 0)
             {
-                throw new Exception($"Animation clip {AssetDatabase.GetAssetPath(animationClip)} requires root bone, please setup root node in avatar {AssetDatabase.GetAssetPath(targetRig.Avatar)}");
+                throw new Exception($"Animation clip {AssetDatabase.GetAssetPath(animationClip)} " +
+                                    $"requires root bone, please setup root node in avatar {AssetDatabase.GetAssetPath(targetRig.Avatar)}");
             }
 
             parentIndices = targetRig.GenerateParentIndicesNA();
@@ -90,14 +91,13 @@ namespace Momat.Editor
 
             if (!isRootInTrajectorySpace)
             {
-                //
                 // Body and trajectory transform are both in world space.
                 // Adjust body transform to be relative to trajectory transform.
-                //
 
-                // There can be joints in the hierarchy between the trajectory (first joint) and the body joint. We accumulate the transforms of those in-between joints
-                // in order to compute correctly the transform of the body joint relative to the trajectory. i.e.we compute the new body transform `body'` relative to trajectory so that
-                // trajectory * bodyOffset * body' = bodyOffset * body
+                // There can be joints in the hierarchy between the trajectory (first joint) and the body joint.
+                // We accumulate the transforms of those in-between joint in order to compute correctly
+                // the transform of the body joint relative to the trajectory. i.e.we compute the new
+                // body transform `body'` relative to trajectory so that trajectory * bodyOffset * body' = bodyOffset * body
 
                 AffineTransform bodyOffset = AffineTransform.identity;
 

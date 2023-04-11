@@ -23,7 +23,7 @@ namespace Momat.Editor
             this.animationClip = animationClip;
             this.rig = rig;
             
-            editorAnimation = KeyframeAnimation.Create(animationClip,rig);
+            editorAnimation = KeyframeAnimation.Create(animationClip, rig);
             bakedAnimation = null;
             
             try
@@ -52,6 +52,7 @@ namespace Momat.Editor
             
             try
             {
+                poseSamplePostProcess.Dispose();
                 poseSamplePostProcess = new PoseSamplePostProcess
                     (targetRig, animationClip, editorAnimation.JointTransformSamplers[0][0]);
             }
