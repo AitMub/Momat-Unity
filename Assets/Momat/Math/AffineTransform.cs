@@ -616,5 +616,12 @@ namespace Unity.Mathematics
         {
             return Matrix4x4.TRS(t, Quaternion.Normalize(q), Vector3.one);
         }
+
+        public static AffineTransform Interpolate(AffineTransform m1, AffineTransform m2, float weight)
+        {
+            var t = m1.t * (1 - weight) + m2.t * weight;
+            var q = Quaternion.Slerp(m1.q, m2.q, weight);
+            return new AffineTransform(t, q);
+        }
     }
 }

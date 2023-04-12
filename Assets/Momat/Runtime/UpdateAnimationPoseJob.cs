@@ -5,26 +5,20 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Animations;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 
 
 namespace Momat.Runtime
 {
-    internal struct UpdateAnimationPoseJob : IAnimationJob, System.IDisposable
+    internal struct UpdateAnimationPoseJob : IAnimationJob, IDisposable
     {
         private NativeArray<TransformStreamHandle> transforms;
         private NativeArray<bool> boundJoints;
-
-        private PropertySceneHandle deltaTime;
-
-        private bool transformBufferValid;
-
-        private RuntimeAnimationData runtimeAnimationData;
-
-        public int loopTime;
         
-        public bool Setup(Animator animator, Transform[] transforms, RuntimeAnimationData runtimeAnimationData, PropertySceneHandle deltaTimePropertyHandle)
+        private AnimationGenerator animationGenerator;
+        
+        public bool Setup(Animator animator, Transform[] transforms, RuntimeAnimationData runtimeAnimationData, AnimationGenerator animationGenerator)
         {
-            this.runtimeAnimationData = runtimeAnimationData;
             int numJoints = runtimeAnimationData.rig.NumJoints;
             this.transforms = new NativeArray<TransformStreamHandle>(numJoints, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
 
@@ -44,12 +38,8 @@ namespace Momat.Runtime
                 }
             }
 
-            deltaTime = deltaTimePropertyHandle;
-
-            loopTime = 1;
-
-            transformBufferValid = true;
-
+            this.animationGenerator = animationGenerator;
+            
             return true;
         }
 
@@ -77,19 +67,21 @@ namespace Momat.Runtime
         
         public void ProcessAnimation(AnimationStream stream)
         {
-            if (transformBufferValid)
+            int numJoints = transforms.Length;
+            for (int i = 1; i < numJoints; ++i)
             {
-                int numTransforms = transforms.Length;
-                for (int i = 1; i < numTransforms; ++i)
+                if (!boundJoints[i])
                 {
-                    if (!boundJoints[i])
-                    {
-                        continue;
-                    }
-                    
-                    transforms[i].SetLocalPosition(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].t);
-                    transforms[i].SetLocalRotation(stream, runtimeAnimationData.transforms[i + MomatAnimator.t * numTransforms].q);
+                    continue;
                 }
+
+                var transform = animationGenerator.GetCurrPoseJointTransform(i);
+                if (transform == null)
+                {
+                    continue;
+                }
+                transforms[i].SetLocalPosition(stream, transform.Value.t);
+                transforms[i].SetLocalRotation(stream, transform.Value.q);
             }
         }
 
