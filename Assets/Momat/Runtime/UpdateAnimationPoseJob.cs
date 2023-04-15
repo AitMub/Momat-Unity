@@ -28,7 +28,7 @@ namespace Momat.Runtime
             this.transforms[0] = animator.BindStreamTransform(transforms[0]);
             boundJoints[0] = true;
 
-            for (int i = 1; i < transforms.Length; i++)
+            for (int i = 0; i < transforms.Length; i++)
             {
                 int jointIndex = runtimeAnimationData.rig.GetJointIndexFromName(transforms[i].name);
                 if (jointIndex >= 0)
@@ -51,6 +51,24 @@ namespace Momat.Runtime
 
         public void ProcessRootMotion(AnimationStream stream)
         {
+            /*float invDeltaTime = 1.0f / animationGenerator.deltaTime;
+
+            var rootTransform = new AffineTransform
+                (0, stream.rootMotionRotation);
+            var rootMotion = rootTransform.inverse() * animationGenerator.rootMotion;*/
+            
+            Vector3 rootMotionAngles = ((Quaternion)animationGenerator.rootMotion.q).eulerAngles;
+            if (rootMotionAngles.y > 180)
+            {
+                rootMotionAngles.y -= 360f;
+            }
+            
+            rootMotionAngles = math.radians(rootMotionAngles);
+            rootMotionAngles *= 30;
+
+            stream.velocity = animationGenerator.rootMotion.t / animationGenerator.deltaTime;
+            stream.angularVelocity = animationGenerator.angularSpeed;
+
             /*ref MotionSynthesizer synthesizer = ref this.synthesizer.Ref;
             float dt = deltaTime.GetFloat(stream);
 
@@ -81,6 +99,7 @@ namespace Momat.Runtime
                     continue;
                 }
                 transforms[i].SetLocalPosition(stream, transform.Value.t);
+                if(i != 1)
                 transforms[i].SetLocalRotation(stream, transform.Value.q);
             }
         }

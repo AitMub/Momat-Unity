@@ -29,7 +29,7 @@ namespace Momat.Runtime
 
         void Start()
         {
-            animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime, playbackFrameRate);
+            animationGenerator = new AnimationGenerator(runtimeAnimationData, transform, blendTime, playbackFrameRate);
             animatorClock = new Clock();
             animatorClock.SetTimeStamp();
             
@@ -93,8 +93,8 @@ namespace Momat.Runtime
         private PoseIdentifier SearchNextPose()
         {
             PoseIdentifier poseIdentifier;
-            poseIdentifier.animationID = UnityEngine.Random.Range(0, 2);
-            poseIdentifier.frameID = UnityEngine.Random.Range(0, 200);
+            poseIdentifier.animationID = UnityEngine.Random.Range(1, 2);
+            poseIdentifier.frameID = UnityEngine.Random.Range(0, 1);
             return poseIdentifier;
         }
 

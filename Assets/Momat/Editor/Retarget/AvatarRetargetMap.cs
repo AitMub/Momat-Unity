@@ -15,7 +15,7 @@ namespace Momat.Editor
     {
         public Avatar sourceAvatar;
         public Avatar targetAvatar;
-
+        
         public string[] sourceJoints;
         public string[] targetJoints;
         

@@ -34,11 +34,19 @@ namespace Momat.Runtime
         private float blendBeginTime;
         private float weight;
 
+        public float deltaTime; // temp
+
         private EPlayState currentState;
+
+        private AffineTransform deltaRootTransform;
+        private Transform worldTransform;
+        public AffineTransform rootMotion;
+        public Vector3 angularSpeed;
         
-        public AnimationGenerator(RuntimeAnimationData runtimeAnimationData, float blendTime, int playbackFrameRate)
+        public AnimationGenerator(RuntimeAnimationData runtimeAnimationData, Transform transform, float blendTime, int playbackFrameRate)
         {
             this.runtimeAnimationData = runtimeAnimationData;
+            this.worldTransform = transform;
             this.blendTime = blendTime;
             this.playbackFrameRate = playbackFrameRate;
             
@@ -50,10 +58,14 @@ namespace Momat.Runtime
         public void UpdateClock(float deltaTime)
         {
             clock.Tick(deltaTime);
+            this.deltaTime = deltaTime;
         }
         
         public void UpdatePose()
         {
+            var prevRootTransform = GetCurrPoseJointTransform(0);
+            int prevFrame = currPlayingSegment.currFrame;
+            
             if (currentState == EPlayState.eBlendIntoAnim)
             {
                 bool blendFinish = Blend();
@@ -65,6 +77,39 @@ namespace Momat.Runtime
             else if (currentState == EPlayState.ePlayAnim)
             {
                 PlaySingleAnim();
+            }
+            
+            
+            var currRootTransform = GetCurrPoseJointTransform(0);
+            int currFrame = currPlayingSegment.currFrame;
+            
+            if (currRootTransform != null && prevRootTransform != null)
+            {
+                deltaRootTransform = prevRootTransform.Value.inverse() * currRootTransform.Value;
+                
+                Quaternion q = deltaRootTransform.q;
+                q.ToAngleAxis(out float angleInDegrees, out Vector3 axis);
+                Vector3 angularDisplacement = axis * angleInDegrees * Mathf.Deg2Rad;    
+                angularSpeed = angularDisplacement / deltaTime;
+
+                rootMotion = deltaRootTransform;
+                
+                var world = new AffineTransform(worldTransform.position, worldTransform.rotation);
+                var currRootTransformWorld = world * deltaRootTransform;
+                // rootMotion = world.inverse() * currRootTransformWorld;
+                
+                if (currFrame == 30 && currFrame > prevFrame)
+                {
+                    Debug.Log($"prevT {prevRootTransform.Value.t} {prevRootTransform.Value.q}\n" +
+                              $"currT {currRootTransform.Value.t} {currRootTransform.Value.q}\n" +
+                              $"deltaT {deltaRootTransform.t} {deltaRootTransform.q}\n");
+                    
+                    Vector3 rootMotionAngles = ((Quaternion)rootMotion.q).eulerAngles;
+                    Debug.Log($"world {world.q}\n" +
+                              $"currWorld {currRootTransformWorld.t} {currRootTransformWorld.q}\n" +
+                              $"rootMotion {rootMotion.t} {rootMotion.q}\n" +
+                              $"rootAngles {rootMotionAngles}");
+                }
             }
         }
 
@@ -88,7 +133,6 @@ namespace Momat.Runtime
                 blendBeginTime = clock.CurrentTime;
             }
         }
-
 
         public AffineTransform? GetCurrPoseJointTransform(int jointIndex)
         {
