@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
         Quaternion qPrev = new Quaternion(-2.310494E-08f, -0.6921239f, 8.061203E-08f, 0.7205052f);
         Quaternion qCurr = new Quaternion(-2.819978E-08f, -0.7428225f, 8.515291E-08f, 0.6705722f);
         Quaternion qDiff = Quaternion.Inverse(qPrev) * qCurr;
-        Debug.Log($"prev euler {qPrev.eulerAngles}\n curr euler {qCurr.eulerAngles}\n diff euler {qDiff.eulerAngles}");
+        // Debug.Log($"prev euler {qPrev.eulerAngles}\n curr euler {qCurr.eulerAngles}\n diff euler {qDiff.eulerAngles}");
     }
 
     // Update is called once per frame

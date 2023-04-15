@@ -51,36 +51,8 @@ namespace Momat.Runtime
 
         public void ProcessRootMotion(AnimationStream stream)
         {
-            /*float invDeltaTime = 1.0f / animationGenerator.deltaTime;
-
-            var rootTransform = new AffineTransform
-                (0, stream.rootMotionRotation);
-            var rootMotion = rootTransform.inverse() * animationGenerator.rootMotion;*/
-            
-            Vector3 rootMotionAngles = ((Quaternion)animationGenerator.rootMotion.q).eulerAngles;
-            if (rootMotionAngles.y > 180)
-            {
-                rootMotionAngles.y -= 360f;
-            }
-            
-            rootMotionAngles = math.radians(rootMotionAngles);
-            rootMotionAngles *= 30;
-
-            stream.velocity = animationGenerator.rootMotion.t / animationGenerator.deltaTime;
-            stream.angularVelocity = animationGenerator.angularSpeed;
-
-            /*ref MotionSynthesizer synthesizer = ref this.synthesizer.Ref;
-            float dt = deltaTime.GetFloat(stream);
-
-            var previousTransform = synthesizer.WorldRootTransform;
-            transformBufferValid = synthesizer.Update(dt);
-            
-            
-            //convert the delta transform to root motion in the stream
-            if (transformBufferValid && dt > 0.0f)
-            {
-                WriteRootMotion(stream, dt, previousTransform, synthesizer.WorldRootTransform);
-            }*/
+            stream.velocity = animationGenerator.velocity;
+            stream.angularVelocity = animationGenerator.angularVelocity;
         }
         
         public void ProcessAnimation(AnimationStream stream)
@@ -93,7 +65,7 @@ namespace Momat.Runtime
                     continue;
                 }
 
-                var transform = animationGenerator.GetCurrPoseJointTransform(i);
+                var transform = animationGenerator.GetPoseJointTransformAtTime(i);
                 if (transform == null)
                 {
                     continue;

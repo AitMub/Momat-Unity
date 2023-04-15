@@ -9579,8 +9579,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d83e9bba2f81bd47afaddba1a813f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateInterval: 10
-  blendTime: 0.1
+  updateInterval: 3
+  blendTime: 0.2
   playbackFrameRate: 30
   runtimeAnimationData: {fileID: 11400000, guid: 1485cc4eb0a5c8846a59311ad13ba9f5, type: 2}
 --- !u!114 &1933243364
