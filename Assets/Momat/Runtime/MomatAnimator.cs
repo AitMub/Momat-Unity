@@ -40,7 +40,7 @@ namespace Momat.Runtime
         void Update()
         {
             UpdateClock();
-
+            
             if (CheckNeedUpdatePose())
             {
                 SwitchPose();

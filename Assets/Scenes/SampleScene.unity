@@ -9055,6 +9055,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MarkerMan
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2559285840627121667, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 332
@@ -9377,7 +9381,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1657270249}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.496, z: 0}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []

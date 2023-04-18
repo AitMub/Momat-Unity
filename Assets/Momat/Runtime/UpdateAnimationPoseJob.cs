@@ -54,7 +54,7 @@ namespace Momat.Runtime
             stream.velocity = animationGenerator.velocity;
             stream.angularVelocity = animationGenerator.angularVelocity;
         }
-        
+
         public void ProcessAnimation(AnimationStream stream)
         {
             int numJoints = transforms.Length;
@@ -70,9 +70,27 @@ namespace Momat.Runtime
                 {
                     continue;
                 }
-                transforms[i].SetLocalPosition(stream, transform.Value.t);
-                if(i != 1)
-                transforms[i].SetLocalRotation(stream, transform.Value.q);
+
+                if (i == 1)
+                {
+                    Vector3 t = transform.Value.t;
+                    t.x = 0;
+                    t.z = 0;
+                    transforms[i].SetLocalPosition(stream, t);
+                }
+
+                if (i == 1)
+                {
+                    Quaternion q = transform.Value.q;
+                    var euler = q.eulerAngles;
+                    euler.y = 0;
+                    q = Quaternion.Euler(euler);
+                    transforms[i].SetLocalRotation(stream, q);
+                }
+                else
+                {
+                    transforms[i].SetLocalRotation(stream, transform.Value.q);
+                }
             }
         }
 
