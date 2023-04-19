@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateInterval: 0.5
   blendTime: 0.1
-  playbackFrameRate: 30
+  playbackSpeed: 1
   runtimeAnimationData: {fileID: 11400000, guid: 7ddde82416de9df44bff0d42929ae132, type: 2}
 --- !u!1001 &164944955
 PrefabInstance:
@@ -9564,7 +9564,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateInterval: 0.5
   blendTime: 0.1
-  playbackFrameRate: 30
+  playbackSpeed: 1
   runtimeAnimationData: {fileID: 11400000, guid: 1b54070a87c20d34986b4421d3487986, type: 2}
 --- !u!1 &1933243358 stripped
 GameObject:
@@ -9585,7 +9585,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updateInterval: 3
   blendTime: 0.2
-  playbackFrameRate: 30
+  playbackSpeed: 1
   runtimeAnimationData: {fileID: 11400000, guid: 1485cc4eb0a5c8846a59311ad13ba9f5, type: 2}
 --- !u!114 &1933243364
 MonoBehaviour:

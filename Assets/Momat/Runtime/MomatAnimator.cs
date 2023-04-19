@@ -15,13 +15,13 @@ namespace Momat.Runtime
     {
         [SerializeField] private float updateInterval = 2f;
         [SerializeField] private float blendTime = 0.1f;
-        [SerializeField] private int playbackFrameRate = 30;
+        [SerializeField] private float playbackSpeed = 1.0f;
         
         [SerializeField] private RuntimeAnimationData runtimeAnimationData;
         
         private Animator animator;
         private PlayableGraph playableGraph;
-        private UpdateAnimationPoseJob job;
+        private UpdateAnimationPoseJob updateAnimationPoseJob;
 
         private AnimationGenerator animationGenerator;
 
@@ -29,9 +29,8 @@ namespace Momat.Runtime
 
         void Start()
         {
-            animationGenerator = new AnimationGenerator(runtimeAnimationData, transform, blendTime, playbackFrameRate);
             animatorClock = new Clock();
-            animatorClock.SetTimeStamp();
+            animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime, playbackSpeed);
             
             animator = GetComponent<Animator>();
             CreatePlayableGraph();
@@ -39,33 +38,27 @@ namespace Momat.Runtime
     
         void Update()
         {
-            UpdateClock();
-            
+            animatorClock.Tick(Time.deltaTime);
+
             if (CheckNeedUpdatePose())
             {
                 SwitchPose();
             }
             
-            UpdatePose();
+            animationGenerator.Update(Time.deltaTime);
         }
         
         private void CreatePlayableGraph()
         {
-            job = new UpdateAnimationPoseJob();
-            job.Setup(animator, GetComponentsInChildren<Transform>(), runtimeAnimationData, animationGenerator);
+            updateAnimationPoseJob = new UpdateAnimationPoseJob();
+            updateAnimationPoseJob.Setup(animator, GetComponentsInChildren<Transform>(), runtimeAnimationData, animationGenerator);
             
             playableGraph = PlayableGraph.Create($"Momat_{transform.name}_Graph");
             var output = AnimationPlayableOutput.Create(playableGraph, "output", animator);
-            var playable = AnimationScriptPlayable.Create(playableGraph, job);
+            var playable = AnimationScriptPlayable.Create(playableGraph, updateAnimationPoseJob);
             output.SetSourcePlayable(playable);
 
             playableGraph.Play();
-        }
-
-        private void UpdateClock()
-        {
-            animatorClock.Tick(Time.deltaTime);
-            animationGenerator.UpdateClock(Time.deltaTime);
         }
 
         private bool CheckNeedUpdatePose()
@@ -82,12 +75,7 @@ namespace Momat.Runtime
         private void SwitchPose()
         {
             var nextPose = SearchNextPose();
-            animationGenerator.BeginBlendIntoPose(nextPose);
-        }
-
-        private void UpdatePose()
-        {
-            animationGenerator.UpdatePose();
+            animationGenerator.BeginPlayPose(nextPose);
         }
 
         private PoseIdentifier SearchNextPose()
@@ -100,7 +88,7 @@ namespace Momat.Runtime
 
         private void OnDisable()
         {
-            job.Dispose();
+            updateAnimationPoseJob.Dispose();
             playableGraph.Destroy();
         }
     }

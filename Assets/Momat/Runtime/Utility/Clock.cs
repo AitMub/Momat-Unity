@@ -9,16 +9,24 @@ namespace Momat.Runtime
         private bool paused = false;
 
         private float elapsedTime = 0f;
+        private float deltaTime = 0f;
         private float timeStamp = -1f;
 
         public float CurrentTime => elapsedTime;
         public float TimeFromLastTimeStamp =>
-            timeStamp >= 0f ? elapsedTime - timeStamp : -1f; 
+            timeStamp >= 0f ? elapsedTime - timeStamp : -1f;
+        public float DeltaTime => deltaTime;
+
+        public Clock()
+        {
+            SetTimeStamp();
+        }
         
         public void Tick(float deltaTime)
         {
             if (paused == false)
             {
+                this.deltaTime = deltaTime;
                 elapsedTime += deltaTime;
             }
         }
