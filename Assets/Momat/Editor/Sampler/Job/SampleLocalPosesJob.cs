@@ -37,6 +37,19 @@ namespace Momat.Editor
             for (int jointIndex = 0; jointIndex < numJoints; ++jointIndex)
             {
                 localPose[jointIndex] = jointSamplers[jointIndex][frameIndex];
+                
+                // process hips transform
+                if (jointIndex == poseSamplePostProcess.bodyJointIndex)
+                {
+                    Vector3 t = localPose[jointIndex].t;
+                    t.x = 0;
+                    t.z = 0;
+                    Quaternion q = localPose[jointIndex].q;
+                    var euler = q.eulerAngles;
+                    euler.y = 0;
+                    q = Quaternion.Euler(euler);
+                    localPose[jointIndex] = new AffineTransform(t, q);
+                }
             }
         }
 

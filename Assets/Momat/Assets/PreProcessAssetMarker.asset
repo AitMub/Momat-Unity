@@ -16,7 +16,7 @@ MonoBehaviour:
   motionAnimSet:
   - sourceAnimClip: {fileID: 7400084, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
-  - sourceAnimClip: {fileID: 7400010, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+  - sourceAnimClip: {fileID: 7400014, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
   - sourceAnimClip: {fileID: -203655887218126122, guid: 764658affd570ff49b3b51edcbe91981, type: 3}
     avatarRetargetMap: {fileID: 0}

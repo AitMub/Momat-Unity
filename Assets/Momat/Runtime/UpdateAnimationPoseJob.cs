@@ -66,40 +66,9 @@ namespace Momat.Runtime
                 }
 
                 var transform = animationGenerator.GetPoseJointTransformAtTime(i);
-
-                if (i == 1)
-                {
-                    Vector3 t = transform.t;
-                    t.x = 0;
-                    t.z = 0;
-                    transforms[i].SetLocalPosition(stream, t);
-                }
-
-                if (i == 1)
-                {
-                    Quaternion q = transform.q;
-                    var euler = q.eulerAngles;
-                    euler.y = 0;
-                    q = Quaternion.Euler(euler);
-                    transforms[i].SetLocalRotation(stream, q);
-                }
-                else
-                {
-                    transforms[i].SetLocalRotation(stream, transform.q);
-                }
+                transforms[i].SetLocalPosition(stream, transform.t);
+                transforms[i].SetLocalRotation(stream, transform.q);
             }
-        }
-
-        void WriteRootMotion(AnimationStream stream, float deltaTime, AffineTransform previousTransform, AffineTransform updatedTransform)
-        {
-            float invDeltaTime = 1.0f / deltaTime;
-            AffineTransform rootMotion = previousTransform.inverse() * updatedTransform;
-
-            Vector3 rootMotionAngles = ((Quaternion)rootMotion.q).eulerAngles;
-            rootMotionAngles = math.radians(rootMotionAngles);
-
-            stream.velocity = invDeltaTime * rootMotion.t;
-            stream.angularVelocity = invDeltaTime * rootMotionAngles;
         }
     }
 }

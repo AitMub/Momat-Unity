@@ -81,8 +81,8 @@ namespace Momat.Runtime
         private PoseIdentifier SearchNextPose()
         {
             PoseIdentifier poseIdentifier;
-            poseIdentifier.animationID = UnityEngine.Random.Range(1, 2);
-            poseIdentifier.frameID = UnityEngine.Random.Range(0, 1);
+            poseIdentifier.animationID = UnityEngine.Random.Range(0, 2);
+            poseIdentifier.frameID = UnityEngine.Random.Range(0, 200);
             return poseIdentifier;
         }
 
