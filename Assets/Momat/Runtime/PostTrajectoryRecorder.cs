@@ -42,18 +42,14 @@ namespace Momat.Runtime
                     if (iter.Value.timeStamp > iterForPostTraj.Value.timeStamp &&
                         iter.Value.timeStamp - deltaTime < iterForPostTraj.Value.timeStamp)
                     {
-                        var postTrajPoint = iterForPostTraj.Value;
-                        postTrajPoint.transform = iter.Value.transform;
-                        iterForPostTraj.Value = postTrajPoint;
+                        iterForPostTraj.Value.transform = iter.Value.transform;
                     }
 
                     iterForPostTraj = iterForPostTraj.Next;
                 }
 
-                var trajPoint = iter.Value;
-                trajPoint.timeStamp -= deltaTime;
-                iter.Value = trajPoint;
-                    
+                iter.Value.timeStamp -= deltaTime;
+
                 iter = iter.Next;
             }
 

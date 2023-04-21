@@ -28,18 +28,21 @@ namespace Momat.Runtime
         private Clock animatorClock;
 
         private PostTrajectoryRecorder postTrajectoryRecorder;
+        private RuntimeTrajectory postTrajectory => postTrajectoryRecorder.PostTrajectory;
+        private RuntimeTrajectory futureTrajectory;
 
-        void Start()
+        private void Start()
         {
             animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime, playbackSpeed);
             animatorClock = new Clock();
             postTrajectoryRecorder = new PostTrajectoryRecorder(new List<float>{-0.5f, -1.0f}, transform);
-            
+            futureTrajectory = new RuntimeTrajectory();
+
             animator = GetComponent<Animator>();
             CreatePlayableGraph();
         }
     
-        void Update()
+        private void Update()
         {
             animatorClock.Tick(Time.deltaTime);
 
@@ -95,6 +98,10 @@ namespace Momat.Runtime
             updateAnimationPoseJob.Dispose();
             playableGraph.Destroy();
         }
-    }
 
+        public void SetFutureTrajectory(RuntimeTrajectory futureTrajectory)
+        {
+            this.futureTrajectory = futureTrajectory;
+        }
+    }
 }

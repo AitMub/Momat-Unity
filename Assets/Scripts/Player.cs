@@ -1,38 +1,64 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Momat.Runtime;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     private MomatAnimator momatAnimator;
+
+    private Vector3 desiredWorldDirection;
+    
+    [SerializeField] private float acceleration = 2.0f;
+    [SerializeField] private float runSpeed = 2.0f;
+    [SerializeField] private float walkSpeed = 1.0f;
+    private float currSpeed;
+
+    private RuntimeTrajectory futureTrajectory;
+    
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        Quaternion rotation = Quaternion.AngleAxis(90f, Vector3.up);
-        Vector3 translate = new Vector3(1f, 0f, -1f);
-        AffineTransform mat = new AffineTransform(translate, rotation);
-
-        Quaternion rotationA = Quaternion.AngleAxis(-90f, Vector3.up);
-        AffineTransform matA = new AffineTransform(new Vector3(0, 0, 2), rotationA);
-        AffineTransform matB = new AffineTransform(new Vector3(1, 0, 3), Quaternion.identity);
-        AffineTransform diff = matA.inverse() * matB;
-
-        Quaternion rotationW = Quaternion.AngleAxis(90, Vector3.up);
-        AffineTransform matWorld = new AffineTransform(new Vector3(3, 0, 0), rotationW);
-        AffineTransform matWB1 = diff * matWorld;
-        AffineTransform matWB2 = matWorld * diff;
-
-        Quaternion qPrev = new Quaternion(-2.310494E-08f, -0.6921239f, 8.061203E-08f, 0.7205052f);
-        Quaternion qCurr = new Quaternion(-2.819978E-08f, -0.7428225f, 8.515291E-08f, 0.6705722f);
-        Quaternion qDiff = Quaternion.Inverse(qPrev) * qCurr;
-        // Debug.Log($"prev euler {qPrev.eulerAngles}\n curr euler {qCurr.eulerAngles}\n diff euler {qDiff.eulerAngles}");
+        momatAnimator = GetComponent<MomatAnimator>();
+        futureTrajectory = new RuntimeTrajectory();
+        futureTrajectory.trajectoryData.AddLast(new TrajectoryPoint(transform, 1.0f));
+        futureTrajectory.trajectoryData.AddLast(new TrajectoryPoint(transform, 0.5f));
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        UpdateDesiredDirection();
+        UpdateFutureTrajectory();
+        momatAnimator.SetFutureTrajectory(futureTrajectory);
+    }
+
+    private void UpdateDesiredDirection()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            currSpeed = Mathf.Lerp(currSpeed, runSpeed, Time.deltaTime * acceleration);
+        }
+        else
+        {
+            currSpeed = Mathf.Lerp(currSpeed, walkSpeed, Time.deltaTime * acceleration);
+        }
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+        desiredWorldDirection = new Vector3(x, 0, z) * currSpeed;
+        desiredWorldDirection =transform.localToWorldMatrix * 
+                               new Vector4(desiredWorldDirection.x, desiredWorldDirection.y, desiredWorldDirection.z, 0f);
+    }
+
+    private void UpdateFutureTrajectory()
+    {
+        foreach (var tp in futureTrajectory.trajectoryData)
+        {
+            tp.transform = new AffineTransform
+                ((desiredWorldDirection * tp.timeStamp + transform.position) , quaternion.identity);
+        }
     }
 }
