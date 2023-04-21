@@ -35,4 +35,5 @@ MonoBehaviour:
   idleAnimSet:
   - sourceAnimClip: {fileID: 7400000, guid: f5589feb81050bc4ca0def6972ffb4a7, type: 2}
     avatarRetargetMap: {fileID: 0}
+  featureDefinition: {fileID: 11400000, guid: 71f45b8468bbd884088b46368707b0c8, type: 2}
   sampleRate: 30

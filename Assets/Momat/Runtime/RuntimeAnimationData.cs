@@ -16,7 +16,8 @@ namespace Momat.Runtime
     {
         public List<AffineTransform> transforms;
         public List<int> animationTransformOffset;
-
+        
+        [HideInInspector]
         public AnimationRig rig;
 
         public readonly float frameRate = 30;

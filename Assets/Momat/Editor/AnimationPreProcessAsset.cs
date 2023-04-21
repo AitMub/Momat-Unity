@@ -15,13 +15,15 @@ namespace Momat.Editor
         EIdle = 1
     };
     
-    [CreateAssetMenu(menuName = "Momat/Create Asset")]
-    class AnimationPreProcessAsset : ScriptableObject
+    [CreateAssetMenu(menuName = "Momat/Animation PreProcess Asset")]
+    internal class AnimationPreProcessAsset : ScriptableObject
     {
         public Avatar avatar;
 
         public List<ProcessingAnimationClip> motionAnimSet;
         public List<ProcessingAnimationClip> idleAnimSet;
+
+        public AnimationFeatureDefinition featureDefinition;
         
         public float sampleRate = 30f;
         
@@ -54,7 +56,7 @@ namespace Momat.Editor
             AssetDatabase.SaveAssets();
         }
 
-        public NativeArray<AffineTransform> GenerateClipRuntimeData(ProcessingAnimationClip animClip, AnimationRig targetRig)
+        internal NativeArray<AffineTransform> GenerateClipRuntimeData(ProcessingAnimationClip animClip, AnimationRig targetRig)
         {
             var clip = animClip.sourceAnimClip;
             var avatarRetargetMap = animClip.avatarRetargetMap;

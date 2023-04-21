@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Momat.Editor
 {
     [Serializable]
-    class ProcessingAnimationClip
+    public class ProcessingAnimationClip
     {
         public AnimationClip sourceAnimClip;
         public AvatarRetargetMap avatarRetargetMap;
