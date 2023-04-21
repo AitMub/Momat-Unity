@@ -11,7 +11,7 @@ using Random = System.Random;
 
 namespace Momat.Runtime
 {
-    public class MomatAnimator : MonoBehaviour
+    public partial class MomatAnimator : MonoBehaviour
     {
         [SerializeField] private float updateInterval = 2f;
         [SerializeField] private float blendTime = 0.1f;
@@ -27,10 +27,13 @@ namespace Momat.Runtime
 
         private Clock animatorClock;
 
+        private PostTrajectoryRecorder postTrajectoryRecorder;
+
         void Start()
         {
-            animatorClock = new Clock();
             animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime, playbackSpeed);
+            animatorClock = new Clock();
+            postTrajectoryRecorder = new PostTrajectoryRecorder(new List<float>{-0.5f, -1.0f}, transform);
             
             animator = GetComponent<Animator>();
             CreatePlayableGraph();
@@ -46,6 +49,7 @@ namespace Momat.Runtime
             }
             
             animationGenerator.Update(Time.deltaTime);
+            postTrajectoryRecorder.Record(transform, Time.deltaTime);
         }
         
         private void CreatePlayableGraph()
