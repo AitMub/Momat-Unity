@@ -37,13 +37,11 @@ namespace Momat.Editor
             {
                 bakeHandle = bakeJob.Schedule(bakeJob.curves.Length, 1);
                 sampleLocalHandle = sampleLocalPosesJob.Schedule(sampleLocalPosesJob.sampleRange.numFrames, 1, bakeHandle);
-                // convertToGlobalHandle = convertToGlobalPosesJob.Schedule(convertToGlobalPosesJob.sampleRange.numFrames, 1, sampleLocalHandle);
             }
 
             public void Complete()
             {
                 sampleLocalHandle.Complete();
-                // convertToGlobalHandle.Complete();
             }
         }
     }

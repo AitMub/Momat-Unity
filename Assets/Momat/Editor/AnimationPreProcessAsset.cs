@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Momat.Runtime;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Vector2 = System.Numerics.Vector2;
 
 namespace Momat.Editor
 {
@@ -34,20 +37,32 @@ namespace Momat.Editor
             var runtimeAsset = CreateInstance<Runtime.RuntimeAnimationData>();
             runtimeAsset.transforms = new List<AffineTransform>();
             runtimeAsset.animationTransformOffset = new List<int>();
-                
+            runtimeAsset.trajectoryPoints = new List<float3>();
+            runtimeAsset.trajectoryPointOffset = new List<int>();
+            
             for (int i = 0; i < 2; i++)
             {
-                var jointTransforms = GenerateClipRuntimeData(motionAnimSet[i], targetRig);
+                var jointTransforms = GenerateClipRuntimeJointTransform
+                    (motionAnimSet[i], targetRig);
+                var featureVectors = GenerateClipFeatureVector
+                    (motionAnimSet[i], jointTransforms, targetRig);
                 
                 runtimeAsset.animationTransformOffset.Add(runtimeAsset.transforms.Count);
                 for (int j = 0; j < jointTransforms.Length; j++)
                 {
                     runtimeAsset.transforms.Add(jointTransforms[j]);
                 }
+                
+                runtimeAsset.trajectoryPointOffset.Add(runtimeAsset.trajectoryPoints.Count);
+                for (int j = 0; j < featureVectors.trajectories.Length; j++)
+                {
+                    runtimeAsset.trajectoryPoints.Add(featureVectors.trajectories[j]);
+                }
 
                 runtimeAsset.rig = targetRig.GenerateRuntimeRig();
 
                 jointTransforms.Dispose();
+                featureVectors.Dispose();
             }
             
             string assetName = name.Substring(name.IndexOf('t'));
@@ -56,7 +71,8 @@ namespace Momat.Editor
             AssetDatabase.SaveAssets();
         }
 
-        internal NativeArray<AffineTransform> GenerateClipRuntimeData(ProcessingAnimationClip animClip, AnimationRig targetRig)
+        private NativeArray<AffineTransform> GenerateClipRuntimeJointTransform
+            (ProcessingAnimationClip animClip, AnimationRig targetRig)
         {
             var clip = animClip.sourceAnimClip;
             var avatarRetargetMap = animClip.avatarRetargetMap;
@@ -65,7 +81,7 @@ namespace Momat.Editor
             int numFrames = (int)math.ceil(clip.frameRate * clip.length);
             int numTransforms = numFrames * numJoints;
 
-            var jointTransforms = new NativeArray<AffineTransform>(numTransforms, Allocator.Persistent);
+            var outJointTransforms = new NativeArray<AffineTransform>(numTransforms, Allocator.Persistent);
 
             if (avatarRetargetMap != null)
             {
@@ -87,18 +103,47 @@ namespace Momat.Editor
                     };
 
                     using (var rangeSampler = animSampler.PrepareRangeSampler
-                           (targetSampleRate, sampleRange, 0, jointTransforms))
+                           (targetSampleRate, sampleRange, 0, outJointTransforms))
                     {
                         rangeSampler.Schedule();
-
                         rangeSampler.Complete();
                     }
                 }
             }
-
-            return jointTransforms;
+            
+            return outJointTransforms;
         }
 
+        private ClipFeatureVectors GenerateClipFeatureVector
+            (ProcessingAnimationClip animClip, NativeArray<AffineTransform> jointTransforms, AnimationRig targetRig)
+        {
+            var clip = animClip.sourceAnimClip;
+            int numFrames = (int)math.ceil(clip.frameRate * clip.length);
+
+            var outFeatureVectors = new ClipFeatureVectors
+            {
+                trajectories = new NativeArray<float3>
+                (numFrames * featureDefinition.trajectoryFeatureDefinition.trajectoryTimeStamps.Count,
+                    Allocator.Persistent)
+            };
+
+            using (var generateFeatureVectorJob = new GenerateFeatureVectorJob
+                   {
+                       localPoses = jointTransforms,
+                       numJoints = targetRig.NumJoints,
+                       frameRate = sampleRate,
+                       trajectoryTimeStamps = new NativeArray<float>
+                           (featureDefinition.trajectoryFeatureDefinition.trajectoryTimeStamps.ToArray(), Allocator.Persistent),
+                       featureVectors = outFeatureVectors
+                   })
+            {
+                var handle = generateFeatureVectorJob.Schedule(numFrames, 1);
+                handle.Complete();
+            }
+
+            return outFeatureVectors;
+        }
+ 
         public void AddClipsToAnimSet(List<AnimationClip> clips, AnimationSetEnum animationSetEnum)
         {
             if (animationSetEnum == AnimationSetEnum.EMotion)

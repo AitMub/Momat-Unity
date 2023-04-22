@@ -16,6 +16,9 @@ namespace Momat.Runtime
     {
         public List<AffineTransform> transforms;
         public List<int> animationTransformOffset;
+
+        public List<float3> trajectoryPoints;
+        public List<int> trajectoryPointOffset;
         
         [HideInInspector]
         public AnimationRig rig;

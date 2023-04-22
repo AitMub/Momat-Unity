@@ -16,7 +16,6 @@ MonoBehaviour:
     trajectoryTimeStamps:
     - 1
     - 0.5
-    - 0
     - -0.5
     - -1
   poseFeatureDefinition:
@@ -24,5 +23,5 @@ MonoBehaviour:
     comparePosition: 1
     compareVelocity: 0
     comparedJoint:
-    - mixamorig:RightFoot
     - mixamorig:LeftFoot
+    - mixamorig:RightFoot

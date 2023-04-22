@@ -10,10 +10,16 @@ namespace Momat.Runtime
     {
         public AffineTransform transform;
         public float timeStamp;
-
+        
         public TrajectoryPoint(Transform transform, float timeStamp = 0f)
         {
             this.transform = new AffineTransform(transform.position, transform.rotation);
+            this.timeStamp = timeStamp;
+        }
+        
+        public TrajectoryPoint(AffineTransform transform, float timeStamp = 0f)
+        {
+            this.transform = transform;
             this.timeStamp = timeStamp;
         }
 

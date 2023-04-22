@@ -9,21 +9,6 @@ using UnityEngine.UIElements;
 
 namespace Momat.Editor
 {
-    [Serializable]
-    public class TrajectoryFeatureDefinition
-    {
-        public List<float> trajectoryTimeStamps;
-    }
-    
-    [Serializable]
-    public class PoseFeatureDefinition
-    {
-        public int comparedPastFuturePoseNum;
-        public bool comparePosition = true;
-        public bool compareVelocity = false;
-        public List<string> comparedJoint;
-    }
-    
     [CreateAssetMenu(fileName = "AnimationFeatureDefinition", menuName = "Momat/Animation Feature Definition")]
     public class AnimationFeatureDefinition : ScriptableObject
     {

@@ -17,7 +17,6 @@ namespace Momat.Editor
         public MemoryArray<TransformSampler> jointSamplers; // input proxy to local joint transforms from individual float curve
         public NativeArray<AffineTransform> localPoses; // output contiguous poses
 
-        // settings
         [ReadOnly]
         public SampleRange sampleRange;
 
@@ -30,7 +29,8 @@ namespace Momat.Editor
 
             int numJoints = jointSamplers.Length;
 
-            MemoryArray<AffineTransform> localPose = new MemoryArray<AffineTransform>(localPoses, numJoints * index, numJoints);
+            MemoryArray<AffineTransform> localPose = new MemoryArray<AffineTransform>
+                (localPoses, numJoints * index, numJoints);
 
             localPose[0] = AffineTransform.identity;
 
