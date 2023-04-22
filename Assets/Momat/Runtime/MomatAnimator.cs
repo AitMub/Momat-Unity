@@ -27,16 +27,16 @@ namespace Momat.Runtime
 
         private Clock animatorClock;
 
-        private PostTrajectoryRecorder postTrajectoryRecorder;
-        private RuntimeTrajectory postTrajectory => postTrajectoryRecorder.PostTrajectory;
-        private RuntimeTrajectory futureTrajectory;
+        private PastTrajectoryRecorder pastTrajectoryRecorder;
+        private RuntimeTrajectory pastLocalTrajectory => pastTrajectoryRecorder.PastLocalTrajectory;
+        private RuntimeTrajectory futureLocalTrajectory;
 
         private void Start()
         {
             animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime, playbackSpeed);
             animatorClock = new Clock();
-            postTrajectoryRecorder = new PostTrajectoryRecorder(new List<float>{-0.5f, -1.0f}, transform);
-            futureTrajectory = new RuntimeTrajectory();
+            pastTrajectoryRecorder = new PastTrajectoryRecorder(new List<float>{-0.5f, -1.0f}, transform);
+            futureLocalTrajectory = new RuntimeTrajectory();
 
             animator = GetComponent<Animator>();
             CreatePlayableGraph();
@@ -52,7 +52,7 @@ namespace Momat.Runtime
             }
             
             animationGenerator.Update(Time.deltaTime);
-            postTrajectoryRecorder.Record(transform, Time.deltaTime);
+            pastTrajectoryRecorder.Record(transform, Time.deltaTime);
         }
         
         private void CreatePlayableGraph()
@@ -89,7 +89,7 @@ namespace Momat.Runtime
         {
             PoseIdentifier poseIdentifier;
             poseIdentifier.animationID = UnityEngine.Random.Range(0, 2);
-            poseIdentifier.frameID = UnityEngine.Random.Range(0, 200);
+            poseIdentifier.frameID = UnityEngine.Random.Range(0, 100);
             return poseIdentifier;
         }
 
@@ -99,9 +99,9 @@ namespace Momat.Runtime
             playableGraph.Destroy();
         }
 
-        public void SetFutureTrajectory(RuntimeTrajectory futureTrajectory)
+        public void SetFutureLocalTrajectory(RuntimeTrajectory futureTrajectory)
         {
-            this.futureTrajectory = futureTrajectory;
+            this.futureLocalTrajectory = futureTrajectory;
         }
     }
 }

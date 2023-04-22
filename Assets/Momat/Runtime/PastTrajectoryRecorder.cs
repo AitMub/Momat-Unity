@@ -5,44 +5,46 @@ using UnityEngine;
 
 namespace Momat.Runtime
 {
-    public class PostTrajectoryRecorder
+    public class PastTrajectoryRecorder
     {
-        private RuntimeTrajectory trajectory;
-        private RuntimeTrajectory postTrajectory;
+        private RuntimeTrajectory worldTrajectory;
+        private RuntimeTrajectory pastLocalTrajectory;
         private readonly float earliestTimeStamp;
 
-        public RuntimeTrajectory PostTrajectory => postTrajectory;
+        public RuntimeTrajectory PastLocalTrajectory => pastLocalTrajectory;
 
-        public PostTrajectoryRecorder(List<float> recordTimeStamp, Transform oriTransform)
+        public PastTrajectoryRecorder(List<float> recordTimeStamp, Transform oriTransform)
         {
             earliestTimeStamp = recordTimeStamp[^1];
 
-            trajectory = new RuntimeTrajectory();
-            postTrajectory = new RuntimeTrajectory();
+            worldTrajectory = new RuntimeTrajectory();
+            pastLocalTrajectory = new RuntimeTrajectory();
 
             for (int i = 0; i < recordTimeStamp.Count; i++)
             {
-                postTrajectory.trajectoryData.AddLast(new TrajectoryPoint(oriTransform, recordTimeStamp[i]));
+                pastLocalTrajectory.trajectoryData.AddLast(new TrajectoryPoint(oriTransform, recordTimeStamp[i]));
             }
         }
 
         public void Record(Transform transform, float deltaTime)
         {
-            var iter = trajectory.trajectoryData.First;
+            var iter = worldTrajectory.trajectoryData.First;
+            var currTransform = new AffineTransform(transform.position, transform.rotation);
+            
             while (iter != null)
             {
                 if (iter.Value.timeStamp < earliestTimeStamp)
                 {
-                    trajectory.trajectoryData.Remove(iter);
+                    worldTrajectory.trajectoryData.Remove(iter);
                 }
 
-                var iterForPostTraj = postTrajectory.trajectoryData.First;
+                var iterForPostTraj = pastLocalTrajectory.trajectoryData.First;
                 while (iterForPostTraj != null)
                 {
                     if (iter.Value.timeStamp > iterForPostTraj.Value.timeStamp &&
                         iter.Value.timeStamp - deltaTime < iterForPostTraj.Value.timeStamp)
                     {
-                        iterForPostTraj.Value.transform = iter.Value.transform;
+                        iterForPostTraj.Value.transform =  currTransform.inverse() * iter.Value.transform;
                     }
 
                     iterForPostTraj = iterForPostTraj.Next;
@@ -53,7 +55,7 @@ namespace Momat.Runtime
                 iter = iter.Next;
             }
 
-            trajectory.trajectoryData.AddFirst(new TrajectoryPoint(transform));
+            worldTrajectory.trajectoryData.AddFirst(new TrajectoryPoint(transform));
         }
     }
 }

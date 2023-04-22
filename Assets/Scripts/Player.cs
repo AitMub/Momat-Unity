@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
     {
         UpdateDesiredDirection();
         UpdateFutureTrajectory();
-        momatAnimator.SetFutureTrajectory(futureTrajectory);
+        momatAnimator.SetFutureLocalTrajectory(futureTrajectory);
     }
 
     private void UpdateDesiredDirection()
@@ -49,8 +49,8 @@ public class Player : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
         desiredWorldDirection = new Vector3(x, 0, z) * currSpeed;
-        desiredWorldDirection =transform.localToWorldMatrix * 
-                               new Vector4(desiredWorldDirection.x, desiredWorldDirection.y, desiredWorldDirection.z, 0f);
+        desiredWorldDirection =
+            new Vector4(desiredWorldDirection.x, desiredWorldDirection.y, desiredWorldDirection.z, 0f);
     }
 
     private void UpdateFutureTrajectory()
@@ -58,7 +58,7 @@ public class Player : MonoBehaviour
         foreach (var tp in futureTrajectory.trajectoryData)
         {
             tp.transform = new AffineTransform
-                ((desiredWorldDirection * tp.timeStamp + transform.position) , quaternion.identity);
+                ((desiredWorldDirection * tp.timeStamp) , quaternion.identity);
         }
     }
 }

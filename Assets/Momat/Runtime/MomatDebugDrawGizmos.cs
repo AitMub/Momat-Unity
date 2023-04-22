@@ -13,8 +13,8 @@ namespace Momat.Runtime
         {
             if (Application.isPlaying)
             {
-                DrawTrajectory(postTrajectory, Color.blue);
-                DrawTrajectory(futureTrajectory, Color.blue);
+                DrawTrajectory(pastLocalTrajectory, Color.blue);
+                DrawTrajectory(futureLocalTrajectory, Color.cyan);
             }
         }
 
@@ -26,7 +26,9 @@ namespace Momat.Runtime
             int index = 1;
             foreach (var trajectoryPoint in trajectory.trajectoryData)
             {
-                positions[index] = trajectoryPoint.transform.t;
+                var localPosition = new Vector4
+                (trajectoryPoint.transform.t.x, trajectoryPoint.transform.t.y, trajectoryPoint.transform.t.z, 1.0f);
+                positions[index] =  transform.localToWorldMatrix * localPosition;
                 index++;
             }
             
