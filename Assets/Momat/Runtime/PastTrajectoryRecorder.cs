@@ -12,17 +12,25 @@ namespace Momat.Runtime
         private readonly float earliestTimeStamp;
 
         public RuntimeTrajectory PastLocalTrajectory => pastLocalTrajectory;
-
-        public PastTrajectoryRecorder(List<float> recordTimeStamp, Transform oriTransform)
+        
+        public PastTrajectoryRecorder(TrajectoryFeatureDefinition trajectoryFeatureDefinition, Transform oriTransform)
         {
-            earliestTimeStamp = recordTimeStamp[^1];
+            var pastRecordTimeStamp = new List<float>();
+            for (int i = 0; i < trajectoryFeatureDefinition.trajectoryTimeStamps.Count; i++)
+            {
+                if (trajectoryFeatureDefinition.trajectoryTimeStamps[i] < 0)
+                {
+                    pastRecordTimeStamp.Add(trajectoryFeatureDefinition.trajectoryTimeStamps[i]);
+                }
+            }
+            earliestTimeStamp = pastRecordTimeStamp[^1];
 
             worldTrajectory = new RuntimeTrajectory();
             pastLocalTrajectory = new RuntimeTrajectory();
 
-            for (int i = 0; i < recordTimeStamp.Count; i++)
+            for (int i = 0; i < pastRecordTimeStamp.Count; i++)
             {
-                pastLocalTrajectory.trajectoryData.AddLast(new TrajectoryPoint(oriTransform, recordTimeStamp[i]));
+                pastLocalTrajectory.trajectoryData.AddLast(new TrajectoryPoint(oriTransform, pastRecordTimeStamp[i]));
             }
         }
 

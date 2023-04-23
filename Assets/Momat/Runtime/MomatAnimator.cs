@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -13,7 +14,7 @@ namespace Momat.Runtime
 {
     public partial class MomatAnimator : MonoBehaviour
     {
-        [SerializeField] private float updateInterval = 2f;
+        [SerializeField] private float updateInterval = 0.5f;
         [SerializeField] private float blendTime = 0.1f;
         [SerializeField] private float playbackSpeed = 1.0f;
         
@@ -30,12 +31,14 @@ namespace Momat.Runtime
         private PastTrajectoryRecorder pastTrajectoryRecorder;
         private RuntimeTrajectory pastLocalTrajectory => pastTrajectoryRecorder.PastLocalTrajectory;
         private RuntimeTrajectory futureLocalTrajectory;
+        
+        private PoseIdentifier nextPose;
 
         private void Start()
         {
             animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime, playbackSpeed);
             animatorClock = new Clock();
-            pastTrajectoryRecorder = new PastTrajectoryRecorder(new List<float>{-0.5f, -1.0f}, transform);
+            pastTrajectoryRecorder = new PastTrajectoryRecorder(runtimeAnimationData.trajectoryFeatureDefinition, transform);
             futureLocalTrajectory = new RuntimeTrajectory();
 
             animator = GetComponent<Animator>();
@@ -81,16 +84,47 @@ namespace Momat.Runtime
 
         private void SwitchPose()
         {
-            var nextPose = SearchNextPose();
+            nextPose = SearchNextPose();
             animationGenerator.BeginPlayPose(nextPose);
         }
 
         private PoseIdentifier SearchNextPose()
         {
-            PoseIdentifier poseIdentifier;
-            poseIdentifier.animationID = UnityEngine.Random.Range(0, 2);
-            poseIdentifier.frameID = UnityEngine.Random.Range(0, 100);
+            var poseIdentifier = new PoseIdentifier();
+            float minCost = float.MaxValue;
+
+            foreach (var featureVector in runtimeAnimationData.GetPlayablePoseFeatureVectors(updateInterval + blendTime))
+            {
+                var cost = ComputeCost(featureVector);
+                if (cost < minCost)
+                {
+                    poseIdentifier = featureVector.poseIdentifier;
+                    minCost = cost;
+                }
+            }
+            
+            nextPose = poseIdentifier;
             return poseIdentifier;
+        }
+
+        private float ComputeCost(in FeatureVector featureVector)
+        {
+            float cost = 0;
+            int i = 0;
+
+            foreach (var trajectoryPoint in futureLocalTrajectory.trajectoryData)
+            {
+                cost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                i++;
+            }
+
+            foreach (var trajectoryPoint in pastLocalTrajectory.trajectoryData)
+            {
+                cost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                i++;
+            }
+
+            return cost;
         }
 
         private void OnDisable()

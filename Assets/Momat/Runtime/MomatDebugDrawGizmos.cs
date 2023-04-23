@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,12 +10,25 @@ namespace Momat.Runtime
     {
         private Vector3[] positions = new Vector3[10];
         
+        [SerializeField] private int debugShowAnimationID;
+        [SerializeField] private int debugShowFrameID;
+        [SerializeField] private bool debugShowTrajectory;
         private void OnDrawGizmos()
         {
             if (Application.isPlaying)
             {
                 DrawTrajectory(pastLocalTrajectory, Color.blue);
                 DrawTrajectory(futureLocalTrajectory, Color.cyan);
+
+                var debugNextPoseFeatureVector = runtimeAnimationData.GetFeatureVector(nextPose);
+                DrawTrajectory(debugNextPoseFeatureVector.trajectory, Color.yellow);
+            }
+
+            if (debugShowTrajectory)
+            {
+                var debugPoseFeatureVector = runtimeAnimationData.GetFeatureVector(new PoseIdentifier
+                    { animationID = debugShowAnimationID, frameID = debugShowFrameID });
+                DrawTrajectory(debugPoseFeatureVector.trajectory, Color.green);
             }
         }
 
@@ -27,7 +41,7 @@ namespace Momat.Runtime
             foreach (var trajectoryPoint in trajectory.trajectoryData)
             {
                 var localPosition = new Vector4
-                (trajectoryPoint.transform.t.x, trajectoryPoint.transform.t.y, trajectoryPoint.transform.t.z, 1.0f);
+                    (trajectoryPoint.transform.t.x, trajectoryPoint.transform.t.y, trajectoryPoint.transform.t.z, 1.0f);
                 positions[index] =  transform.localToWorldMatrix * localPosition;
                 index++;
             }
@@ -43,5 +57,41 @@ namespace Momat.Runtime
                 Gizmos.DrawLine(positions[i], positions[i + 1]);
             }
         }
+        
+        private void DrawTrajectory(List<float3> trajectory, Color color)
+        {
+            var timeStamps = runtimeAnimationData.trajectoryFeatureDefinition.trajectoryTimeStamps;
+
+            int tIndex = 0;
+            for (int i = 0; i < timeStamps.Count + 1; i++)
+            {
+                if (i > 0 && timeStamps[i - 1] > 0 && timeStamps[i] < 0)
+                {
+                    positions[i] = transform.position;
+                    continue;
+                }
+
+                var trajectoryPoint = trajectory[tIndex];
+                var localPosition = new Vector4
+                    (trajectoryPoint.x, trajectoryPoint.y, trajectoryPoint.z, 1.0f);
+                positions[i] =  transform.localToWorldMatrix * localPosition;
+                
+                tIndex++;
+            }
+            
+            int length = trajectory.Count + 1;
+
+            Gizmos.color = color;
+            for (int i = 0; i < length; i++)
+            {
+                Gizmos.DrawSphere(positions[i], 0.05f);
+            }
+
+            for (int i = 0; i < length - 1; i++)
+            {
+                Gizmos.DrawLine(positions[i], positions[i + 1]);
+            }
+        }
+
     }
 }

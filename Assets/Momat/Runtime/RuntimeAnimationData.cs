@@ -11,19 +11,41 @@ namespace Momat.Runtime
         public int animationID;
         public int frameID;
     }
+
+    public struct FeatureVector
+    {
+        public PoseIdentifier poseIdentifier;
+        public List<float3> trajectory;
+    }
     
     public class RuntimeAnimationData : ScriptableObject
     {
+        public TrajectoryFeatureDefinition trajectoryFeatureDefinition;
+        public PoseFeatureDefinition poseFeatureDefinition;
+        
         public List<AffineTransform> transforms;
         public List<int> animationTransformOffset;
 
         public List<float3> trajectoryPoints;
         public List<int> trajectoryPointOffset;
+        public int PoseTrajectoryPointNum => trajectoryFeatureDefinition.trajectoryTimeStamps.Count;
         
         [HideInInspector]
         public AnimationRig rig;
 
         public readonly float frameRate = 30;
+
+        public int AnimationNum => animationTransformOffset.Count;
+        public List<int> animationFrameNum;
+
+        public RuntimeAnimationData()
+        {
+            transforms = new List<AffineTransform>();
+            animationTransformOffset = new List<int>();
+            trajectoryPoints = new List<float3>();
+            trajectoryPointOffset = new List<int>();
+            animationFrameNum = new List<int>();
+        }
 
         public AffineTransform GetPoseTransform(PoseIdentifier poseIdentifier, int jointIndex)
         {
@@ -46,6 +68,35 @@ namespace Momat.Runtime
                 (new PoseIdentifier { animationID = animationID, frameID = frameID2 }, jointIndex);
 
             return AffineTransform.Interpolate(transform1, transform2, weight);
+        }
+
+        public IEnumerable<FeatureVector> GetPlayablePoseFeatureVectors(float playTime)
+        {
+            for (int animationIndex = 0; animationIndex < AnimationNum; animationIndex++)
+            {
+                for (int frameIndex = 0; frameIndex + playTime * frameRate < animationFrameNum[animationIndex]; frameIndex++)
+                {
+                    var featureVector = new FeatureVector();
+                    featureVector.poseIdentifier = new PoseIdentifier
+                        { animationID = animationIndex, frameID = frameIndex };
+
+                    int rangeBegin = trajectoryPointOffset[animationIndex] + frameIndex * PoseTrajectoryPointNum;
+                    featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, PoseTrajectoryPointNum);
+
+                    yield return featureVector;
+                }
+            }
+        }
+
+        public FeatureVector GetFeatureVector(PoseIdentifier poseIdentifier)
+        {
+            var featureVector = new FeatureVector();
+            featureVector.poseIdentifier = poseIdentifier;
+
+            int rangeBegin = trajectoryPointOffset[poseIdentifier.animationID] + poseIdentifier.frameID * PoseTrajectoryPointNum;
+            featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, PoseTrajectoryPointNum);
+
+            return featureVector;
         }
     }
 }

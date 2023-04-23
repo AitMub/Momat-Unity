@@ -35,11 +35,7 @@ namespace Momat.Editor
             var targetRig = AnimationRig.Create(avatar);
             
             var runtimeAsset = CreateInstance<Runtime.RuntimeAnimationData>();
-            runtimeAsset.transforms = new List<AffineTransform>();
-            runtimeAsset.animationTransformOffset = new List<int>();
-            runtimeAsset.trajectoryPoints = new List<float3>();
-            runtimeAsset.trajectoryPointOffset = new List<int>();
-            
+
             for (int i = 0; i < 2; i++)
             {
                 var jointTransforms = GenerateClipRuntimeJointTransform
@@ -59,11 +55,16 @@ namespace Momat.Editor
                     runtimeAsset.trajectoryPoints.Add(featureVectors.trajectories[j]);
                 }
 
-                runtimeAsset.rig = targetRig.GenerateRuntimeRig();
+                runtimeAsset.animationFrameNum.Add(jointTransforms.Length / targetRig.NumJoints);
 
                 jointTransforms.Dispose();
                 featureVectors.Dispose();
             }
+            
+            runtimeAsset.rig = targetRig.GenerateRuntimeRig();
+
+            runtimeAsset.trajectoryFeatureDefinition = featureDefinition.trajectoryFeatureDefinition;
+            runtimeAsset.poseFeatureDefinition = featureDefinition.poseFeatureDefinition;
             
             string assetName = name.Substring(name.IndexOf('t'));
             AssetDatabase.CreateAsset(runtimeAsset,
