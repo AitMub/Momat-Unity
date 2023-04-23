@@ -19,8 +19,9 @@ namespace Momat.Runtime
     {
         private RuntimeAnimationData runtimeAnimationData;
         
-        private float blendTime;
         private float playbackSpeed = 1.0f;
+        private float blendTime;
+        private readonly float frameRate;
 
         private Clock clock;
 
@@ -34,11 +35,11 @@ namespace Momat.Runtime
         public Vector3 RootVelocity => rootVelocity;
         public Vector3 RootAngularVelocity => rootAngularVelocity;
         
-        public AnimationGenerator(RuntimeAnimationData runtimeAnimationData, float blendTime, float playbackSpeed)
+        public AnimationGenerator(RuntimeAnimationData runtimeAnimationData, float blendTime)
         {
             this.runtimeAnimationData = runtimeAnimationData;
             this.blendTime = blendTime;
-            this.playbackSpeed = playbackSpeed;
+            frameRate = runtimeAnimationData.frameRate;
             
             clock = new Clock();
 
@@ -52,6 +53,11 @@ namespace Momat.Runtime
             deltaTime *= playbackSpeed;
             clock.Tick(deltaTime);
             currentState.Update(deltaTime);
+        }
+
+        public void SetPlaybackSpeed(float playbackSpeed)
+        {
+            this.playbackSpeed = playbackSpeed;
         }
 
         public void BeginPlayPose(PoseIdentifier pose)
@@ -89,6 +95,11 @@ namespace Momat.Runtime
             q.ToAngleAxis(out float angleInDegrees, out Vector3 axis);
             Vector3 angularDisplacement = axis * angleInDegrees * Mathf.Deg2Rad;
             return angularDisplacement;
+        }
+
+        private float GetPlayingSegmentCurrTime(PlayingSegment playingSegment)
+        {
+            return playingSegment.playBeginPose.frameID / frameRate + playingSegment.timeFromPoseBegin;
         }
 
         private static Vector3 NLerp(Vector3 v1, Vector3 v2, float weight)

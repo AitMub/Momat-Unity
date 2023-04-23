@@ -88,7 +88,7 @@ namespace Momat.Runtime
                 playingSegment.timeFromPoseBegin = context.prevPosePlayedTime;
                 
                 prevRootTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (playingSegment.AnimationID, playingSegment.timeFromPoseBegin, 0);
+                    (playingSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(playingSegment), 0);
             }
     
             public void Update(float deltaTime)
@@ -113,7 +113,7 @@ namespace Momat.Runtime
             public AffineTransform GetCurrPoseJointTransform(int jointIndex)
             {
                 return animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (playingSegment.AnimationID, playingSegment.timeFromPoseBegin, jointIndex);
+                    (playingSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(playingSegment), jointIndex);
             }
 
             private void PlaySingleAnim()
@@ -122,7 +122,7 @@ namespace Momat.Runtime
                 
                 var currRootTransform =
                     animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                        (playingSegment.AnimationID, playingSegment.timeFromPoseBegin, 0);
+                        (playingSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(playingSegment), 0);
                 
                 var motion = CalculateRootMotion
                     (prevRootTransform, currRootTransform, clock.DeltaTime);
@@ -169,9 +169,9 @@ namespace Momat.Runtime
                 fadeInSegment.timeFromPoseBegin = 0;
                 
                 fadeOutPrevRootTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (fadeOutSegment.AnimationID, fadeOutSegment.timeFromPoseBegin, 0);
+                    (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), 0);
                 fadeInPrevRootTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (fadeInSegment.AnimationID, fadeInSegment.timeFromPoseBegin, 0);
+                    (fadeInSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeInSegment), 0);
             }
     
             public void Update(float deltaTime)
@@ -199,9 +199,9 @@ namespace Momat.Runtime
             public AffineTransform GetCurrPoseJointTransform(int jointIndex)
             {
                 var fadeOutTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (fadeOutSegment.AnimationID, fadeOutSegment.timeFromPoseBegin, jointIndex);
+                    (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), jointIndex);
                 var fadeInTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (fadeInSegment.AnimationID, fadeInSegment.timeFromPoseBegin, jointIndex);
+                    (fadeInSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeInSegment), jointIndex);
                 return AffineTransform.Interpolate(fadeOutTransform, fadeInTransform, weight);
             }
             
@@ -219,10 +219,10 @@ namespace Momat.Runtime
 
                 var fadeOutCurrRootTransform =
                     animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                        (fadeOutSegment.AnimationID, fadeOutSegment.timeFromPoseBegin, 0);
+                        (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), 0);
                 var fadeInCurrRootTransform =
                     animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                        (fadeInSegment.AnimationID, fadeInSegment.timeFromPoseBegin, 0);
+                        (fadeInSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeInSegment), 0);
                 
                 var deltaFadeOutRootTransform = fadeOutPrevRootTransform.inverse() * fadeOutCurrRootTransform;
                 var deltaFadeInRootTransform = fadeInPrevRootTransform.inverse() * fadeInCurrRootTransform;

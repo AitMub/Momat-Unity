@@ -36,7 +36,7 @@ namespace Momat.Runtime
 
         private void Start()
         {
-            animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime, playbackSpeed);
+            animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime);
             animatorClock = new Clock();
             pastTrajectoryRecorder = new PastTrajectoryRecorder(runtimeAnimationData.trajectoryFeatureDefinition, transform);
             futureLocalTrajectory = new RuntimeTrajectory();

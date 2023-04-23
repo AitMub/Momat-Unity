@@ -9013,7 +9013,7 @@ Transform:
   m_Children:
   - {fileID: 2007014966}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 34.024}
 --- !u!1001 &365263929
 PrefabInstance:
@@ -9286,13 +9286,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.0026982068, y: -0.93817323, z: 0.34607834, w: 0.0073148175}
-  m_LocalPosition: {x: -1.486, y: 5.707, z: 4.307}
+  m_LocalRotation: {x: 0.19758867, y: -0.0029407798, z: 0.0005927822, w: 0.98028046}
+  m_LocalPosition: {x: -0.006401415, y: 3.5480096, z: -4.755993}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1657270249
 GameObject:
@@ -9595,7 +9595,7 @@ MonoBehaviour:
   runtimeAnimationData: {fileID: 11400000, guid: 1485cc4eb0a5c8846a59311ad13ba9f5, type: 2}
   debugShowAnimationID: 0
   debugShowFrameID: 1073
-  debugShowTrajectory: 1
+  debugShowTrajectory: 0
 --- !u!114 &1933243364
 MonoBehaviour:
   m_ObjectHideFlags: 0
