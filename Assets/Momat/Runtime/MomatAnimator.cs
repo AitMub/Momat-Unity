@@ -31,6 +31,9 @@ namespace Momat.Runtime
         private PastTrajectoryRecorder pastTrajectoryRecorder;
         private RuntimeTrajectory pastLocalTrajectory => pastTrajectoryRecorder.PastLocalTrajectory;
         private RuntimeTrajectory futureLocalTrajectory;
+
+        private AffineTransform[] comparedJointHipSpaceT;
+        private Transform[] jointTransforms;
         
         private PoseIdentifier nextPose;
 
@@ -40,7 +43,22 @@ namespace Momat.Runtime
             animatorClock = new Clock();
             pastTrajectoryRecorder = new PastTrajectoryRecorder(runtimeAnimationData.trajectoryFeatureDefinition, transform);
             futureLocalTrajectory = new RuntimeTrajectory();
+            comparedJointHipSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformNum];
+            jointTransforms = new Transform[runtimeAnimationData.ComparedJointTransformNum];
 
+            var transforms = transform.GetComponentsInChildren<Transform>();
+            for (int i = 0; i < jointTransforms.Length; i++)
+            {
+                for (int j = 0; j < transforms.Length; j++)
+                {
+                    if (transforms[j].name == runtimeAnimationData.poseFeatureDefinition.comparedJoint[i])
+                    {
+                        jointTransforms[i] = transforms[j];
+                        break;
+                    }
+                }
+            }
+            
             animator = GetComponent<Animator>();
             CreatePlayableGraph();
         }
@@ -93,6 +111,8 @@ namespace Momat.Runtime
             var poseIdentifier = new PoseIdentifier();
             float minCost = float.MaxValue;
 
+            ComputeComparedJointTransform();
+            
             foreach (var featureVector in runtimeAnimationData.GetPlayablePoseFeatureVectors(updateInterval + blendTime))
             {
                 var cost = ComputeCost(featureVector);
@@ -103,6 +123,7 @@ namespace Momat.Runtime
                 }
             }
             
+            Debug.Log($"{poseIdentifier.animationID} {poseIdentifier.frameID} {minCost}");
             nextPose = poseIdentifier;
             return poseIdentifier;
         }
@@ -124,7 +145,28 @@ namespace Momat.Runtime
                 i++;
             }
 
+            for (int j = 0; j < featureVector.jointHipSpaceT.Count; j++)
+            {
+                cost += Vector3.Distance(featureVector.jointHipSpaceT[j].t, comparedJointHipSpaceT[j].t);
+            }
+
             return cost;
+        }
+
+        private void ComputeComparedJointTransform()
+        {
+            for (int i = 0; i < comparedJointHipSpaceT.Length; i++)
+            {
+                var currTransform = jointTransforms[i];
+                var affineT = AffineTransform.identity;
+                while (currTransform != transform)
+                {
+                    affineT = new AffineTransform(currTransform.position, currTransform.rotation) * affineT;
+                    currTransform = currTransform.parent;
+                }
+
+                comparedJointHipSpaceT[i] = affineT;
+            }
         }
 
         private void OnDisable()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEngine.Serialization;
 
 namespace Momat.Runtime
 {
@@ -16,6 +17,7 @@ namespace Momat.Runtime
     {
         public PoseIdentifier poseIdentifier;
         public List<float3> trajectory;
+        public List<AffineTransform> jointHipSpaceT;
     }
     
     public class RuntimeAnimationData : ScriptableObject
@@ -23,15 +25,17 @@ namespace Momat.Runtime
         public TrajectoryFeatureDefinition trajectoryFeatureDefinition;
         public PoseFeatureDefinition poseFeatureDefinition;
         
-        public List<AffineTransform> transforms;
+        [HideInInspector]  public List<AffineTransform> transforms;
         public List<int> animationTransformOffset;
 
-        public List<float3> trajectoryPoints;
+        [HideInInspector] public List<float3> trajectoryPoints;
         public List<int> trajectoryPointOffset;
         public int PoseTrajectoryPointNum => trajectoryFeatureDefinition.trajectoryTimeStamps.Count;
+
+        public List<AffineTransform> comparedJointHipSpaceT;
+        public int ComparedJointTransformNum => poseFeatureDefinition.comparedJoint.Count;
         
-        [HideInInspector]
-        public AnimationRig rig;
+        [HideInInspector] public AnimationRig rig;
 
         public readonly float frameRate = 30;
 
@@ -44,6 +48,7 @@ namespace Momat.Runtime
             animationTransformOffset = new List<int>();
             trajectoryPoints = new List<float3>();
             trajectoryPointOffset = new List<int>();
+            comparedJointHipSpaceT = new List<AffineTransform>();
             animationFrameNum = new List<int>();
         }
 
@@ -83,6 +88,10 @@ namespace Momat.Runtime
                     int rangeBegin = trajectoryPointOffset[animationIndex] + frameIndex * PoseTrajectoryPointNum;
                     featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, PoseTrajectoryPointNum);
 
+                    rangeBegin = animationIndex * ComparedJointTransformNum * animationFrameNum[animationIndex]
+                                 + frameIndex * ComparedJointTransformNum;
+                    featureVector.jointHipSpaceT = comparedJointHipSpaceT.GetRange(rangeBegin, ComparedJointTransformNum);
+                    
                     yield return featureVector;
                 }
             }

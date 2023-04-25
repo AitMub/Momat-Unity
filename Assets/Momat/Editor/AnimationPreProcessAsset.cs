@@ -34,7 +34,7 @@ namespace Momat.Editor
         {
             var targetRig = AnimationRig.Create(avatar);
             
-            var runtimeAsset = CreateInstance<Runtime.RuntimeAnimationData>();
+            var runtimeAsset = CreateInstance<RuntimeAnimationData>();
 
             for (int i = 0; i < 2; i++)
             {
@@ -53,6 +53,11 @@ namespace Momat.Editor
                 for (int j = 0; j < featureVectors.trajectories.Length; j++)
                 {
                     runtimeAsset.trajectoryPoints.Add(featureVectors.trajectories[j]);
+                }
+                
+                for (int j = 0; j < featureVectors.jointHipSpaceT.Length; j++)
+                {
+                    runtimeAsset.comparedJointHipSpaceT.Add(featureVectors.jointHipSpaceT[j]);
                 }
 
                 runtimeAsset.animationFrameNum.Add(jointTransforms.Length / targetRig.NumJoints);
@@ -125,8 +130,19 @@ namespace Momat.Editor
             {
                 trajectories = new NativeArray<float3>
                 (numFrames * featureDefinition.trajectoryFeatureDefinition.trajectoryTimeStamps.Count,
-                    Allocator.Persistent)
+                    Allocator.Persistent),
+                jointHipSpaceT = new NativeArray<AffineTransform>
+                    (numFrames * featureDefinition.poseFeatureDefinition.comparedJoint.Count,
+                        Allocator.Persistent)
             };
+
+            var jointIndices = new int[featureDefinition.poseFeatureDefinition.comparedJoint.Count];
+            for (int i = 0; i < jointIndices.Length; i++)
+            {
+                var index = targetRig.GetJointIndexFromName
+                    (featureDefinition.poseFeatureDefinition.comparedJoint[i]);
+                jointIndices[i] = index;
+            }
 
             using (var generateFeatureVectorJob = new GenerateFeatureVectorJob
                    {
@@ -135,6 +151,10 @@ namespace Momat.Editor
                        frameRate = sampleRate,
                        trajectoryTimeStamps = new NativeArray<float>
                            (featureDefinition.trajectoryFeatureDefinition.trajectoryTimeStamps.ToArray(), Allocator.Persistent),
+                       jointIndices = new NativeArray<int>
+                           (jointIndices, Allocator.Persistent),
+                       hipIndex = targetRig.BodyJointIndex,
+                       parentIndices = targetRig.GenerateParentIndicesNA(),
                        featureVectors = outFeatureVectors
                    })
             {

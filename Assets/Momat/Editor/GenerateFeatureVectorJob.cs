@@ -13,10 +13,12 @@ namespace Momat.Editor
     internal struct ClipFeatureVectors : IDisposable
     {
         public NativeArray<float3> trajectories;
+        public NativeArray<AffineTransform> jointHipSpaceT;
 
         public void Dispose()
         {
             trajectories.Dispose();
+            jointHipSpaceT.Dispose();
         }
     }
 
@@ -27,6 +29,9 @@ namespace Momat.Editor
         [ReadOnly] public int numJoints;
         [ReadOnly] public float frameRate;
         [ReadOnly] public NativeArray<float> trajectoryTimeStamps;
+        [ReadOnly] public NativeArray<int> jointIndices;
+        [ReadOnly] public int hipIndex;
+        [ReadOnly] public NativeArray<int> parentIndices;
 
         public ClipFeatureVectors featureVectors;
         
@@ -35,7 +40,7 @@ namespace Momat.Editor
             var currWorldTransform = localPoses[frameIndex * numJoints];
             var timeStampNum = trajectoryTimeStamps.Length;
             
-            MemoryArray<float3> frameTrajectoryPoints = new MemoryArray<float3>
+            var frameTrajectoryPoints = new MemoryArray<float3>
                 (featureVectors.trajectories, frameIndex * timeStampNum, timeStampNum);
 
             for (int i = 0; i < timeStampNum; i++)
@@ -45,11 +50,24 @@ namespace Momat.Editor
                 var localTransform = currWorldTransform.inverse() * worldTransform;
                 frameTrajectoryPoints[i] = localTransform.t;
             }
+
+            var jointNum = jointIndices.Length;
+            var frameJointHipSpaceTransform = new MemoryArray<AffineTransform>
+                (featureVectors.jointHipSpaceT, frameIndex * jointNum, jointNum);
+
+            for (int i = 0; i < jointNum; i++)
+            {
+                var jointIndex = jointIndices[i];
+                var hipSpaceTransform = GetHipSpaceTransform(frameIndex, jointIndex);
+                frameJointHipSpaceTransform[i] = hipSpaceTransform;
+            }
         }
         
         public void Dispose()
         {
             trajectoryTimeStamps.Dispose();
+            jointIndices.Dispose();
+            parentIndices.Dispose();
         }
 
         private AffineTransform SampleTransform(int frameIndex, float relativeTime)
@@ -64,6 +82,18 @@ namespace Momat.Editor
                 targetFrameIndex = localPoses.Length / numJoints - 1;
             }
             return localPoses[Mathf.CeilToInt(targetFrameIndex * numJoints)];
+        }
+
+        private AffineTransform GetHipSpaceTransform(int frameIndex, int jointIndex)
+        {
+            var transform = localPoses[frameIndex * numJoints + jointIndex];
+            while (jointIndex != hipIndex)
+            {
+                jointIndex = parentIndices[jointIndex];
+                transform = localPoses[frameIndex * numJoints + jointIndex] * transform;
+            }
+
+            return transform;
         }
     }
 }
