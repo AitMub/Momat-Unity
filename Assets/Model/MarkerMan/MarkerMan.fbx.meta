@@ -96,11 +96,11 @@ ModelImporter:
     - boneName: mixamorig:LeftUpLeg
       humanName: LeftUpperLeg
       limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        min: {x: -180, y: -180, z: -180}
+        max: {x: 180, y: 180, z: 180}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: mixamorig:RightUpLeg
       humanName: RightUpperLeg
       limit:
@@ -144,11 +144,11 @@ ModelImporter:
     - boneName: mixamorig:Spine
       humanName: Spine
       limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
+        min: {x: -180, y: -180, z: -180}
+        max: {x: 180, y: 180, z: 180}
         value: {x: 0, y: 0, z: 0}
         length: 0
-        modified: 0
+        modified: 1
     - boneName: mixamorig:Spine1
       humanName: Chest
       limit:
@@ -867,7 +867,7 @@ ModelImporter:
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
-    armTwist: 0.5
+    armTwist: 0.506
     foreArmTwist: 0.5
     upperLegTwist: 0.5
     legTwist: 0.5

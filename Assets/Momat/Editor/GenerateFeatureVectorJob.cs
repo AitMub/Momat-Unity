@@ -13,12 +13,12 @@ namespace Momat.Editor
     internal struct ClipFeatureVectors : IDisposable
     {
         public NativeArray<float3> trajectories;
-        public NativeArray<AffineTransform> jointHipSpaceT;
+        public NativeArray<AffineTransform> jointRootSpaceT;
 
         public void Dispose()
         {
             trajectories.Dispose();
-            jointHipSpaceT.Dispose();
+            jointRootSpaceT.Dispose();
         }
     }
 
@@ -30,7 +30,6 @@ namespace Momat.Editor
         [ReadOnly] public float frameRate;
         [ReadOnly] public NativeArray<float> trajectoryTimeStamps;
         [ReadOnly] public NativeArray<int> jointIndices;
-        [ReadOnly] public int hipIndex;
         [ReadOnly] public NativeArray<int> parentIndices;
 
         public ClipFeatureVectors featureVectors;
@@ -52,14 +51,14 @@ namespace Momat.Editor
             }
 
             var jointNum = jointIndices.Length;
-            var frameJointHipSpaceTransform = new MemoryArray<AffineTransform>
-                (featureVectors.jointHipSpaceT, frameIndex * jointNum, jointNum);
+            var frameJointRootSpaceTransform = new MemoryArray<AffineTransform>
+                (featureVectors.jointRootSpaceT, frameIndex * jointNum, jointNum);
 
             for (int i = 0; i < jointNum; i++)
             {
                 var jointIndex = jointIndices[i];
-                var hipSpaceTransform = GetHipSpaceTransform(frameIndex, jointIndex);
-                frameJointHipSpaceTransform[i] = hipSpaceTransform;
+                var rootSpaceTransform = GetRootSpaceTransform(frameIndex, jointIndex);
+                frameJointRootSpaceTransform[i] = rootSpaceTransform;
             }
         }
         
@@ -84,15 +83,15 @@ namespace Momat.Editor
             return localPoses[Mathf.CeilToInt(targetFrameIndex * numJoints)];
         }
 
-        private AffineTransform GetHipSpaceTransform(int frameIndex, int jointIndex)
+        private AffineTransform GetRootSpaceTransform(int frameIndex, int jointIndex)
         {
-            var transform = localPoses[frameIndex * numJoints + jointIndex];
-            while (jointIndex != hipIndex)
+            var transform = AffineTransform.identity;
+            while (jointIndex != 0)
             {
-                jointIndex = parentIndices[jointIndex];
                 transform = localPoses[frameIndex * numJoints + jointIndex] * transform;
+                jointIndex = parentIndices[jointIndex];
             }
-
+            
             return transform;
         }
     }

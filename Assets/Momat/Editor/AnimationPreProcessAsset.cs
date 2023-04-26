@@ -55,9 +55,9 @@ namespace Momat.Editor
                     runtimeAsset.trajectoryPoints.Add(featureVectors.trajectories[j]);
                 }
                 
-                for (int j = 0; j < featureVectors.jointHipSpaceT.Length; j++)
+                for (int j = 0; j < featureVectors.jointRootSpaceT.Length; j++)
                 {
-                    runtimeAsset.comparedJointHipSpaceT.Add(featureVectors.jointHipSpaceT[j]);
+                    runtimeAsset.comparedJointRootSpaceT.Add(featureVectors.jointRootSpaceT[j]);
                 }
 
                 runtimeAsset.animationFrameNum.Add(jointTransforms.Length / targetRig.NumJoints);
@@ -131,7 +131,7 @@ namespace Momat.Editor
                 trajectories = new NativeArray<float3>
                 (numFrames * featureDefinition.trajectoryFeatureDefinition.trajectoryTimeStamps.Count,
                     Allocator.Persistent),
-                jointHipSpaceT = new NativeArray<AffineTransform>
+                jointRootSpaceT = new NativeArray<AffineTransform>
                     (numFrames * featureDefinition.poseFeatureDefinition.comparedJoint.Count,
                         Allocator.Persistent)
             };
@@ -153,7 +153,6 @@ namespace Momat.Editor
                            (featureDefinition.trajectoryFeatureDefinition.trajectoryTimeStamps.ToArray(), Allocator.Persistent),
                        jointIndices = new NativeArray<int>
                            (jointIndices, Allocator.Persistent),
-                       hipIndex = targetRig.BodyJointIndex,
                        parentIndices = targetRig.GenerateParentIndicesNA(),
                        featureVectors = outFeatureVectors
                    })

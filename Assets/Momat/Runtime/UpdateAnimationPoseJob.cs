@@ -65,7 +65,7 @@ namespace Momat.Runtime
                     continue;
                 }
 
-                var transform = animationGenerator.GetPoseJointTransformAtTime(i);
+                var transform = animationGenerator.GetCurrPoseJointTransform(i);
                 transforms[i].SetLocalPosition(stream, transform.t);
                 transforms[i].SetLocalRotation(stream, transform.q);
             }

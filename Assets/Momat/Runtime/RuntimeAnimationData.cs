@@ -17,7 +17,7 @@ namespace Momat.Runtime
     {
         public PoseIdentifier poseIdentifier;
         public List<float3> trajectory;
-        public List<AffineTransform> jointHipSpaceT;
+        public List<AffineTransform> jointRootSpaceT;
     }
     
     public class RuntimeAnimationData : ScriptableObject
@@ -32,7 +32,7 @@ namespace Momat.Runtime
         public List<int> trajectoryPointOffset;
         public int PoseTrajectoryPointNum => trajectoryFeatureDefinition.trajectoryTimeStamps.Count;
 
-        public List<AffineTransform> comparedJointHipSpaceT;
+        public List<AffineTransform> comparedJointRootSpaceT;
         public int ComparedJointTransformNum => poseFeatureDefinition.comparedJoint.Count;
         
         [HideInInspector] public AnimationRig rig;
@@ -48,7 +48,7 @@ namespace Momat.Runtime
             animationTransformOffset = new List<int>();
             trajectoryPoints = new List<float3>();
             trajectoryPointOffset = new List<int>();
-            comparedJointHipSpaceT = new List<AffineTransform>();
+            comparedJointRootSpaceT = new List<AffineTransform>();
             animationFrameNum = new List<int>();
         }
 
@@ -79,7 +79,7 @@ namespace Momat.Runtime
         {
             for (int animationIndex = 0; animationIndex < AnimationNum; animationIndex++)
             {
-                for (int frameIndex = 0; frameIndex + playTime * frameRate < animationFrameNum[animationIndex]; frameIndex++)
+                for (int frameIndex = 0; frameIndex + Mathf.FloorToInt(playTime * frameRate) < animationFrameNum[animationIndex]; frameIndex++)
                 {
                     var featureVector = new FeatureVector();
                     featureVector.poseIdentifier = new PoseIdentifier
@@ -90,7 +90,7 @@ namespace Momat.Runtime
 
                     rangeBegin = animationIndex * ComparedJointTransformNum * animationFrameNum[animationIndex]
                                  + frameIndex * ComparedJointTransformNum;
-                    featureVector.jointHipSpaceT = comparedJointHipSpaceT.GetRange(rangeBegin, ComparedJointTransformNum);
+                    featureVector.jointRootSpaceT = comparedJointRootSpaceT.GetRange(rangeBegin, ComparedJointTransformNum);
                     
                     yield return featureVector;
                 }

@@ -32,8 +32,8 @@ namespace Momat.Runtime
         private RuntimeTrajectory pastLocalTrajectory => pastTrajectoryRecorder.PastLocalTrajectory;
         private RuntimeTrajectory futureLocalTrajectory;
 
-        private AffineTransform[] comparedJointHipSpaceT;
-        private Transform[] jointTransforms;
+        private AffineTransform[] comparedJointRootSpaceT;
+        private List<int> parentIndices;
         
         private PoseIdentifier nextPose;
 
@@ -43,22 +43,9 @@ namespace Momat.Runtime
             animatorClock = new Clock();
             pastTrajectoryRecorder = new PastTrajectoryRecorder(runtimeAnimationData.trajectoryFeatureDefinition, transform);
             futureLocalTrajectory = new RuntimeTrajectory();
-            comparedJointHipSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformNum];
-            jointTransforms = new Transform[runtimeAnimationData.ComparedJointTransformNum];
+            comparedJointRootSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformNum];
+            parentIndices = runtimeAnimationData.rig.GenerateParentIndices();
 
-            var transforms = transform.GetComponentsInChildren<Transform>();
-            for (int i = 0; i < jointTransforms.Length; i++)
-            {
-                for (int j = 0; j < transforms.Length; j++)
-                {
-                    if (transforms[j].name == runtimeAnimationData.poseFeatureDefinition.comparedJoint[i])
-                    {
-                        jointTransforms[i] = transforms[j];
-                        break;
-                    }
-                }
-            }
-            
             animator = GetComponent<Animator>();
             CreatePlayableGraph();
         }
@@ -122,50 +109,55 @@ namespace Momat.Runtime
                     minCost = cost;
                 }
             }
-            
-            Debug.Log($"{poseIdentifier.animationID} {poseIdentifier.frameID} {minCost}");
+
             nextPose = poseIdentifier;
             return poseIdentifier;
         }
 
         private float ComputeCost(in FeatureVector featureVector)
         {
-            float cost = 0;
+            float trajCost = 0;
             int i = 0;
 
             foreach (var trajectoryPoint in futureLocalTrajectory.trajectoryData)
             {
-                cost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                trajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
                 i++;
             }
 
             foreach (var trajectoryPoint in pastLocalTrajectory.trajectoryData)
             {
-                cost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                trajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
                 i++;
             }
 
-            for (int j = 0; j < featureVector.jointHipSpaceT.Count; j++)
+            float poseCost = 0;
+            for (int j = 0; j < featureVector.jointRootSpaceT.Count; j++)
             {
-                cost += Vector3.Distance(featureVector.jointHipSpaceT[j].t, comparedJointHipSpaceT[j].t);
+                poseCost += Vector3.Distance(featureVector.jointRootSpaceT[j].t, comparedJointRootSpaceT[j].t);
             }
 
-            return cost;
+            return trajCost + poseCost;
         }
 
         private void ComputeComparedJointTransform()
         {
-            for (int i = 0; i < comparedJointHipSpaceT.Length; i++)
+            // these transform are based on RuntimeAnimationData instead of transform of joint
+            // in game, this is because when setting local transform in UpdateAnimationPoseJob,
+            // the transform we set would be modified by unity animator
+            for (int i = 0; i < comparedJointRootSpaceT.Length; i++)
             {
-                var currTransform = jointTransforms[i];
-                var affineT = AffineTransform.identity;
-                while (currTransform != transform)
+                var jointName = runtimeAnimationData.poseFeatureDefinition.comparedJoint[i];
+                var jointIndex = runtimeAnimationData.rig.GetJointIndexFromName(jointName);
+
+                var rootSpaceT = AffineTransform.identity;
+                while (jointIndex != 0)
                 {
-                    affineT = new AffineTransform(currTransform.position, currTransform.rotation) * affineT;
-                    currTransform = currTransform.parent;
+                    rootSpaceT = animationGenerator.GetCurrPoseJointTransform(jointIndex) * rootSpaceT;
+                    jointIndex = parentIndices[jointIndex];
                 }
 
-                comparedJointHipSpaceT[i] = affineT;
+                comparedJointRootSpaceT[i] = rootSpaceT;
             }
         }
 
@@ -177,7 +169,7 @@ namespace Momat.Runtime
 
         public void SetFutureLocalTrajectory(RuntimeTrajectory futureTrajectory)
         {
-            this.futureLocalTrajectory = futureTrajectory;
+            futureLocalTrajectory = futureTrajectory;
         }
     }
 }

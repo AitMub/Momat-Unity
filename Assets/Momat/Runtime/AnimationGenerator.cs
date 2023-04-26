@@ -65,7 +65,7 @@ namespace Momat.Runtime
             nextPlayPose = pose;
         }
         
-        public AffineTransform GetPoseJointTransformAtTime(int jointIndex)
+        public AffineTransform GetCurrPoseJointTransform(int jointIndex)
         {
             return currentState.GetCurrPoseJointTransform(jointIndex);
         }

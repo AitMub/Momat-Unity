@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 {
     private MomatAnimator momatAnimator;
 
-    private Vector3 desiredWorldDirection;
+    private Vector3 desiredLocalDirection;
     
     [SerializeField] private float acceleration = 2.0f;
     [SerializeField] private float runSpeed = 2.0f;
@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     private float currSpeed;
 
     private RuntimeTrajectory futureTrajectory;
+
+    public Transform hand;
     
     // Start is called before the first frame update
     private void Start()
@@ -48,9 +50,9 @@ public class Player : MonoBehaviour
         }
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
-        desiredWorldDirection = new Vector3(x, 0, z) * currSpeed;
-        desiredWorldDirection =
-            new Vector4(desiredWorldDirection.x, desiredWorldDirection.y, desiredWorldDirection.z, 0f);
+        desiredLocalDirection = new Vector3(x, 0, z) * currSpeed;
+        desiredLocalDirection = transform.worldToLocalMatrix * new Vector4
+            (desiredLocalDirection.x, desiredLocalDirection.y, desiredLocalDirection.z, 0f);
     }
 
     private void UpdateFutureTrajectory()
@@ -58,7 +60,7 @@ public class Player : MonoBehaviour
         foreach (var tp in futureTrajectory.trajectoryData)
         {
             tp.transform = new AffineTransform
-                ((desiredWorldDirection * tp.timeStamp) , quaternion.identity);
+                ((desiredLocalDirection * tp.timeStamp) , quaternion.identity);
         }
     }
 }

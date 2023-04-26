@@ -8,6 +8,7 @@ using Unity.Mathematics;
 
 using UnityEditor;
 using Unity.Collections;
+using Unity.VisualScripting;
 
 namespace Momat.Runtime
 {
@@ -123,13 +124,25 @@ namespace Momat.Runtime
             return transforms;
         }
 
-        public NativeArray<int> GenerateParentIndices()
+        public NativeArray<int> GenerateParentIndicesNA()
         {
             NativeArray<int> parents = new NativeArray<int>(NumJoints, Allocator.Persistent);
 
             for (int jointIndex = 0; jointIndex < NumJoints; ++jointIndex)
             {
                 parents[jointIndex] = joints[jointIndex].parentIndex;
+            }
+
+            return parents;
+        }
+        
+        public List<int> GenerateParentIndices()
+        {
+            List<int> parents = new List<int>(NumJoints);
+
+            for (int jointIndex = 0; jointIndex < NumJoints; ++jointIndex)
+            {
+                parents.Add(joints[jointIndex].parentIndex);
             }
 
             return parents;

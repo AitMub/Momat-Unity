@@ -62,7 +62,6 @@ namespace Momat.Editor
             EditorGUI.indentLevel++;
             SerializedProperty listProperty = serializedObject.FindProperty("trajectoryFeatureDefinition.trajectoryTimeStamps");
             EditorGUILayout.PropertyField(listProperty, true);
-            serializedObject.ApplyModifiedProperties();
             EditorGUI.indentLevel--;
 
             GUILayout.Space(10);
@@ -118,6 +117,8 @@ namespace Momat.Editor
                 animationFeatureDefinition.poseFeatureDefinition.compareVelocity);
             
             EditorGUI.indentLevel--;
+            
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }
