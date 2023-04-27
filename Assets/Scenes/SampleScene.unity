@@ -9616,7 +9616,7 @@ MonoBehaviour:
   blendTime: 0.05
   playbackSpeed: 1
   weight: 0.45
-  runtimeAnimationData: {fileID: 11400000, guid: 1485cc4eb0a5c8846a59311ad13ba9f5, type: 2}
+  runtimeAnimationData: {fileID: 11400000, guid: 9b63839dc63a07843ba54fa4b2f02f44, type: 2}
   debugShowAnimationID: 0
   debugShowFrameID: 1707
   debugShowTrajectory: 0

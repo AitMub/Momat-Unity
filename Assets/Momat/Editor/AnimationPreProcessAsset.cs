@@ -71,7 +71,8 @@ namespace Momat.Editor
             runtimeAsset.trajectoryFeatureDefinition = featureDefinition.trajectoryFeatureDefinition;
             runtimeAsset.poseFeatureDefinition = featureDefinition.poseFeatureDefinition;
             
-            string assetName = name.Substring(name.IndexOf('t'));
+            string assetName = name.Substring(name.IndexOf('t') + 1);
+            AssetDatabase.DeleteAsset($"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
             AssetDatabase.CreateAsset(runtimeAsset,
                 $"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
             AssetDatabase.SaveAssets();

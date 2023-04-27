@@ -17,6 +17,8 @@ namespace Momat.Runtime
         [SerializeField] private float updateInterval = 0.5f;
         [SerializeField] private float blendTime = 0.1f;
         [SerializeField] private float playbackSpeed = 1.0f;
+        [Range(0,1)]
+        [SerializeField] private float weight;
         
         [SerializeField] private RuntimeAnimationData runtimeAnimationData;
         
@@ -137,7 +139,7 @@ namespace Momat.Runtime
                 poseCost += Vector3.Distance(featureVector.jointRootSpaceT[j].t, comparedJointRootSpaceT[j].t);
             }
 
-            return trajCost + poseCost;
+            return trajCost * weight + poseCost * (1 - weight);
         }
 
         private void ComputeComparedJointTransform()
