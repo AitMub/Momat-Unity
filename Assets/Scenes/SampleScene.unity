@@ -143,6 +143,7 @@ MonoBehaviour:
   updateInterval: 0.5
   blendTime: 0.1
   playbackSpeed: 1
+  weight: 0
   runtimeAnimationData: {fileID: 11400000, guid: 7ddde82416de9df44bff0d42929ae132, type: 2}
   debugShowAnimationID: 0
   debugShowFrameID: 0
@@ -9589,6 +9590,7 @@ MonoBehaviour:
   updateInterval: 0.5
   blendTime: 0.1
   playbackSpeed: 1
+  weight: 0
   runtimeAnimationData: {fileID: 11400000, guid: 1b54070a87c20d34986b4421d3487986, type: 2}
   debugShowAnimationID: 0
   debugShowFrameID: 0
@@ -9613,10 +9615,11 @@ MonoBehaviour:
   updateInterval: 0.1
   blendTime: 0.05
   playbackSpeed: 1
+  weight: 0.45
   runtimeAnimationData: {fileID: 11400000, guid: 1485cc4eb0a5c8846a59311ad13ba9f5, type: 2}
   debugShowAnimationID: 0
   debugShowFrameID: 1707
-  debugShowTrajectory: 1
+  debugShowTrajectory: 0
 --- !u!114 &1933243364
 MonoBehaviour:
   m_ObjectHideFlags: 0

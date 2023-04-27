@@ -13,6 +13,7 @@ namespace Momat.Editor
     public class AnimationFeatureDefinition : ScriptableObject
     {
         internal AnimationPreProcessAsset animationPreProcessAsset;
+        internal string[] joints;
 
         public TrajectoryFeatureDefinition trajectoryFeatureDefinition;
         public PoseFeatureDefinition poseFeatureDefinition;
@@ -21,17 +22,6 @@ namespace Momat.Editor
     [CustomEditor(typeof(AnimationFeatureDefinition))]
     public class AnimationFeatureDefinitionCustomEditor : UnityEditor.Editor
     {
-        private string[] joints;
-
-        private void OnEnable()
-        {
-            var animationFeatureDefinition = target as AnimationFeatureDefinition;
-            if (animationFeatureDefinition.animationPreProcessAsset != null)
-            {
-                joints = animationFeatureDefinition.animationPreProcessAsset.avatar.GetAvatarJointNames().ToArray();
-            }
-        }
-
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -47,11 +37,11 @@ namespace Momat.Editor
                 animationFeatureDefinition.poseFeatureDefinition.comparedJoint = new List<string>();
                 if (animationPreProcessAsset != null)
                 {
-                    joints = animationFeatureDefinition.animationPreProcessAsset.avatar.GetAvatarJointNames().ToArray();
+                    animationFeatureDefinition.joints = animationFeatureDefinition.animationPreProcessAsset.avatar.GetAvatarJointNames().ToArray();
                 }
                 else
                 {
-                    joints = null;
+                    animationFeatureDefinition.joints = null;
                 }
             }
             
@@ -70,13 +60,14 @@ namespace Momat.Editor
             
             EditorGUI.indentLevel++;
             
-            if (joints != null)
+            if (animationFeatureDefinition.joints != null)
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Compared Joints");
                 if (GUILayout.Button("Add Compare Joint",  GUILayout.Height(18), GUILayout.Width(150)))
                 {
-                    animationFeatureDefinition.poseFeatureDefinition.comparedJoint.Add(joints[0]);
+                    animationFeatureDefinition.poseFeatureDefinition.comparedJoint.
+                        Add(animationFeatureDefinition.joints[0]);
                 }
                 EditorGUILayout.EndHorizontal();
                 
@@ -86,11 +77,12 @@ namespace Momat.Editor
                     EditorGUILayout.BeginHorizontal();
 
                     EditorGUILayout.LabelField($"joint{i + 1}");
-                    int selectedIndex = Array.IndexOf(joints,
+                    int selectedIndex = Array.IndexOf(animationFeatureDefinition.joints,
                         animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i]);
-                    selectedIndex = EditorGUILayout.Popup(selectedIndex, joints);
+                    selectedIndex = EditorGUILayout.Popup(selectedIndex, animationFeatureDefinition.joints);
                     
-                    animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i] = joints[selectedIndex];
+                    animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i] = 
+                        animationFeatureDefinition.joints[selectedIndex];
 
                     if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(20)))
                     {
