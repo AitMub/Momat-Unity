@@ -35,21 +35,27 @@ namespace Momat.Editor
             var targetRig = AnimationRig.Create(avatar);
             
             var runtimeAsset = CreateInstance<RuntimeAnimationData>();
+            runtimeAsset.frameRate = sampleRate;
 
-            for (int i = 0; i < 2; i++)
+            int totalFrame = 0;
+            for (int i = 0; i < motionAnimSet.Count; i++)
             {
                 var jointTransforms = GenerateClipRuntimeJointTransform
                     (motionAnimSet[i], targetRig);
                 var featureVectors = GenerateClipFeatureVector
                     (motionAnimSet[i], jointTransforms, targetRig);
+
+                var frameNum = jointTransforms.Length / targetRig.NumJoints;
+                runtimeAsset.animationFrameOffset.Add(totalFrame);
+                runtimeAsset.animationFrameNum.Add(frameNum);
+                totalFrame += frameNum;
                 
-                runtimeAsset.animationTransformOffset.Add(runtimeAsset.transforms.Count);
+                
                 for (int j = 0; j < jointTransforms.Length; j++)
                 {
                     runtimeAsset.transforms.Add(jointTransforms[j]);
                 }
                 
-                runtimeAsset.trajectoryPointOffset.Add(runtimeAsset.trajectoryPoints.Count);
                 for (int j = 0; j < featureVectors.trajectories.Length; j++)
                 {
                     runtimeAsset.trajectoryPoints.Add(featureVectors.trajectories[j]);
@@ -59,9 +65,7 @@ namespace Momat.Editor
                 {
                     runtimeAsset.comparedJointRootSpaceT.Add(featureVectors.jointRootSpaceT[j]);
                 }
-
-                runtimeAsset.animationFrameNum.Add(jointTransforms.Length / targetRig.NumJoints);
-
+                
                 jointTransforms.Dispose();
                 featureVectors.Dispose();
             }

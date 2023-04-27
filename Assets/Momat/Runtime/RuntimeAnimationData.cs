@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -11,6 +12,8 @@ namespace Momat.Runtime
     {
         public int animationID;
         public int frameID;
+        
+        public void Print(){Debug.Log($"{animationID} {frameID}");}
     }
 
     public struct FeatureVector
@@ -22,41 +25,41 @@ namespace Momat.Runtime
     
     public class RuntimeAnimationData : ScriptableObject
     {
+        public float frameRate = 30;
+
+        [HideInInspector] public AnimationRig rig;
+
         public TrajectoryFeatureDefinition trajectoryFeatureDefinition;
         public PoseFeatureDefinition poseFeatureDefinition;
         
-        [HideInInspector]  public List<AffineTransform> transforms;
-        public List<int> animationTransformOffset;
-
-        [HideInInspector] public List<float3> trajectoryPoints;
-        public List<int> trajectoryPointOffset;
-        public int PoseTrajectoryPointNum => trajectoryFeatureDefinition.trajectoryTimeStamps.Count;
-
-        public List<AffineTransform> comparedJointRootSpaceT;
-        public int ComparedJointTransformNum => poseFeatureDefinition.comparedJoint.Count;
-        
-        [HideInInspector] public AnimationRig rig;
-
-        public readonly float frameRate = 30;
-
-        public int AnimationNum => animationTransformOffset.Count;
         public List<int> animationFrameNum;
+        public List<int> animationFrameOffset;
+        public int AnimationCnt => animationFrameNum.Count;
 
+        public int TransformGroupLen => rig.NumJoints;
+        [HideInInspector]  public List<AffineTransform> transforms;
+
+        public int TrajectoryPointGroupLen => trajectoryFeatureDefinition.trajectoryTimeStamps.Count;
+        [HideInInspector] public List<float3> trajectoryPoints;
+        
+        public int ComparedJointTransformGroupLen => poseFeatureDefinition.comparedJoint.Count;
+        [HideInInspector] public List<AffineTransform> comparedJointRootSpaceT;
+        
         public RuntimeAnimationData()
         {
-            transforms = new List<AffineTransform>();
-            animationTransformOffset = new List<int>();
-            trajectoryPoints = new List<float3>();
-            trajectoryPointOffset = new List<int>();
-            comparedJointRootSpaceT = new List<AffineTransform>();
             animationFrameNum = new List<int>();
+            animationFrameOffset = new List<int>();
+            
+            transforms = new List<AffineTransform>();
+            trajectoryPoints = new List<float3>();
+            comparedJointRootSpaceT = new List<AffineTransform>();
         }
 
         public AffineTransform GetPoseTransform(PoseIdentifier poseIdentifier, int jointIndex)
         {
-            int index = animationTransformOffset[poseIdentifier.animationID] +
-                        rig.NumJoints * poseIdentifier.frameID +
-                        jointIndex;
+            int clampedFrameID = Math.Clamp(poseIdentifier.frameID, 0, animationFrameNum[poseIdentifier.animationID] - 1);
+            int index = TransformGroupLen * animationFrameOffset[poseIdentifier.animationID] +
+                        rig.NumJoints * clampedFrameID + jointIndex;
             return transforms[index];
         }
 
@@ -77,7 +80,7 @@ namespace Momat.Runtime
 
         public IEnumerable<FeatureVector> GetPlayablePoseFeatureVectors(float playTime)
         {
-            for (int animationIndex = 0; animationIndex < AnimationNum; animationIndex++)
+            for (int animationIndex = 0; animationIndex < AnimationCnt; animationIndex++)
             {
                 for (int frameIndex = 0; frameIndex + Mathf.FloorToInt(playTime * frameRate) < animationFrameNum[animationIndex]; frameIndex++)
                 {
@@ -85,12 +88,13 @@ namespace Momat.Runtime
                     featureVector.poseIdentifier = new PoseIdentifier
                         { animationID = animationIndex, frameID = frameIndex };
 
-                    int rangeBegin = trajectoryPointOffset[animationIndex] + frameIndex * PoseTrajectoryPointNum;
-                    featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, PoseTrajectoryPointNum);
+                    int rangeBegin = TrajectoryPointGroupLen * animationFrameOffset[animationIndex]
+                                     + frameIndex * TrajectoryPointGroupLen;
+                    featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, TrajectoryPointGroupLen);
 
-                    rangeBegin = animationIndex * ComparedJointTransformNum * animationFrameNum[animationIndex]
-                                 + frameIndex * ComparedJointTransformNum;
-                    featureVector.jointRootSpaceT = comparedJointRootSpaceT.GetRange(rangeBegin, ComparedJointTransformNum);
+                    rangeBegin = ComparedJointTransformGroupLen * animationFrameOffset[animationIndex]
+                                 + frameIndex * ComparedJointTransformGroupLen;
+                    featureVector.jointRootSpaceT = comparedJointRootSpaceT.GetRange(rangeBegin, ComparedJointTransformGroupLen);
                     
                     yield return featureVector;
                 }
@@ -102,8 +106,9 @@ namespace Momat.Runtime
             var featureVector = new FeatureVector();
             featureVector.poseIdentifier = poseIdentifier;
 
-            int rangeBegin = trajectoryPointOffset[poseIdentifier.animationID] + poseIdentifier.frameID * PoseTrajectoryPointNum;
-            featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, PoseTrajectoryPointNum);
+            int rangeBegin = TrajectoryPointGroupLen * animationFrameOffset[poseIdentifier.animationID]
+                             + poseIdentifier.frameID * TrajectoryPointGroupLen;
+            featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, TrajectoryPointGroupLen);
 
             return featureVector;
         }

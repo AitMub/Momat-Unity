@@ -45,7 +45,7 @@ namespace Momat.Runtime
             animatorClock = new Clock();
             pastTrajectoryRecorder = new PastTrajectoryRecorder(runtimeAnimationData.trajectoryFeatureDefinition, transform);
             futureLocalTrajectory = new RuntimeTrajectory();
-            comparedJointRootSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformNum];
+            comparedJointRootSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformGroupLen];
             parentIndices = runtimeAnimationData.rig.GenerateParentIndices();
 
             animator = GetComponent<Animator>();
@@ -111,25 +111,26 @@ namespace Momat.Runtime
                     minCost = cost;
                 }
             }
-
+            
             nextPose = poseIdentifier;
             return poseIdentifier;
         }
 
         private float ComputeCost(in FeatureVector featureVector)
         {
-            float trajCost = 0;
+            float futureTrajCost = 0;
+            float pastTrajCost = 0;
             int i = 0;
 
             foreach (var trajectoryPoint in futureLocalTrajectory.trajectoryData)
             {
-                trajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                futureTrajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
                 i++;
             }
 
             foreach (var trajectoryPoint in pastLocalTrajectory.trajectoryData)
             {
-                trajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                pastTrajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
                 i++;
             }
 
@@ -139,7 +140,7 @@ namespace Momat.Runtime
                 poseCost += Vector3.Distance(featureVector.jointRootSpaceT[j].t, comparedJointRootSpaceT[j].t);
             }
 
-            return trajCost * weight + poseCost * (1 - weight);
+            return (futureTrajCost * 0.8f + pastTrajCost * 0.2f) * weight + poseCost * (1 - weight);
         }
 
         private void ComputeComparedJointTransform()
