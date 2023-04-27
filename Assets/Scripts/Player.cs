@@ -60,7 +60,7 @@ public class Player : MonoBehaviour
         foreach (var tp in futureTrajectory.trajectoryData)
         {
             tp.transform = new AffineTransform
-                ((desiredLocalDirection * tp.timeStamp) , quaternion.identity);
+                ((desiredLocalDirection * 2f * tp.timeStamp) , quaternion.identity);
         }
     }
 }
