@@ -80,9 +80,9 @@ namespace Momat.Editor
                     int selectedIndex = Array.IndexOf(animationFeatureDefinition.joints,
                         animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i]);
                     selectedIndex = EditorGUILayout.Popup(selectedIndex, animationFeatureDefinition.joints);
-                    
-                    animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i] = 
-                        animationFeatureDefinition.joints[selectedIndex];
+
+                    animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i] =
+                        selectedIndex >= 0 ? animationFeatureDefinition.joints[selectedIndex] : null;
 
                     if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(20)))
                     {

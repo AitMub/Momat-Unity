@@ -31,6 +31,12 @@ namespace Momat.Runtime
             for (int i = 0; i < transforms.Length; i++)
             {
                 int jointIndex = runtimeAnimationData.rig.GetJointIndexFromName(transforms[i].name);
+                if (runtimeAnimationData.jointIndexInTransforms[i] < 0)
+                {
+                    boundJoints[jointIndex] = false;
+                    continue;
+                }
+                
                 if (jointIndex >= 0)
                 {
                     this.transforms[jointIndex] = animator.BindStreamTransform(transforms[i]);

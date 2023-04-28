@@ -1,13 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Momat.Runtime;
+using NUnit.Framework;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Serialization;
+using AffineTransform = Unity.Mathematics.AffineTransform;
 using Vector2 = System.Numerics.Vector2;
 
 namespace Momat.Editor
@@ -37,11 +42,13 @@ namespace Momat.Editor
             var runtimeAsset = CreateInstance<RuntimeAnimationData>();
             runtimeAsset.frameRate = sampleRate;
 
+            var animatedJointIndices = new HashSet<int>();
+            
             int totalFrame = 0;
             for (int i = 0; i < motionAnimSet.Count; i++)
             {
                 var jointTransforms = GenerateClipRuntimeJointTransform
-                    (motionAnimSet[i], targetRig);
+                    (motionAnimSet[i], targetRig, ref animatedJointIndices);
                 var featureVectors = GenerateClipFeatureVector
                     (motionAnimSet[i], jointTransforms, targetRig);
 
@@ -50,24 +57,22 @@ namespace Momat.Editor
                 runtimeAsset.animationFrameNum.Add(frameNum);
                 totalFrame += frameNum;
                 
-                
-                for (int j = 0; j < jointTransforms.Length; j++)
-                {
-                    runtimeAsset.transforms.Add(jointTransforms[j]);
-                }
-                
-                for (int j = 0; j < featureVectors.trajectories.Length; j++)
-                {
-                    runtimeAsset.trajectoryPoints.Add(featureVectors.trajectories[j]);
-                }
-                
-                for (int j = 0; j < featureVectors.jointRootSpaceT.Length; j++)
-                {
-                    runtimeAsset.comparedJointRootSpaceT.Add(featureVectors.jointRootSpaceT[j]);
-                }
-                
+                runtimeAsset.transforms.AddRange(jointTransforms);
+                runtimeAsset.trajectoryPoints.AddRange(featureVectors.trajectories);
+                runtimeAsset.comparedJointRootSpaceT.AddRange(featureVectors.jointRootSpaceT);
+
                 jointTransforms.Dispose();
                 featureVectors.Dispose();
+            }
+            
+            runtimeAsset.transforms = RemoveUnanimatedTransform
+                (runtimeAsset.transforms, animatedJointIndices, targetRig);
+
+            runtimeAsset.animatedJointIndices = animatedJointIndices.ToArray();
+            runtimeAsset.jointIndexInTransforms = Enumerable.Repeat(-1, targetRig.NumJoints).ToArray();
+            for (int i = 0; i < runtimeAsset.animatedJointIndices.Length; i++)
+            {
+                runtimeAsset.jointIndexInTransforms[runtimeAsset.animatedJointIndices[i]] = i;
             }
             
             runtimeAsset.rig = targetRig.GenerateRuntimeRig();
@@ -83,7 +88,7 @@ namespace Momat.Editor
         }
 
         private NativeArray<AffineTransform> GenerateClipRuntimeJointTransform
-            (ProcessingAnimationClip animClip, AnimationRig targetRig)
+            (ProcessingAnimationClip animClip, AnimationRig targetRig, ref HashSet<int> animatedJointIndex)
         {
             var clip = animClip.sourceAnimClip;
             var avatarRetargetMap = animClip.avatarRetargetMap;
@@ -101,6 +106,7 @@ namespace Momat.Editor
                 using (var animSampler = new AnimationSampler(clip, sourceRig))
                 {
                     animSampler.RetargetAnimation(targetRig, avatarRetargetMap);
+                    animSampler.CollectAnimatedJointIndex(ref animatedJointIndex);
                     
                     float sourceSampleRate = clip.frameRate;
                     float targetSampleRate = sampleRate;
@@ -167,6 +173,28 @@ namespace Momat.Editor
             }
 
             return outFeatureVectors;
+        }
+
+        private List<AffineTransform> RemoveUnanimatedTransform(List<AffineTransform> transforms, in HashSet<int> animatedJointIndices, AnimationRig rig)
+        {
+            if (animatedJointIndices.Count == rig.NumJoints)
+            {
+                return transforms;
+            }
+
+            int frameCnt = transforms.Count / rig.NumJoints;
+            
+            var cutTransform = new List<AffineTransform>(frameCnt * animatedJointIndices.Count);
+
+            for (int i = 0; i < frameCnt; i++)
+            {
+                foreach (var jointIndex in animatedJointIndices)
+                {
+                    cutTransform.Add(transforms[i * rig.NumJoints + jointIndex]);
+                }
+            }
+
+            return cutTransform;
         }
  
         public void AddClipsToAnimSet(List<AnimationClip> clips, AnimationSetEnum animationSetEnum)

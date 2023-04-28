@@ -1,5 +1,5 @@
 using System;
-
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
 using Unity.Collections;
@@ -62,7 +62,54 @@ namespace Momat.Editor
                 throw e;
             }
             
-            this.rig = targetRig;
+            rig = targetRig;
+        }
+
+        internal void CollectAnimatedJointIndex(ref HashSet<int> animatedJointIndex)
+        {
+            int jointBegin = 0, jointEnd = 1;
+            int curveCnt = editorAnimation.AnimationCurveInfos.Count;
+            while (jointBegin < curveCnt)
+            {
+                while ( jointEnd < curveCnt &&
+                    editorAnimation.AnimationCurveInfos[jointEnd].jointIndex ==
+                       editorAnimation.AnimationCurveInfos[jointBegin].jointIndex)
+                {
+                    jointEnd++;
+                }
+                
+                for (int i = jointBegin; i < jointEnd; i++)
+                {
+                    var curveInfo = editorAnimation.AnimationCurveInfos[i];
+                    if (CheckIfAnimated(curveInfo.curve))
+                    {
+                        animatedJointIndex.Add(curveInfo.jointIndex);
+                        break;
+                    }
+                }
+
+                jointBegin = jointEnd;
+            }
+        }
+
+        private bool CheckIfAnimated(in Curve curve)
+        {
+            const double tolerance = 1e-5;
+
+            if (curve.Length <= 1)
+            {
+                return false;
+            }
+
+            for (int i = 1; i < curve.Length; i++)
+            {
+                if (Mathf.Abs(curve.Keys[i].value - curve.Keys[i - 1].value) > tolerance)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void Dispose()

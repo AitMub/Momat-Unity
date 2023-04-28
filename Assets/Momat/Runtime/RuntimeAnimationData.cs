@@ -36,7 +36,10 @@ namespace Momat.Runtime
         public List<int> animationFrameOffset;
         public int AnimationCnt => animationFrameNum.Count;
 
-        public int TransformGroupLen => rig.NumJoints;
+        public int[] animatedJointIndices;
+        public int[] jointIndexInTransforms; 
+            
+        public int TransformGroupLen => animatedJointIndices.Length;
         [HideInInspector]  public List<AffineTransform> transforms;
 
         public int TrajectoryPointGroupLen => trajectoryFeatureDefinition.trajectoryTimeStamps.Count;
@@ -57,9 +60,14 @@ namespace Momat.Runtime
 
         public AffineTransform GetPoseTransform(PoseIdentifier poseIdentifier, int jointIndex)
         {
+            if (jointIndexInTransforms[jointIndex] == -1)
+            {
+                return rig.joints[jointIndex].localTransform;
+            }
+            
             int clampedFrameID = Math.Clamp(poseIdentifier.frameID, 0, animationFrameNum[poseIdentifier.animationID] - 1);
             int index = TransformGroupLen * animationFrameOffset[poseIdentifier.animationID] +
-                        rig.NumJoints * clampedFrameID + jointIndex;
+                        TransformGroupLen * clampedFrameID + jointIndexInTransforms[jointIndex];
             return transforms[index];
         }
 

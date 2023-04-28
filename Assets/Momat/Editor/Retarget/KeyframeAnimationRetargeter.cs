@@ -68,7 +68,7 @@ namespace Momat.Editor
             {
                 Debug.LogWarning($"Target rig does not have mapped joint " +
                                  $"for animated joint {sourceJointIndex} in source animation. " +
-                                 $"Animation for this joint will not be retargeted");
+                                 "Animation for this joint will not be retargeted and will be lost");
                 return null;
             }
             
