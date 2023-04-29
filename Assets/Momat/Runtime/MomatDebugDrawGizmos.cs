@@ -10,25 +10,15 @@ namespace Momat.Runtime
     {
         private Vector3[] positions = new Vector3[10];
         
-        [SerializeField] private int debugShowAnimationID;
-        [SerializeField] private int debugShowFrameID;
-        [SerializeField] private bool debugShowTrajectory;
         private void OnDrawGizmos()
         {
-            if (Application.isPlaying)
+            if (Application.isPlaying && enabled)
             {
                 DrawTrajectory(pastLocalTrajectory, Color.blue);
                 DrawTrajectory(futureLocalTrajectory, Color.cyan);
 
                 var debugNextPoseFeatureVector = runtimeAnimationData.GetFeatureVector(nextPose);
                 DrawTrajectory(debugNextPoseFeatureVector.trajectory, Color.yellow);
-            }
-
-            if (debugShowTrajectory)
-            {
-                var debugPoseFeatureVector = runtimeAnimationData.GetFeatureVector(new PoseIdentifier
-                    { animationID = debugShowAnimationID, frameID = debugShowFrameID });
-                DrawTrajectory(debugPoseFeatureVector.trajectory, Color.green);
             }
         }
 

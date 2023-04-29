@@ -18,8 +18,6 @@ public class Player : MonoBehaviour
     private float currSpeed;
 
     private RuntimeTrajectory futureTrajectory;
-
-    public Transform hand;
     
     // Start is called before the first frame update
     private void Start()

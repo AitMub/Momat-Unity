@@ -8,12 +8,11 @@ using UnityEngine.Serialization;
 
 namespace Momat.Runtime
 {
+    [Serializable]
     public struct PoseIdentifier
     {
         public int animationID;
         public int frameID;
-        
-        public void Print(){Debug.Log($"{animationID} {frameID}");}
     }
 
     public struct FeatureVector
@@ -23,6 +22,7 @@ namespace Momat.Runtime
         public List<AffineTransform> jointRootSpaceT;
     }
     
+    [PreferBinarySerialization]
     public class RuntimeAnimationData : ScriptableObject
     {
         public float frameRate = 30;
