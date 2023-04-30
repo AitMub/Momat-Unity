@@ -12,8 +12,8 @@ namespace Momat.Editor
     [CreateAssetMenu(fileName = "AnimationFeatureDefinition", menuName = "Momat/Animation Feature Definition")]
     public class AnimationFeatureDefinition : ScriptableObject
     {
-        internal AnimationPreProcessAsset animationPreProcessAsset;
-        internal string[] joints;
+        [SerializeField]
+        internal Avatar avatar;
 
         public TrajectoryFeatureDefinition trajectoryFeatureDefinition;
         public PoseFeatureDefinition poseFeatureDefinition;
@@ -22,26 +22,35 @@ namespace Momat.Editor
     [CustomEditor(typeof(AnimationFeatureDefinition))]
     public class AnimationFeatureDefinitionCustomEditor : UnityEditor.Editor
     {
+        internal string[] joints;
+
+        private void OnEnable()
+        {
+            var animationFeatureDefinition = target as AnimationFeatureDefinition;
+            joints = animationFeatureDefinition.avatar.GetAvatarJointNames().ToArray();
+        }
+        
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
             var animationFeatureDefinition = target as AnimationFeatureDefinition;
             
-            var animationPreProcessAsset = 
-                EditorGUILayout.ObjectField("Preprocess Asset", animationFeatureDefinition.animationPreProcessAsset, 
-                    typeof(AnimationPreProcessAsset), false) as AnimationPreProcessAsset;
-            if (animationPreProcessAsset != animationFeatureDefinition.animationPreProcessAsset)
+            var avatar = 
+                EditorGUILayout.ObjectField("Avatar", animationFeatureDefinition.avatar, 
+                    typeof(Avatar), false) as Avatar;
+            if (avatar != animationFeatureDefinition.avatar)
             {
-                animationFeatureDefinition.animationPreProcessAsset = animationPreProcessAsset;
+                animationFeatureDefinition.avatar = avatar;
                 animationFeatureDefinition.poseFeatureDefinition.comparedJoint = new List<string>();
-                if (animationPreProcessAsset != null)
+                
+                if (avatar != null)
                 {
-                    animationFeatureDefinition.joints = animationFeatureDefinition.animationPreProcessAsset.avatar.GetAvatarJointNames().ToArray();
+                    joints = avatar.GetAvatarJointNames().ToArray();
                 }
                 else
                 {
-                    animationFeatureDefinition.joints = null;
+                    joints = null;
                 }
             }
             
@@ -60,14 +69,14 @@ namespace Momat.Editor
             
             EditorGUI.indentLevel++;
             
-            if (animationFeatureDefinition.joints != null)
+            if (joints != null)
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Compared Joints");
                 if (GUILayout.Button("Add Compare Joint",  GUILayout.Height(18), GUILayout.Width(150)))
                 {
                     animationFeatureDefinition.poseFeatureDefinition.comparedJoint.
-                        Add(animationFeatureDefinition.joints[0]);
+                        Add(joints[0]);
                 }
                 EditorGUILayout.EndHorizontal();
                 
@@ -77,12 +86,12 @@ namespace Momat.Editor
                     EditorGUILayout.BeginHorizontal();
 
                     EditorGUILayout.LabelField($"joint{i + 1}");
-                    int selectedIndex = Array.IndexOf(animationFeatureDefinition.joints,
+                    int selectedIndex = Array.IndexOf(joints,
                         animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i]);
-                    selectedIndex = EditorGUILayout.Popup(selectedIndex, animationFeatureDefinition.joints);
+                    selectedIndex = EditorGUILayout.Popup(selectedIndex, joints);
 
                     animationFeatureDefinition.poseFeatureDefinition.comparedJoint[i] =
-                        selectedIndex >= 0 ? animationFeatureDefinition.joints[selectedIndex] : null;
+                        selectedIndex >= 0 ? joints[selectedIndex] : null;
 
                     if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(20)))
                     {

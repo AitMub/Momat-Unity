@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ef8d0f87ae9bcd48a26a15ac34e0d18, type: 3}
   m_Name: AnimationFeatureDefinition
   m_EditorClassIdentifier: 
+  avatar: {fileID: 9000000, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
   trajectoryFeatureDefinition:
     trajectoryTimeStamps:
     - 1
@@ -25,3 +26,5 @@ MonoBehaviour:
     comparedJoint:
     - mixamorig:LeftFoot
     - mixamorig:RightFoot
+    - mixamorig:LeftHand
+    - mixamorig:RightHand
