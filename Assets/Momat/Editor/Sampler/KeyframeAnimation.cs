@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 
 namespace Momat.Editor
 {
@@ -65,14 +66,6 @@ namespace Momat.Editor
                             anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", curve);
                         }
                     }
-                    // 暂时忽略root curve
-                    /*if (jointIndex == 0 && animClip.hasRootCurves)
-                    {
-                        if (curveBinding.propertyName.Contains("Root"))
-                        {
-                            anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "RootT", "RootQ", curve);
-                        }
-                    }*/
                     else
                     {
                         anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "m_LocalPosition", "m_LocalRotation", curve);
@@ -81,7 +74,8 @@ namespace Momat.Editor
             }
 
             anim.animationCurveInfos.Sort((x, y) => x.CompareTo(y));
-
+            anim.CounteractDupRootTransformInBody(animatedRig);
+            
             return anim;
         }
 
@@ -113,6 +107,82 @@ namespace Momat.Editor
             }
 
             return targetAnim;
+        }
+
+        private void CounteractDupRootTransformInBody(AnimationRig rig)
+        {
+            string assetPath = AssetDatabase.GetAssetPath(rig.Avatar);
+            GameObject avatarRootObject = AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject)) as GameObject;
+            var bodyToWorldTransform = avatarRootObject.transform;
+            var bodyToWorldMat = bodyToWorldTransform.localToWorldMatrix;
+
+            var bodyCurveIndex = animationCurveInfos.FindIndex(c => c.jointIndex == rig.BodyJointIndex);
+            
+            var positionCurves = 
+                Enumerable.Range(1, 3).Select(i => new AnimationCurve()).ToArray();
+            var rotationCurves = 
+                Enumerable.Range(1, 4).Select(i => new AnimationCurve()).ToArray();
+
+            var bodyWorldHeight = (bodyToWorldMat * rig.Joints[rig.BodyJointIndex].localTransform.GetMatrix()).GetPosition().y;
+            
+            for (int i = 0; i < AnimationCurves[bodyCurveIndex].Keys.Length; i++)
+            {
+                var time = AnimationCurves[bodyCurveIndex].Keys[i].time;
+                var animRootTransform = jointTransformSamplers[0].Evaluate(time);
+                var animRootMat = animRootTransform.GetMatrix();
+
+                var bodyLocalTransform = jointTransformSamplers[rig.BodyJointIndex].Evaluate(time);
+                
+                var bodyWorldT = bodyToWorldMat * bodyLocalTransform.GetMatrix();
+                var bodyWorldRelativeT = animRootMat.inverse * bodyWorldT;
+
+                bodyLocalTransform = new AffineTransform(bodyWorldRelativeT);
+                var translate = bodyLocalTransform.t;
+                bodyLocalTransform.t = new float3(translate.x,
+                    translate.y - bodyWorldHeight, 
+                    translate.z);
+
+                for (int j = 0; j < 3; j++)
+                {
+                    positionCurves[j].AddKey(time, bodyLocalTransform.t[j]);
+                }
+                for (int j = 0; j < 4; j++)
+                {
+                    rotationCurves[j].AddKey(time, bodyLocalTransform.q.value[j]);
+                }
+            }
+            
+            var curveInfos = new CurveInfo[7];
+            for (int i = 0; i < 3; i++)
+            {
+                curveInfos[i] = new CurveInfo
+                {
+                    curve = new Curve(positionCurves[i], Allocator.Persistent),
+                    jointIndex = rig.BodyJointIndex,
+                    curveIndex = i
+                };
+                var sampler = jointTransformSamplers[rig.BodyJointIndex];
+                sampler.SetCurve(i, curveInfos[i].curve);
+                jointTransformSamplers[rig.BodyJointIndex] = sampler;
+            }
+            for (int i = 3; i < 7; i++)
+            {
+                curveInfos[i] = new CurveInfo
+                {
+                    curve = new Curve(rotationCurves[i - 3], Allocator.Persistent),
+                    jointIndex = rig.BodyJointIndex,
+                    curveIndex = i
+                };
+                var sampler = jointTransformSamplers[rig.BodyJointIndex];
+                sampler.SetCurve(i, curveInfos[i].curve);
+                jointTransformSamplers[rig.BodyJointIndex] = sampler;
+            }
+
+            var toRemoveCurve = animationCurveInfos.GetRange(bodyCurveIndex, 7);
+            animationCurveInfos.RemoveRange(bodyCurveIndex, 7);
+            toRemoveCurve.ForEach(c => c.curve.Dispose());
+            
+            animationCurveInfos.InsertRange(bodyCurveIndex, curveInfos);
         }
         
         public AffineTransform SampleLocalJoint(int jointIndex, float sampleTimeInSeconds)

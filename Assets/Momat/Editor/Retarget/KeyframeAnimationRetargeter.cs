@@ -17,12 +17,14 @@ namespace Momat.Editor
     {
         private static AvatarRetargetMap avatarRetargetMap;
         
+        private static AnimationRig targetRig;
+
         private static int[] sourceParentIndices;
         private static AffineTransform[] sourceRigBindTransforms;
         private static AffineTransform[] sourceRigInverseBindTransforms;
         private static AffineTransform[] targetRigBindTransforms;
         private static AffineTransform[] targetRigParentInverseBindTransforms;
-
+        
         public static KeyframeAnimation CreateRetargetAnimation(
             AnimationRig sourceRig,AnimationRig targetRig, 
             KeyframeAnimation sourceAnim, AvatarRetargetMap avatarRetargetMap)
@@ -166,7 +168,7 @@ namespace Momat.Editor
         {
             int sourceParentIndex = sourceParentIndices[sourceJointIndex];
             
-            if (sourceParentIndex >= 0)
+            if (sourceParentIndex > 0)
             {
                 AffineTransform sJointWorldTransformInAnim = 
                     sourceRigBindTransforms[sourceParentIndex] * sourceTransform;
@@ -183,6 +185,11 @@ namespace Momat.Editor
                 return tJointLocalTransformInAnim;
             }
 
+            if (sourceParentIndex == 0)
+            {
+                return sourceTransform * targetRig.Joints[targetJointIndex].localTransform;
+            }
+
             return sourceTransform; // root transform can apply to target directly
         }
 
@@ -190,6 +197,8 @@ namespace Momat.Editor
             (AnimationRig sourceRig, AnimationRig targetRig, AvatarRetargetMap avatarRetargetMap)
         {
             KeyframeAnimationRetargeter.avatarRetargetMap = avatarRetargetMap;
+
+            KeyframeAnimationRetargeter.targetRig = targetRig;
 
             sourceParentIndices = sourceRig.GenerateParentIndices();
             

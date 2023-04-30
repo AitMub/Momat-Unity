@@ -8,6 +8,7 @@ using Unity.Mathematics;
 
 using UnityEditor;
 using Unity.Collections;
+using Unity.VisualScripting;
 
 namespace Momat.Editor
 {
@@ -217,7 +218,7 @@ namespace Momat.Editor
         AnimationRig(Avatar avatar)
         {
             this.avatar = avatar;
-
+            
             string assetPath = AssetDatabase.GetAssetPath(avatar);
             GameObject avatarRootObject = AssetDatabase.LoadAssetAtPath(assetPath, typeof(GameObject)) as GameObject;
             if (avatarRootObject == null)
@@ -248,6 +249,14 @@ namespace Momat.Editor
             }
             else
             {
+                for (int i = 0; i < joints.Length; i++)
+                {
+                    if (joints[i].name.Contains("Hips"))
+                    {
+                        return i;
+                    }
+                }
+
                 string assetPath = AssetDatabase.GetAssetPath(avatar);
                 string rootJointName = Utility.GetImporterRootJointName(assetPath);
                 if (rootJointName == null)
