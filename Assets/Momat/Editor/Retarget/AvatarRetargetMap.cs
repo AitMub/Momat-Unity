@@ -246,7 +246,12 @@ namespace Momat.Editor
                 GUI.enabled = true;
             }
             
-
+            if (avatarChanged)
+            {
+                avatarRetargetMap.OnAvatarChanged();
+            }
+            
+            
             if (avatarRetargetMap.sourceAvatar != null && avatarRetargetMap.targetAvatar != null)
             {
                 GUILayout.Space(20);
@@ -268,17 +273,30 @@ namespace Momat.Editor
                     int selectedIndex = EditorGUILayout.Popup(avatarRetargetMap.sourceToTargetIndices[i], 
                         avatarRetargetMap.targetJoints);
                     avatarRetargetMap.sourceToTargetIndices[i] = selectedIndex;
+                    
+                    if (GUILayout.Button("-", GUILayout.Height(18), GUILayout.Width(20)))
+                    {
+                        avatarRetargetMap.sourceToTargetIndices[i] = 0;
+                    }
                 
                     EditorGUILayout.EndHorizontal();
                 }
             }
-
+            
+            
             serializedObject.ApplyModifiedProperties();
             
-            if (avatarChanged)
+            if (GUILayout.Button("Save Asset"))
             {
-                avatarRetargetMap.OnAvatarChanged();
+                SaveAsset();
             }
+        }
+
+        private void SaveAsset()
+        {
+            EditorUtility.SetDirty(serializedObject.targetObject);
+            AssetDatabase.SaveAssetIfDirty(serializedObject.targetObject);
+            AssetDatabase.Refresh();
         }
     }
     

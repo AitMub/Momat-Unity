@@ -17,19 +17,12 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace Momat.Editor
 {
-    enum AnimationSetEnum : byte
-    {
-        EMotion = 0,
-        EIdle = 1
-    };
-    
     [CreateAssetMenu(menuName = "Momat/Animation PreProcess Asset")]
     internal class AnimationPreProcessAsset : ScriptableObject
     {
         public Avatar avatar;
 
-        public List<ProcessingAnimationClip> motionAnimSet;
-        public List<ProcessingAnimationClip> idleAnimSet;
+        public List<ProcessingAnimationClip> animSet;
 
         public AnimationFeatureDefinition featureDefinition;
         
@@ -45,12 +38,12 @@ namespace Momat.Editor
             var animatedJointIndices = new HashSet<int>();
             
             int totalFrame = 0;
-            for (int i = 0; i < motionAnimSet.Count; i++)
+            for (int i = 0; i < animSet.Count; i++)
             {
                 var jointTransforms = GenerateClipRuntimeJointTransform
-                    (motionAnimSet[i], targetRig, ref animatedJointIndices);
+                    (animSet[i], targetRig, ref animatedJointIndices);
                 var featureVectors = GenerateClipFeatureVector
-                    (motionAnimSet[i], jointTransforms, targetRig);
+                    (animSet[i], jointTransforms, targetRig);
 
                 var frameNum = jointTransforms.Length / targetRig.NumJoints;
                 runtimeAsset.animationFrameOffset.Add(totalFrame);
@@ -197,38 +190,19 @@ namespace Momat.Editor
             return cutTransform;
         }
  
-        public void AddClipsToAnimSet(List<AnimationClip> clips, AnimationSetEnum animationSetEnum)
+        public void AddClipsToAnimSet(List<AnimationClip> clips)
         {
-            if (animationSetEnum == AnimationSetEnum.EMotion)
+            foreach (var c in clips)
             {
-                foreach (var c in clips)
-                {
-                    var processingAnimClip = new ProcessingAnimationClip();
-                    processingAnimClip.sourceAnimClip = c;
-                    motionAnimSet.Add(processingAnimClip);
-                }   
-            }
-            else if (animationSetEnum == AnimationSetEnum.EIdle)
-            {
-                foreach (var c in clips)
-                {
-                    var processingAnimClip = new ProcessingAnimationClip();
-                    processingAnimClip.sourceAnimClip = c;
-                    idleAnimSet.Add(processingAnimClip);
-                }   
-            }
+                var processingAnimClip = new ProcessingAnimationClip();
+                processingAnimClip.sourceAnimClip = c;
+                animSet.Add(processingAnimClip);
+            }   
         }
 
-        public void RemoveClipInAnimSet(ProcessingAnimationClip clip, AnimationSetEnum animationSetEnum)
+        public void RemoveClipInAnimSet(ProcessingAnimationClip clip)
         {
-            if (animationSetEnum == AnimationSetEnum.EMotion)
-            {
-                motionAnimSet.Remove(clip);
-            }
-            else if (animationSetEnum == AnimationSetEnum.EIdle)
-            {
-                idleAnimSet.Remove(clip);
-            }
+            animSet.Remove(clip);
         }
     }
 }

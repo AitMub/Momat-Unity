@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: PreProcessAssetMarker
   m_EditorClassIdentifier: 
   avatar: {fileID: 9000000, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
-  motionAnimSet:
+  animSet:
+  - sourceAnimClip: {fileID: -203655887218126122, guid: 738422c0067b24c40afa24fed0d3bcc3, type: 3}
+    animationType: 2
+    avatarRetargetMap: {fileID: 11400000, guid: 8950c5dcbc7865b4abf0402709214e32, type: 2}
   - sourceAnimClip: {fileID: 7400002, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 1
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
-  - sourceAnimClip: {fileID: 7400028, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
-    avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
-  - sourceAnimClip: {fileID: 7400008, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+  - sourceAnimClip: {fileID: 7400018, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
   - sourceAnimClip: {fileID: 7400024, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
   - sourceAnimClip: {fileID: 7400020, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
-  - sourceAnimClip: {fileID: 7400016, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
-    avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
-  idleAnimSet:
-  - sourceAnimClip: {fileID: 7400000, guid: f5589feb81050bc4ca0def6972ffb4a7, type: 2}
-    avatarRetargetMap: {fileID: 0}
   featureDefinition: {fileID: 11400000, guid: 71f45b8468bbd884088b46368707b0c8, type: 2}
   sampleRate: 30

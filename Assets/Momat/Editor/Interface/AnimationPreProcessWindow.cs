@@ -13,8 +13,13 @@ namespace Momat.Editor
     {
         // visual elements
         private AnimationClipListView animationClipListView;
-        private DropdownField animationSetSelectDropdown;
         private Label animationClipNameLabel;
+        private VisualElement animationPropertyEditView;
+        
+        private DropdownField animationTypeDropdown;
+        private string[] typeStrings;
+        
+        private ObjectField retargetMapAssetField;
 
         private AnimationPreProcessAsset animationPreProcessAsset;
         private ProcessingAnimationClip currAnimationClip;
@@ -36,23 +41,33 @@ namespace Momat.Editor
             animationPreProcessAssetField.objectType = typeof(AnimationPreProcessAsset);
             animationPreProcessAssetField.RegisterValueChangedCallback(OnAnimationPreProcessAssetSelectionChanged);
 
+            var saveButton = rootVisualElement.Q<Button>("SaveButton");
+            saveButton.clickable.clicked += SaveAsset;
+            
             var buildButton = rootVisualElement.Q<Button>("BuildButton");
             buildButton.clickable.clicked += OnBuildButtonClicked;
 
-            animationSetSelectDropdown = rootVisualElement.Q<DropdownField>("AnimtionSetSelectDropdown");
-            animationSetSelectDropdown.RegisterValueChangedCallback(OnAnimationSetDropdownChanged);
-            
             animationClipListView = rootVisualElement.Q<AnimationClipListView>("AnimationClipListView");
             animationClipListView.mainWindow = this;
             
             animationClipNameLabel = rootVisualElement.Q<Label>("AnimationClipName");
+
+            animationPropertyEditView = rootVisualElement.Q<VisualElement>("AnimationPropertyEditView");
+            animationPropertyEditView.visible = false;
+
+            animationTypeDropdown = rootVisualElement.Q<DropdownField>("AnimationTypeDropdown");
+            animationTypeDropdown.RegisterValueChangedCallback(OnAnimationTypeChanged);
+            typeStrings = animationTypeDropdown.choices.ToArray();
+            
+            retargetMapAssetField = rootVisualElement.Q<ObjectField>("RetargetMap");
+            retargetMapAssetField.objectType = typeof(AvatarRetargetMap);
+            retargetMapAssetField.RegisterValueChangedCallback(OnRetargetMapChanged);
         }
         
         // callback
         void OnAnimationPreProcessAssetSelectionChanged(ChangeEvent<Object> e)
         {
             animationPreProcessAsset = e.newValue as AnimationPreProcessAsset;
-            animationSetSelectDropdown.index = 0;
             animationClipNameLabel.text = "";
 
             if (animationPreProcessAsset == null)
@@ -61,26 +76,20 @@ namespace Momat.Editor
                 return;
             }
             
-            animationClipListView.UpdateSource(animationPreProcessAsset.motionAnimSet);
+            animationClipListView.UpdateSource(animationPreProcessAsset.animSet);
         }
 
-        void OnAnimationSetDropdownChanged(ChangeEvent<string> evt)
+        void OnAnimationTypeChanged(ChangeEvent<string> e)
         {
-            if (animationPreProcessAsset == null)
-            {
-                return;
-            }
-            
-            if (animationSetSelectDropdown.index == 0)
-            {
-                animationClipListView.UpdateSource(animationPreProcessAsset.motionAnimSet);
-            }
-            else if (animationSetSelectDropdown.index == 1)
-            {
-                animationClipListView.UpdateSource(animationPreProcessAsset.idleAnimSet);
-            }
+            currAnimationClip.animationType = (AnimationTypeEnum)
+                Array.IndexOf(typeStrings, e.newValue);
         }
 
+        void OnRetargetMapChanged(ChangeEvent<Object> e)
+        {
+            currAnimationClip.avatarRetargetMap = e.newValue as AvatarRetargetMap;
+        }
+        
         internal void OnBuildButtonClicked()
         {
             animationPreProcessAsset.BuildRuntimeData();
@@ -98,6 +107,29 @@ namespace Momat.Editor
             {
                 animationClipNameLabel.text = "";
             }
+            
+            UpdateAnimationPropertyEditView();
+        }
+
+        private void UpdateAnimationPropertyEditView()
+        {
+            if (currAnimationClip == null)
+            {
+                animationPropertyEditView.visible = false;
+            }
+            else
+            {
+                animationPropertyEditView.visible = true;
+                animationTypeDropdown.value = typeStrings[(int)currAnimationClip.animationType];
+                retargetMapAssetField.value = currAnimationClip.avatarRetargetMap;
+            }
+        }
+
+        private void SaveAsset()
+        {
+            var animationPreProcessAssetField = rootVisualElement.Q<ObjectField>("AnimationPreProcessAsset");
+            EditorUtility.SetDirty(animationPreProcessAssetField.value);
+            AssetDatabase.SaveAssetIfDirty(animationPreProcessAssetField.value);
         }
 
         internal bool IsEditingAsset()
@@ -107,14 +139,14 @@ namespace Momat.Editor
         
         internal void AddClipsToAsset(List<AnimationClip> clips)
         {
-            animationPreProcessAsset.AddClipsToAnimSet(clips, (AnimationSetEnum)animationSetSelectDropdown.index);
+            animationPreProcessAsset.AddClipsToAnimSet(clips);
         }
 
         internal void DeleteClipInAsset(ProcessingAnimationClip clip)
         {
-            animationPreProcessAsset.RemoveClipInAnimSet(clip, (AnimationSetEnum)animationSetSelectDropdown.index);
+            animationPreProcessAsset.RemoveClipInAnimSet(clip);
         }
 
-        private const string k_UxmlPath = "Assets/Momat/Editor/AnimationPreProcessWindow.uxml";
+        private const string k_UxmlPath = "Assets/Momat/Editor/Interface/AnimationPreProcessWindow.uxml";
     }
 }

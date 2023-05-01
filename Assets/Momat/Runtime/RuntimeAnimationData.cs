@@ -25,7 +25,7 @@ namespace Momat.Runtime
     [PreferBinarySerialization]
     public class RuntimeAnimationData : ScriptableObject
     {
-        public float frameRate = 30;
+        public float frameRate;
 
         [HideInInspector] public AnimationRig rig;
 
@@ -34,11 +34,12 @@ namespace Momat.Runtime
         
         public List<int> animationFrameNum;
         public List<int> animationFrameOffset;
+        public List<int> animationTypeOffset;
         public int AnimationCnt => animationFrameNum.Count;
 
         public int[] animatedJointIndices;
         public int[] jointIndexInTransforms; 
-            
+        
         public int TransformGroupLen => animatedJointIndices.Length;
         [HideInInspector]  public List<AffineTransform> transforms;
 
