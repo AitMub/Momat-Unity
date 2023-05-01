@@ -19,6 +19,9 @@ namespace Momat.Editor
             public int jointIndex;
             public int curveIndex;
 
+            public const int PositionCurveCnt = 3;
+            public const int RotationCurveCnt = 4;
+
             public int CompareTo(CurveInfo otherCurve)
             {
                 int result = jointIndex.CompareTo(otherCurve.jointIndex);
@@ -61,7 +64,14 @@ namespace Momat.Editor
                     
                     if (jointIndex == 0 && animClip.hasMotionCurves)
                     {
-                        if (curveBinding.propertyName.Contains("Motion"))
+                        if (curveBinding.propertyName == "MotionT.y")
+                        {
+                            var zeroHeightCurve = new AnimationCurve();
+                            zeroHeightCurve.AddKey(0, 0);
+                            zeroHeightCurve.AddKey(anim.duration, 0);
+                            anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", zeroHeightCurve);
+                        }
+                        else if (curveBinding.propertyName.Contains("Motion"))
                         {
                             anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", curve);
                         }
@@ -118,12 +128,12 @@ namespace Momat.Editor
 
             var bodyCurveIndex = animationCurveInfos.FindIndex(c => c.jointIndex == rig.BodyJointIndex);
             
-            var positionCurves = 
-                Enumerable.Range(1, 3).Select(i => new AnimationCurve()).ToArray();
-            var rotationCurves = 
-                Enumerable.Range(1, 4).Select(i => new AnimationCurve()).ToArray();
+            var curves = 
+                Enumerable.Range(1, CurveInfo.PositionCurveCnt + CurveInfo.RotationCurveCnt).Select(i => new AnimationCurve()).ToArray();
 
             var bodyWorldHeight = (bodyToWorldMat * rig.Joints[rig.BodyJointIndex].localTransform.GetMatrix()).GetPosition().y;
+
+            var RootCurveCnt = CurveInfo.RotationCurveCnt + CurveInfo.PositionCurveCnt;
             
             for (int i = 0; i < AnimationCurves[bodyCurveIndex].Keys.Length; i++)
             {
@@ -142,34 +152,22 @@ namespace Momat.Editor
                     translate.y - bodyWorldHeight, 
                     translate.z);
 
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < CurveInfo.PositionCurveCnt; j++)
                 {
-                    positionCurves[j].AddKey(time, bodyLocalTransform.t[j]);
+                    curves[j].AddKey(time, bodyLocalTransform.t[j]);
                 }
-                for (int j = 0; j < 4; j++)
+                for (int j = CurveInfo.PositionCurveCnt; j < RootCurveCnt; j++)
                 {
-                    rotationCurves[j].AddKey(time, bodyLocalTransform.q.value[j]);
+                    curves[j].AddKey(time, bodyLocalTransform.q.value[j - CurveInfo.PositionCurveCnt]);
                 }
             }
             
-            var curveInfos = new CurveInfo[7];
-            for (int i = 0; i < 3; i++)
+            var curveInfos = new CurveInfo[RootCurveCnt];
+            for (int i = 0; i < RootCurveCnt; i++)
             {
                 curveInfos[i] = new CurveInfo
                 {
-                    curve = new Curve(positionCurves[i], Allocator.Persistent),
-                    jointIndex = rig.BodyJointIndex,
-                    curveIndex = i
-                };
-                var sampler = jointTransformSamplers[rig.BodyJointIndex];
-                sampler.SetCurve(i, curveInfos[i].curve);
-                jointTransformSamplers[rig.BodyJointIndex] = sampler;
-            }
-            for (int i = 3; i < 7; i++)
-            {
-                curveInfos[i] = new CurveInfo
-                {
-                    curve = new Curve(rotationCurves[i - 3], Allocator.Persistent),
+                    curve = new Curve(curves[i], Allocator.Persistent),
                     jointIndex = rig.BodyJointIndex,
                     curveIndex = i
                 };
@@ -178,8 +176,8 @@ namespace Momat.Editor
                 jointTransformSamplers[rig.BodyJointIndex] = sampler;
             }
 
-            var toRemoveCurve = animationCurveInfos.GetRange(bodyCurveIndex, 7);
-            animationCurveInfos.RemoveRange(bodyCurveIndex, 7);
+            var toRemoveCurve = animationCurveInfos.GetRange(bodyCurveIndex, RootCurveCnt);
+            animationCurveInfos.RemoveRange(bodyCurveIndex, RootCurveCnt);
             toRemoveCurve.ForEach(c => c.curve.Dispose());
             
             animationCurveInfos.InsertRange(bodyCurveIndex, curveInfos);
@@ -261,41 +259,6 @@ namespace Momat.Editor
             }
 
             return rangeEnd;
-        }
-
-        public (int,int) GetPositionCurveRangeIn(int rangeBegin, int rangeEnd)
-        {
-            int rangeEndForPosition = -1;
-            for (int i = rangeBegin; i < rangeEnd; i++)
-            {
-                if (animationCurveInfos[i].curveIndex >= 0 &&
-                    animationCurveInfos[i].curveIndex <= 2)
-                {
-                    rangeEndForPosition = i;
-                }
-            }
-
-            if (rangeEndForPosition != -1)
-            {
-                return (rangeBegin, rangeEndForPosition + 1);
-            }
-            else
-            {                
-                return (-1, -1);
-            }
-        }
-        
-        public (int,int) GetRotationCurveRangeIn(int rangeBegin, int rangeEnd)
-        {
-            var range = GetPositionCurveRangeIn(rangeBegin, rangeEnd);
-            if (range.Item2 != -1)
-            {
-                return (range.Item2, rangeEnd);
-            }
-            else
-            {
-                return (-1, -1);
-            }
         }
 
         private void MapEditorCurve

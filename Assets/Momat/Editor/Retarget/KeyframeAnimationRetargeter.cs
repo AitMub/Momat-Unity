@@ -37,22 +37,31 @@ namespace Momat.Editor
             var sourceCurveInfos = sourceAnim.AnimationCurveInfos;
             for (int i = 0; i < sourceCurveInfos.Count;)
             {
+                var jointIndex = sourceCurveInfos[i].jointIndex;
                 int sameJointCurveEnd = sourceAnim.FindCurveRangeEndForJoint(i);
                 
-                var positionCurveRange = sourceAnim.GetPositionCurveRangeIn(i, sameJointCurveEnd);
-                var retargetedPosCurve = RetargetJointPositionCurve(sourceAnim, positionCurveRange.Item1);
-                if (retargetedPosCurve != null)
+                var positionCurveBegin = sourceAnim.AnimationCurveInfos.FindIndex
+                    (i, sameJointCurveEnd - i,ci => ci.jointIndex == jointIndex && ci.curveIndex == 0);
+                if (positionCurveBegin >= 0)
                 {
-                    targetAnim.AnimationCurveInfos.AddRange(retargetedPosCurve);
-                }
-                
-                var rotationCurveRange = sourceAnim.GetRotationCurveRangeIn(i, sameJointCurveEnd);
-                var retargetedRotCurve = RetargetJointRotationCurve(sourceAnim, rotationCurveRange.Item1);
-                if (retargetedRotCurve != null)
-                {
-                    targetAnim.AnimationCurveInfos.AddRange(retargetedRotCurve);
+                   var retargetedPosCurve = RetargetJointPositionCurve(sourceAnim, positionCurveBegin);
+                   if (retargetedPosCurve != null)
+                   {
+                       targetAnim.AnimationCurveInfos.AddRange(retargetedPosCurve);
+                   } 
                 }
 
+                var rotationCurveBegin = sourceAnim.AnimationCurveInfos.FindIndex
+                    (i, sameJointCurveEnd - i, ci => ci.jointIndex == jointIndex && ci.curveIndex == CurveInfo.PositionCurveCnt);
+                if (rotationCurveBegin >= 0)
+                {
+                    var retargetedRotCurve = RetargetJointRotationCurve(sourceAnim, rotationCurveBegin);
+                    if (retargetedRotCurve != null)
+                    {
+                        targetAnim.AnimationCurveInfos.AddRange(retargetedRotCurve);
+                    }
+                }
+                
                 i = sameJointCurveEnd;
             }
             
@@ -76,7 +85,7 @@ namespace Momat.Editor
             
             // init array and elements in it
             var targetPositionCurves = 
-                Enumerable.Range(1, 3).Select(i => new AnimationCurve()).ToArray();
+                Enumerable.Range(1, CurveInfo.PositionCurveCnt).Select(i => new AnimationCurve()).ToArray();
 
             // Ensure that all three retargeted XYZ curves have the same number of keyframes
             // in order to calculate retargeted transform all at once
@@ -90,15 +99,15 @@ namespace Momat.Editor
                 var targetTransform = ConvertToTargetTransform(sourceTransform, sourceJointIndex, targetJointIndex);
 
                 var pos = targetTransform.t;
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < CurveInfo.PositionCurveCnt; j++)
                 {
                     targetPositionCurves[j].AddKey(time, pos[j]);
                 }
             }
 
-            var targetCurveInfos = new CurveInfo[3];
+            var targetCurveInfos = new CurveInfo[CurveInfo.PositionCurveCnt];
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < CurveInfo.PositionCurveCnt; i++)
             {
                 targetCurveInfos[i] = new CurveInfo
                 {
@@ -128,7 +137,7 @@ namespace Momat.Editor
             }
             
             var targetRotationCurves =                 
-                Enumerable.Range(1, 4).Select(i => new AnimationCurve()).ToArray();
+                Enumerable.Range(1, CurveInfo.RotationCurveCnt).Select(i => new AnimationCurve()).ToArray();
 
             // Ensure that all three retargeted XYZW curves have the same number of keyframes
             // in order to calculate retargeted transform all at once
@@ -142,21 +151,21 @@ namespace Momat.Editor
                 var targetTransform = ConvertToTargetTransform(sourceTransform, sourceJointIndex, targetJointIndex);
 
                 var rot = targetTransform.q;
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < CurveInfo.RotationCurveCnt; j++)
                 {
                     targetRotationCurves[j].AddKey(time, rot.value[j]);
                 }
             }
 
-            var targetCurveInfos = new CurveInfo[4];
+            var targetCurveInfos = new CurveInfo[CurveInfo.RotationCurveCnt];
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < CurveInfo.RotationCurveCnt; i++)
             {
                 targetCurveInfos[i] = new CurveInfo
                 {
                     curve = new Curve(targetRotationCurves[i], Allocator.Persistent),
                     jointIndex = targetJointIndex,
-                    curveIndex = i + 3
+                    curveIndex = i + CurveInfo.PositionCurveCnt
                 };
             }
 
