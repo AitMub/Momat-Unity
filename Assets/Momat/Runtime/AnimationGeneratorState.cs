@@ -14,6 +14,12 @@ namespace Momat.Runtime
             eRest, ePlaySingle, eBlendAnim,
         }
         
+        private struct StateContext
+        {
+            public PoseIdentifier prevPose;
+            public float prevPosePlayedTime;
+        }
+        
         private interface IAnimationGeneratorState
         {
             public void Enter(AnimationGenerator animationGenerator, StateContext context);
@@ -22,12 +28,7 @@ namespace Momat.Runtime
             public AffineTransform GetCurrPoseJointTransform(int jointIndex);
         }
 
-        private struct StateContext
-        {
-            public PoseIdentifier prevPose;
-            public float prevPosePlayedTime;
-        }
-    
+        
         private class RestState : IAnimationGeneratorState
         {
             private AnimationGenerator animationGenerator;

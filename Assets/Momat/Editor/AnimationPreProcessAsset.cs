@@ -13,7 +13,6 @@ using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Serialization;
 using AffineTransform = Unity.Mathematics.AffineTransform;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Momat.Editor
 {
@@ -32,12 +31,16 @@ namespace Momat.Editor
         {
             var targetRig = AnimationRig.Create(avatar);
             
-            var runtimeAsset = CreateInstance<RuntimeAnimationData>();
-            runtimeAsset.frameRate = sampleRate;
-
+            int totalFrame = 0;
             var animatedJointIndices = new HashSet<int>();
             
-            int totalFrame = 0;
+            animSet.Sort((clip1, clip2) => (int)clip1.animationType - (int)clip2.animationType);
+
+            var animationFrameOffset = new List<int>();
+            var animationFrameNum = new List<int>();
+            
+            var runtimeData = CreateInstance<RuntimeAnimationData>();
+
             for (int i = 0; i < animSet.Count; i++)
             {
                 var jointTransforms = GenerateClipRuntimeJointTransform
@@ -46,38 +49,34 @@ namespace Momat.Editor
                     (animSet[i], jointTransforms, targetRig);
 
                 var frameNum = jointTransforms.Length / targetRig.NumJoints;
-                runtimeAsset.animationFrameOffset.Add(totalFrame);
-                runtimeAsset.animationFrameNum.Add(frameNum);
+                animationFrameOffset.Add(totalFrame);
+                animationFrameNum.Add(frameNum);
                 totalFrame += frameNum;
                 
-                runtimeAsset.transforms.AddRange(jointTransforms);
-                runtimeAsset.trajectoryPoints.AddRange(featureVectors.trajectories);
-                runtimeAsset.comparedJointRootSpaceT.AddRange(featureVectors.jointRootSpaceT);
+                runtimeData.transforms.AddRange(jointTransforms);
+                runtimeData.trajectoryPoints.AddRange(featureVectors.trajectories);
+                runtimeData.comparedJointRootSpaceT.AddRange(featureVectors.jointRootSpaceT);
 
                 jointTransforms.Dispose();
                 featureVectors.Dispose();
             }
             
-            runtimeAsset.transforms = RemoveUnanimatedTransform
-                (runtimeAsset.transforms, animatedJointIndices, targetRig);
+            runtimeData.transforms = RemoveUnanimatedTransform
+                (runtimeData.transforms, animatedJointIndices, targetRig);
+            runtimeData.animationFrameOffset = animationFrameOffset.ToArray();
+            runtimeData.animationFrameNum = animationFrameNum.ToArray();
+            runtimeData.animationTypeOffset = GenerateAnimationTypeOffset();
 
-            runtimeAsset.animatedJointIndices = animatedJointIndices.ToArray();
-            runtimeAsset.jointIndexInTransforms = Enumerable.Repeat(-1, targetRig.NumJoints).ToArray();
-            for (int i = 0; i < runtimeAsset.animatedJointIndices.Length; i++)
-            {
-                runtimeAsset.jointIndexInTransforms[runtimeAsset.animatedJointIndices[i]] = i;
-            }
+            runtimeData.animatedJointIndices = animatedJointIndices.ToArray();
+            runtimeData.jointIndexOfTransformsGroup =
+                GenerateJointIndexOfTransformsGroup(runtimeData.animatedJointIndices, targetRig);
             
-            runtimeAsset.rig = targetRig.GenerateRuntimeRig();
-
-            runtimeAsset.trajectoryFeatureDefinition = featureDefinition.trajectoryFeatureDefinition;
-            runtimeAsset.poseFeatureDefinition = featureDefinition.poseFeatureDefinition;
+            runtimeData.frameRate = sampleRate;
+            runtimeData.rig = targetRig.GenerateRuntimeRig();
+            runtimeData.trajectoryFeatureDefinition = featureDefinition.trajectoryFeatureDefinition;
+            runtimeData.poseFeatureDefinition = featureDefinition.poseFeatureDefinition;
             
-            string assetName = name.Substring(name.IndexOf('t') + 1);
-            AssetDatabase.DeleteAsset($"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
-            AssetDatabase.CreateAsset(runtimeAsset,
-                $"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
-            AssetDatabase.SaveAssets();
+            SaveRuntimeDataToAsset(runtimeData);
         }
 
         private NativeArray<AffineTransform> GenerateClipRuntimeJointTransform
@@ -188,6 +187,50 @@ namespace Momat.Editor
             }
 
             return cutTransform;
+        }
+
+        private int[] GenerateAnimationTypeOffset()
+        {
+            var currType = animSet[0].animationType;
+
+            var animationTypeOffset = new List<int>(3);
+            animationTypeOffset.Add(0);
+
+            for (int i = 0; i < animSet.Count; i++)
+            {
+                if (animSet[i].animationType != currType)
+                {
+                    currType = animSet[i].animationType;
+                    animationTypeOffset.Add(i);
+                }
+            }
+            
+            for (int i = 2; i >= animationTypeOffset.Count; i--)
+            {
+                animationTypeOffset.Add(animationTypeOffset.Last());
+            }
+
+            return animationTypeOffset.ToArray();
+        }
+
+        private int[] GenerateJointIndexOfTransformsGroup(int[] animatedJointIndices, AnimationRig rig)
+        {
+            var jointIndexOfTransformsGroup = Enumerable.Repeat(-1, rig.NumJoints).ToArray();
+            for (int i = 0; i < animatedJointIndices.Length; i++)
+            {
+                jointIndexOfTransformsGroup[animatedJointIndices[i]] = i;
+            }
+
+            return jointIndexOfTransformsGroup;
+        }
+
+        private void SaveRuntimeDataToAsset(RuntimeAnimationData runtimeAnimationData)
+        {
+            string assetName = name.Substring(name.IndexOf('t') + 1);
+            AssetDatabase.DeleteAsset($"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
+            AssetDatabase.CreateAsset(runtimeAnimationData,
+                $"Assets/Momat/Assets/AnimationRuntimeAsset{assetName}.asset");
+            AssetDatabase.SaveAssets();
         }
  
         public void AddClipsToAnimSet(List<AnimationClip> clips)

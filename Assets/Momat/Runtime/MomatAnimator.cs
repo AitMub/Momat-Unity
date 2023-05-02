@@ -16,8 +16,7 @@ namespace Momat.Runtime
     {
         [SerializeField] private float updateInterval = 0.5f;
         [SerializeField] private float blendTime = 0.1f;
-        [Range(0,1)]
-        [SerializeField] private float weight;
+        [SerializeField] [Range(0,1)] private float weight;
         
         [SerializeField] private RuntimeAnimationData runtimeAnimationData;
         

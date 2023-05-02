@@ -32,13 +32,13 @@ namespace Momat.Runtime
         public TrajectoryFeatureDefinition trajectoryFeatureDefinition;
         public PoseFeatureDefinition poseFeatureDefinition;
         
-        public List<int> animationFrameNum;
-        public List<int> animationFrameOffset;
-        public List<int> animationTypeOffset;
-        public int AnimationCnt => animationFrameNum.Count;
+        public int[] animationFrameNum;
+        public int[] animationFrameOffset;
+        public int[] animationTypeOffset;
+        public int AnimationCnt => animationFrameNum.Length;
 
         public int[] animatedJointIndices;
-        public int[] jointIndexInTransforms; 
+        public int[] jointIndexOfTransformsGroup; 
         
         public int TransformGroupLen => animatedJointIndices.Length;
         [HideInInspector]  public List<AffineTransform> transforms;
@@ -51,9 +51,6 @@ namespace Momat.Runtime
         
         public RuntimeAnimationData()
         {
-            animationFrameNum = new List<int>();
-            animationFrameOffset = new List<int>();
-            
             transforms = new List<AffineTransform>();
             trajectoryPoints = new List<float3>();
             comparedJointRootSpaceT = new List<AffineTransform>();
@@ -61,14 +58,14 @@ namespace Momat.Runtime
 
         public AffineTransform GetPoseTransform(PoseIdentifier poseIdentifier, int jointIndex)
         {
-            if (jointIndexInTransforms[jointIndex] == -1)
+            if (jointIndexOfTransformsGroup[jointIndex] == -1)
             {
                 return rig.joints[jointIndex].localTransform;
             }
             
             int clampedFrameID = Math.Clamp(poseIdentifier.frameID, 0, animationFrameNum[poseIdentifier.animationID] - 1);
             int index = TransformGroupLen * animationFrameOffset[poseIdentifier.animationID] +
-                        TransformGroupLen * clampedFrameID + jointIndexInTransforms[jointIndex];
+                        TransformGroupLen * clampedFrameID + jointIndexOfTransformsGroup[jointIndex];
             return transforms[index];
         }
 

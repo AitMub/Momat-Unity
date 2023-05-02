@@ -100,6 +100,7 @@ namespace Momat.Editor
             {
                 selectedIndex = -1;
             }
+            Rebuild();
         }
 
         VisualElement MakeItem()

@@ -93,6 +93,7 @@ namespace Momat.Editor
         internal void OnBuildButtonClicked()
         {
             animationPreProcessAsset.BuildRuntimeData();
+            animationClipListView.UpdateSource(animationPreProcessAsset.animSet);
         }
             
         internal void UpdateCurrAnimationClip(ProcessingAnimationClip clip)
