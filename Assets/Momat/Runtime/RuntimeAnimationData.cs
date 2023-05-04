@@ -8,6 +8,13 @@ using UnityEngine.Serialization;
 
 namespace Momat.Runtime
 {
+    public enum EAnimationType : byte
+    {
+        EMotion = 0,
+        EIdle = 1,
+        EEvent = 2
+    };
+    
     [Serializable]
     public struct PoseIdentifier
     {
@@ -34,6 +41,7 @@ namespace Momat.Runtime
         
         public int[] animationFrameNum;
         public int[] animationFrameOffset;
+        public int[] animationTypeNum;
         public int[] animationTypeOffset;
         public int AnimationCnt => animationFrameNum.Length;
 
@@ -84,11 +92,15 @@ namespace Momat.Runtime
             return AffineTransform.Interpolate(transform1, transform2, weight);
         }
 
-        public IEnumerable<FeatureVector> GetPlayablePoseFeatureVectors(float playTime)
+        public IEnumerable<FeatureVector> GetPlayablePoseFeatureVectors(float playTime, EAnimationType animationType)
         {
-            for (int animationIndex = 0; animationIndex < AnimationCnt; animationIndex++)
+            for (int animationIndex = animationTypeOffset[(int)animationType]; 
+                 animationIndex < animationTypeOffset[(int)animationType + 1]; 
+                 animationIndex++)
             {
-                for (int frameIndex = 0; frameIndex + Mathf.FloorToInt(playTime * frameRate) < animationFrameNum[animationIndex]; frameIndex++)
+                for (int frameIndex = 0; 
+                     frameIndex + Mathf.FloorToInt(playTime * frameRate) < animationFrameNum[animationIndex]; 
+                     frameIndex++)
                 {
                     var featureVector = new FeatureVector();
                     featureVector.poseIdentifier = new PoseIdentifier

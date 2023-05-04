@@ -23,7 +23,16 @@ MonoBehaviour:
   - sourceAnimClip: {fileID: 7400018, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+  - sourceAnimClip: {fileID: 7400016, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+  - sourceAnimClip: {fileID: 7400008, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
   - sourceAnimClip: {fileID: 7400002, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 1
+    avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+  - sourceAnimClip: {fileID: 7400048, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 1
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
   - sourceAnimClip: {fileID: -203655887218126122, guid: 738422c0067b24c40afa24fed0d3bcc3, type: 3}

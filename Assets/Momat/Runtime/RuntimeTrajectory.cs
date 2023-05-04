@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using Vector3 = System.Numerics.Vector3;
 
 namespace Momat.Runtime
 {
@@ -25,8 +24,18 @@ namespace Momat.Runtime
 
         public TrajectoryPoint(float3 position, float timeStamp = 0f)
         {
-            this.transform = new AffineTransform(position, quaternion.identity);
+            transform = new AffineTransform(position, quaternion.identity);
             this.timeStamp = timeStamp;
+        }
+
+        public float DistanceTo(TrajectoryPoint otherPoint)
+        {
+            return Vector3.Distance(transform.t, otherPoint.transform.t);
+        }
+        
+        public float DistanceTo(Vector3 position)
+        {
+            return Vector3.Distance(transform.t, position);
         }
     }
     

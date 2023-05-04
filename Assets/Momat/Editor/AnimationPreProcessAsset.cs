@@ -66,6 +66,7 @@ namespace Momat.Editor
             runtimeData.animationFrameOffset = animationFrameOffset.ToArray();
             runtimeData.animationFrameNum = animationFrameNum.ToArray();
             runtimeData.animationTypeOffset = GenerateAnimationTypeOffset();
+            runtimeData.animationTypeNum = GenerateAnimationTypeNum(runtimeData.animationTypeOffset);
 
             runtimeData.animatedJointIndices = animatedJointIndices.ToArray();
             runtimeData.jointIndexOfTransformsGroup =
@@ -209,8 +210,22 @@ namespace Momat.Editor
             {
                 animationTypeOffset.Add(animationTypeOffset.Last());
             }
-
+            
+            animationTypeOffset.Add(animSet.Count);
+            
             return animationTypeOffset.ToArray();
+        }
+
+        private int[] GenerateAnimationTypeNum(int[] animationTypeOffset)
+        {
+            var animationTypeNum = new int[animationTypeOffset.Length - 1];
+
+            for (int i = 1; i < animationTypeOffset.Length; i++)
+            {
+                animationTypeNum[i - 1] = animationTypeOffset[i] - animationTypeOffset[i - 1];
+            }
+
+            return animationTypeNum;
         }
 
         private int[] GenerateJointIndexOfTransformsGroup(int[] animatedJointIndices, AnimationRig rig)

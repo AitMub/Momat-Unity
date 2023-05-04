@@ -14,6 +14,12 @@ namespace Momat.Runtime
 
         public int AnimationID => playBeginPose.animationID;
     }
+
+    public enum EBlendMode : byte
+    {
+        TwoAnimPlayingBlend = 0,
+        BlendWithLastFrame = 1,
+    }
     
     public partial class AnimationGenerator
     {
@@ -26,6 +32,7 @@ namespace Momat.Runtime
         private Clock clock;
 
         private PoseIdentifier? nextPlayPose;
+        private EBlendMode currBlendMode;
 
         private IAnimationGeneratorState currentState;
         
@@ -42,10 +49,8 @@ namespace Momat.Runtime
             frameRate = runtimeAnimationData.frameRate;
             
             clock = new Clock();
-
-            StateContext context = new StateContext();
-            currentState = new RestState();
-            currentState.Enter(this, context);
+            
+            SetState(new RestState());
         }
 
         public void Update(float deltaTime)
@@ -60,21 +65,16 @@ namespace Momat.Runtime
             this.playbackSpeed = playbackSpeed;
         }
 
-        public void BeginPlayPose(PoseIdentifier pose)
+        public void BeginPlayPose(PoseIdentifier pose, float blendTime = 0.1f, EBlendMode blendMode = EBlendMode.TwoAnimPlayingBlend)
         {
             nextPlayPose = pose;
+            this.blendTime = blendTime;
+            currBlendMode = blendMode;
         }
         
         public AffineTransform GetCurrPoseJointTransform(int jointIndex)
         {
             return currentState.GetCurrPoseJointTransform(jointIndex);
-        }
-
-        private void SetState(IAnimationGeneratorState newState)
-        {
-            var context = currentState.Exit();
-            newState.Enter(this, context);
-            currentState = newState;
         }
 
         private static (Vector3, Vector3) CalculateRootMotion

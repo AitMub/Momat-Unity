@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Momat.Runtime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -81,7 +82,7 @@ namespace Momat.Editor
 
         void OnAnimationTypeChanged(ChangeEvent<string> e)
         {
-            currAnimationClip.animationType = (AnimationTypeEnum)
+            currAnimationClip.animationType = (EAnimationType)
                 Array.IndexOf(typeStrings, e.newValue);
         }
 

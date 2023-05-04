@@ -9,6 +9,18 @@ namespace Momat.Runtime
 {
     public partial class AnimationGenerator
     {
+        private void SetState(IAnimationGeneratorState newState)
+        {
+            StateContext context = new StateContext();
+            if (currentState != null)
+            {
+                context = currentState.Exit();
+            }
+            
+            newState.Enter(this, context);
+            currentState = newState;
+        }
+        
         private enum EStateType
         {
             eRest, ePlaySingle, eBlendAnim,
@@ -173,6 +185,8 @@ namespace Momat.Runtime
                     (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), 0);
                 fadeInPrevRootTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
                     (fadeInSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeInSegment), 0);
+                
+                animationGenerator.nextPlayPose = null;
             }
     
             public void Update(float deltaTime)
@@ -183,6 +197,15 @@ namespace Momat.Runtime
                 {
                     animationGenerator.SetState(new PlaySingleAnimState());
                 }
+                else if (animationGenerator.nextPlayPose != null)
+                {
+                    var context = new StateContext
+                    {
+                        prevPose = fadeInSegment.playBeginPose,
+                        prevPosePlayedTime = fadeInSegment.timeFromPoseBegin
+                    };
+                    Enter(animationGenerator, context);
+                }
                 else
                 {
                     Blend();
@@ -191,7 +214,6 @@ namespace Momat.Runtime
     
             public StateContext Exit()
             {
-                animationGenerator.nextPlayPose = null;
                 return new StateContext 
                 { prevPose = fadeInSegment.playBeginPose,
                     prevPosePlayedTime = fadeInSegment.timeFromPoseBegin };
@@ -213,7 +235,10 @@ namespace Momat.Runtime
 
             private void Blend()
             {
-                fadeOutSegment.timeFromPoseBegin += clock.DeltaTime;
+                if (animationGenerator.currBlendMode == EBlendMode.TwoAnimPlayingBlend)
+                {
+                    fadeOutSegment.timeFromPoseBegin += clock.DeltaTime;
+                }
                 fadeInSegment.timeFromPoseBegin += clock.DeltaTime;
 
                 weight = clock.CurrentTime / animationGenerator.blendTime;

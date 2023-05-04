@@ -17,12 +17,15 @@ namespace Momat.Runtime
         [SerializeField] private float updateInterval = 0.5f;
         [SerializeField] private float blendTime = 0.1f;
         [SerializeField] [Range(0,1)] private float weight;
-        
+
         [SerializeField] private RuntimeAnimationData runtimeAnimationData;
+        private float FrameRate => runtimeAnimationData.frameRate;
         
         private Animator animator;
         private PlayableGraph playableGraph;
         private UpdateAnimationPoseJob updateAnimationPoseJob;
+
+        private IMomatAnimatorState currentState;
 
         private AnimationGenerator animationGenerator;
 
@@ -46,6 +49,8 @@ namespace Momat.Runtime
             comparedJointRootSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformGroupLen];
             parentIndices = runtimeAnimationData.rig.GenerateParentIndices();
 
+            SetState(new IdleState());
+
             animator = GetComponent<Animator>();
             CreatePlayableGraph();
         }
@@ -54,10 +59,7 @@ namespace Momat.Runtime
         {
             animatorClock.Tick(Time.deltaTime);
 
-            if (CheckNeedUpdatePose())
-            {
-                SwitchPose();
-            }
+            currentState.Update();
             
             animationGenerator.Update(Time.deltaTime);
             pastTrajectoryRecorder.Record(transform, Time.deltaTime);
@@ -76,31 +78,20 @@ namespace Momat.Runtime
             playableGraph.Play();
         }
 
-        private bool CheckNeedUpdatePose()
+        private void BeginPlayPose(PoseIdentifier poseIdentifier, float blendTime, EBlendMode blendMode = EBlendMode.TwoAnimPlayingBlend)
         {
-            if (animatorClock.TimeFromLastTimeStamp > updateInterval)
-            {
-                animatorClock.SetTimeStamp();
-                return true;
-            }
-
-            return false;
+            nextPose = poseIdentifier;
+            animationGenerator.BeginPlayPose(poseIdentifier, blendTime, blendMode);
         }
 
-        private void SwitchPose()
-        {
-            nextPose = SearchNextPose();
-            animationGenerator.BeginPlayPose(nextPose);
-        }
-
-        private PoseIdentifier SearchNextPose()
+        private PoseIdentifier SearchPoseInFeatureSet(IEnumerable<FeatureVector> featureVectors)
         {
             var poseIdentifier = new PoseIdentifier();
             float minCost = float.MaxValue;
 
             ComputeComparedJointTransform();
             
-            foreach (var featureVector in runtimeAnimationData.GetPlayablePoseFeatureVectors(updateInterval + blendTime))
+            foreach (var featureVector in featureVectors)
             {
                 var cost = ComputeCost(featureVector);
                 if (cost < minCost)
@@ -110,8 +101,69 @@ namespace Momat.Runtime
                 }
             }
             
-            nextPose = poseIdentifier;
             return poseIdentifier;
+        }
+
+        private IEnumerable<FeatureVector> GetAllMotionAnimFeatureVectors()
+        {
+            return runtimeAnimationData.GetPlayablePoseFeatureVectors(updateInterval + blendTime, EAnimationType.EMotion);
+        }
+        
+        private IEnumerable<FeatureVector> GetAllMotionIdleFeatureVectors()
+        {
+            return runtimeAnimationData.GetPlayablePoseFeatureVectors(blendTime, EAnimationType.EIdle);
+        }
+
+        private bool IsIdle()
+        {
+            var futureTrajPointDistance = 0f;
+
+            if (futureLocalTrajectory.trajectoryData == null 
+                || futureLocalTrajectory.trajectoryData.Count == 0
+                || pastLocalTrajectory.trajectoryData == null
+                || pastLocalTrajectory.trajectoryData.Count == 0)
+            {
+                return true;
+            }
+            
+            var trajectoryPoint = futureLocalTrajectory.trajectoryData.First;
+            while (trajectoryPoint.Next != null)
+            {
+                futureTrajPointDistance += trajectoryPoint.Value.DistanceTo(trajectoryPoint.Next.Value);
+                trajectoryPoint = trajectoryPoint.Next;
+            }
+            futureTrajPointDistance += trajectoryPoint.Value.DistanceTo(Vector3.zero); // distance to local position
+
+            var pastTrajPointDistance = 0f;
+            trajectoryPoint = pastLocalTrajectory.trajectoryData.First;
+            pastTrajPointDistance += trajectoryPoint.Value.DistanceTo(Vector3.zero);
+            while (trajectoryPoint.Next != null)
+            {
+                pastTrajPointDistance += trajectoryPoint.Value.DistanceTo(trajectoryPoint.Next.Value);
+                trajectoryPoint = trajectoryPoint.Next;
+            }
+
+            if (futureTrajPointDistance < 0.05f && pastTrajPointDistance < 0.2f)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void TriggerEvent(int eventID)
+        {
+            
+        }
+
+        private bool EventTriggered()
+        {
+            return false;
+        }
+
+        private int GetAnimationFrameCnt(int animationID)
+        {
+            return runtimeAnimationData.animationFrameNum[animationID];
         }
 
         private float ComputeCost(in FeatureVector featureVector)
