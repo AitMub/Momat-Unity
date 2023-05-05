@@ -28,8 +28,12 @@ namespace Momat.Runtime
         
         private struct StateContext
         {
+            public bool isPrevPoseGenerated;
+            
             public PoseIdentifier prevPose;
             public float prevPosePlayedTime;
+
+            public List<AffineTransform> prevGeneratedPose;
         }
         
         private interface IAnimationGeneratorState
@@ -45,11 +49,11 @@ namespace Momat.Runtime
         {
             private AnimationGenerator animationGenerator;
             private PoseIdentifier restPose;
-            
+
             public void Enter(AnimationGenerator animationGenerator, StateContext context)
             {
                 this.animationGenerator = animationGenerator;
-                restPose = context.prevPose;
+                restPose = context.prevPose; // To Do: Enter with generated pose
             }
     
             public void Update(float deltaTime)
@@ -90,9 +94,14 @@ namespace Momat.Runtime
             private PlayingSegment playingSegment;
 
             private AffineTransform prevRootTransform;
-            
+
             public void Enter(AnimationGenerator animationGenerator, StateContext context)
             {
+                if (context.isPrevPoseGenerated)
+                {
+                    throw new Exception("Can not continue playing with generated pose");
+                }
+                
                 this.animationGenerator = animationGenerator;
                 
                 clock = new Clock();
@@ -108,12 +117,12 @@ namespace Momat.Runtime
             {
                 clock.Tick(deltaTime);
                 
-                PlaySingleAnim();
-                
                 if (animationGenerator.nextPlayPose != null)
                 {
                     animationGenerator.SetState(new BlendAnimState());
                 }
+                
+                PlaySingleAnim();
             }
     
             public StateContext Exit()
@@ -161,28 +170,36 @@ namespace Momat.Runtime
             private AnimationGenerator animationGenerator;
 
             private Clock clock;
-            private float weight = 0f;
+            private float weight;
             
             private PlayingSegment fadeOutSegment;
             private PlayingSegment fadeInSegment;
 
             private AffineTransform fadeOutPrevRootTransform;
             private AffineTransform fadeInPrevRootTransform;
-                
+
+            private List<AffineTransform> prevGeneratedPose;
+
             public void Enter(AnimationGenerator animationGenerator, StateContext context)
             {
                 this.animationGenerator = animationGenerator;
 
                 clock = new Clock();
-                
-                fadeOutSegment.playBeginPose = context.prevPose;
-                fadeOutSegment.timeFromPoseBegin = context.prevPosePlayedTime;
+
+                if (context.isPrevPoseGenerated)
+                {
+                    prevGeneratedPose = this.animationGenerator.GetCurrPose();
+                }
+                else
+                {
+                    fadeOutSegment.playBeginPose = context.prevPose;
+                    fadeOutSegment.timeFromPoseBegin = context.prevPosePlayedTime;
+                    fadeOutPrevRootTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
+                        (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), 0);
+                }
 
                 fadeInSegment.playBeginPose = animationGenerator.nextPlayPose.Value;
                 fadeInSegment.timeFromPoseBegin = 0;
-                
-                fadeOutPrevRootTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), 0);
                 fadeInPrevRootTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
                     (fadeInSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeInSegment), 0);
                 
@@ -199,12 +216,7 @@ namespace Momat.Runtime
                 }
                 else if (animationGenerator.nextPlayPose != null)
                 {
-                    var context = new StateContext
-                    {
-                        prevPose = fadeInSegment.playBeginPose,
-                        prevPosePlayedTime = fadeInSegment.timeFromPoseBegin
-                    };
-                    Enter(animationGenerator, context);
+                    animationGenerator.SetState(new BlendAnimState());
                 }
                 else
                 {
@@ -214,18 +226,41 @@ namespace Momat.Runtime
     
             public StateContext Exit()
             {
-                return new StateContext 
-                { prevPose = fadeInSegment.playBeginPose,
-                    prevPosePlayedTime = fadeInSegment.timeFromPoseBegin };
+                if (BlendFinish())
+                {
+                    return new StateContext 
+                    { 
+                        isPrevPoseGenerated = false,
+                        prevPose = fadeInSegment.playBeginPose,
+                        prevPosePlayedTime = fadeInSegment.timeFromPoseBegin 
+                    };
+                }
+                else
+                {
+                    return new StateContext
+                    {
+                        isPrevPoseGenerated = true,
+                        prevPose = fadeInSegment.playBeginPose,
+                        prevPosePlayedTime = fadeInSegment.timeFromPoseBegin
+                    };
+                }
             }
             
             public AffineTransform GetCurrPoseJointTransform(int jointIndex)
             {
-                var fadeOutTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                    (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), jointIndex);
                 var fadeInTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
                     (fadeInSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeInSegment), jointIndex);
-                return AffineTransform.Interpolate(fadeOutTransform, fadeInTransform, weight);
+                
+                if (prevGeneratedPose != null)
+                {
+                    return AffineTransform.Interpolate(prevGeneratedPose[jointIndex], fadeInTransform, weight);
+                }
+                else
+                {
+                    var fadeOutTransform = animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
+                        (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), jointIndex);
+                    return AffineTransform.Interpolate(fadeOutTransform, fadeInTransform, weight);
+                }
             }
             
             private bool BlendFinish()
@@ -235,24 +270,32 @@ namespace Momat.Runtime
 
             private void Blend()
             {
-                if (animationGenerator.currBlendMode == EBlendMode.TwoAnimPlayingBlend)
-                {
-                    fadeOutSegment.timeFromPoseBegin += clock.DeltaTime;
-                }
                 fadeInSegment.timeFromPoseBegin += clock.DeltaTime;
-
                 weight = clock.CurrentTime / animationGenerator.blendTime;
-
-                var fadeOutCurrRootTransform =
-                    animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
-                        (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), 0);
+                
                 var fadeInCurrRootTransform =
                     animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
                         (fadeInSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeInSegment), 0);
                 
-                var deltaFadeOutRootTransform = fadeOutPrevRootTransform.inverse() * fadeOutCurrRootTransform;
                 var deltaFadeInRootTransform = fadeInPrevRootTransform.inverse() * fadeInCurrRootTransform;
+                
+                fadeInPrevRootTransform = fadeInCurrRootTransform;
 
+
+                var deltaFadeOutRootTransform = new AffineTransform();
+                if (animationGenerator.currBlendMode == EBlendMode.TwoAnimPlayingBlend && prevGeneratedPose == null)
+                {
+                    fadeOutSegment.timeFromPoseBegin += clock.DeltaTime;
+                    
+                    var fadeOutCurrRootTransform =
+                        animationGenerator.runtimeAnimationData.GetAnimationTransformAtTime
+                            (fadeOutSegment.AnimationID, animationGenerator.GetPlayingSegmentCurrTime(fadeOutSegment), 0);
+
+                    deltaFadeOutRootTransform = fadeOutPrevRootTransform.inverse() * fadeOutCurrRootTransform;
+                    
+                    fadeOutPrevRootTransform = fadeOutCurrRootTransform;
+                }
+                
                 var deltaT = NLerp
                     (deltaFadeOutRootTransform.t, deltaFadeInRootTransform.t, weight);
                 animationGenerator.rootVelocity = deltaT / clock.DeltaTime;
@@ -260,9 +303,6 @@ namespace Momat.Runtime
                 var deltaQ = Quaternion.Slerp
                     (deltaFadeOutRootTransform.q, deltaFadeInRootTransform.q, weight);
                 animationGenerator.rootAngularVelocity = ConvertQuaternionMotionToEuler(deltaQ) / clock.DeltaTime;
-
-                fadeOutPrevRootTransform = fadeOutCurrRootTransform;
-                fadeInPrevRootTransform = fadeInCurrRootTransform;
             }
 
             public EStateType GetStateType()

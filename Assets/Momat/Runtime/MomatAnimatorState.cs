@@ -92,7 +92,7 @@ namespace Momat.Runtime
             {
                 this.momatAnimator = momatAnimator;
                 momatAnimator.animatorClock.SetTimeStamp();
-
+                
                 idleBeginPose = momatAnimator.SearchPoseInFeatureSet(momatAnimator.GetAllMotionIdleFeatureVectors());
                 this.momatAnimator.BeginPlayPose(idleBeginPose, 1.0f, EBlendMode.BlendWithLastFrame);
             }
@@ -124,10 +124,10 @@ namespace Momat.Runtime
             
             private bool CheckNeedUpdateIdlePose()
             {
-                var totalFrame = momatAnimator.GetAnimationFrameCnt(idleBeginPose.animationID);
+                var currAnimTotalFrame = momatAnimator.GetAnimationFrameCnt(idleBeginPose.animationID);
                 
                 if (momatAnimator.animatorClock.TimeFromLastTimeStamp * momatAnimator.FrameRate 
-                    > totalFrame - idleBeginPose.frameID)
+                    > currAnimTotalFrame - idleBeginPose.frameID)
                 {
                     momatAnimator.animatorClock.SetTimeStamp();
                     return true;
@@ -145,7 +145,7 @@ namespace Momat.Runtime
                         animationID = momatAnimator.runtimeAnimationData.animationTypeOffset[(int)EAnimationType.EIdle],
                         frameID = 0
                     };
-                    momatAnimator.BeginPlayPose(idleBeginPose, 1.0f);
+                    momatAnimator.BeginPlayPose(idleBeginPose, 1.0f, EBlendMode.BlendWithLastFrame);
                 }
                 else
                 {
@@ -163,7 +163,7 @@ namespace Momat.Runtime
                         animationID = nextIdleAnimationID,
                         frameID = 0
                     };
-                    momatAnimator.BeginPlayPose(idleBeginPose, 1.0f);
+                    momatAnimator.BeginPlayPose(idleBeginPose, 1.0f, EBlendMode.BlendWithLastFrame);
                 }
             }
         }

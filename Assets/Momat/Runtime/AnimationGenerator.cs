@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Momat.Runtime
 {
+    [Serializable]
     public struct PlayingSegment
     {
         public PoseIdentifier playBeginPose;
@@ -65,11 +66,22 @@ namespace Momat.Runtime
             this.playbackSpeed = playbackSpeed;
         }
 
-        public void BeginPlayPose(PoseIdentifier pose, float blendTime = 0.1f, EBlendMode blendMode = EBlendMode.TwoAnimPlayingBlend)
+        public void BeginPlayPose(PoseIdentifier pose, float toBlendTime = 0.1f, EBlendMode blendMode = EBlendMode.TwoAnimPlayingBlend)
         {
             nextPlayPose = pose;
-            this.blendTime = blendTime;
+            blendTime = toBlendTime;
             currBlendMode = blendMode;
+        }
+
+        public List<AffineTransform> GetCurrPose()
+        {
+            var pose = new List<AffineTransform>(runtimeAnimationData.rig.NumJoints);
+            for (int i = 0; i < runtimeAnimationData.rig.NumJoints; i++)
+            {
+                pose.Add(GetCurrPoseJointTransform(i));
+            }
+
+            return pose;
         }
         
         public AffineTransform GetCurrPoseJointTransform(int jointIndex)

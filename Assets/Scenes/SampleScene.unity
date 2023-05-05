@@ -144,6 +144,17 @@ MonoBehaviour:
   blendTime: 0.1
   weight: 0
   runtimeAnimationData: {fileID: 11400000, guid: 7ddde82416de9df44bff0d42929ae132, type: 2}
+  animatorState: 
+  seg1:
+    playBeginPose:
+      animationID: 0
+      frameID: 0
+    timeFromPoseBegin: 0
+  seg2:
+    playBeginPose:
+      animationID: 0
+      frameID: 0
+    timeFromPoseBegin: 0
 --- !u!1001 &164944955
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9025,7 +9036,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -2.03
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 94b4a85712e9a5348b26e8c7917bc475, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9301,7 +9312,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.17020983, y: -0, z: -0, w: 0.9854078}
-  m_LocalPosition: {x: -0.01, y: 2.02, z: -2.252}
+  m_LocalPosition: {x: -2.01, y: 2.02, z: -2.252}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9412,7 +9423,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1657270249}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.3, y: -0.5, z: 0}
+  m_LocalPosition: {x: -2.06, y: -0.5, z: 0}
   m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9597,6 +9608,17 @@ MonoBehaviour:
   blendTime: 0.12
   weight: 0.45
   runtimeAnimationData: {fileID: 11400000, guid: 09810d3f44b2a014b9e34cb6b1471e5c, type: 2}
+  animatorState: 
+  seg1:
+    playBeginPose:
+      animationID: 0
+      frameID: 0
+    timeFromPoseBegin: 0
+  seg2:
+    playBeginPose:
+      animationID: 0
+      frameID: 0
+    timeFromPoseBegin: 0
 --- !u!114 &1817191158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9630,9 +9652,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updateInterval: 0.15
-  blendTime: 0.12
+  blendTime: 0.13
   weight: 0.5
   runtimeAnimationData: {fileID: 11400000, guid: 6255208dc3aa0e84b9d42cbe07e7e769, type: 2}
+  animatorState: 
+  seg1:
+    playBeginPose:
+      animationID: 0
+      frameID: 0
+    timeFromPoseBegin: 0
+  seg2:
+    playBeginPose:
+      animationID: 0
+      frameID: 0
+    timeFromPoseBegin: 0
 --- !u!114 &1933243364
 MonoBehaviour:
   m_ObjectHideFlags: 0

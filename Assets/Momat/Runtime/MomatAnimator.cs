@@ -39,7 +39,7 @@ namespace Momat.Runtime
         private List<int> parentIndices;
         
         private PoseIdentifier nextPose;
-
+        
         private void Start()
         {
             animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime);
