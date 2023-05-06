@@ -17,26 +17,92 @@ MonoBehaviour:
   - sourceAnimClip: {fileID: 7400024, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
   - sourceAnimClip: {fileID: 7400020, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
   - sourceAnimClip: {fileID: 7400018, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
   - sourceAnimClip: {fileID: 7400016, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
   - sourceAnimClip: {fileID: 7400008, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
   - sourceAnimClip: {fileID: 7400002, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 1
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
   - sourceAnimClip: {fileID: 7400048, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
     animationType: 1
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
   - sourceAnimClip: {fileID: -203655887218126122, guid: 738422c0067b24c40afa24fed0d3bcc3, type: 3}
     animationType: 2
     avatarRetargetMap: {fileID: 11400000, guid: 8950c5dcbc7865b4abf0402709214e32, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 1
+        prepareFrame: 0
+        beginFrame: 8
+        beginRecoveryFrame: 40
+        finishFrame: 47
+  - sourceAnimClip: {fileID: -203655887218126122, guid: 043ea55fbcb1c9342af0091991644fb8, type: 3}
+    animationType: 2
+    avatarRetargetMap: {fileID: 11400000, guid: 8950c5dcbc7865b4abf0402709214e32, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 2
+        prepareFrame: 0
+        beginFrame: 8
+        beginRecoveryFrame: 35
+        finishFrame: 63
   featureDefinition: {fileID: 11400000, guid: 71f45b8468bbd884088b46368707b0c8, type: 2}
   sampleRate: 30

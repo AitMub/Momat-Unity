@@ -39,6 +39,7 @@ namespace Momat.Runtime
         private List<int> parentIndices;
         
         private PoseIdentifier nextPose;
+        private int toPlayEventID;
         
         private void Start()
         {
@@ -48,6 +49,8 @@ namespace Momat.Runtime
             futureLocalTrajectory = new RuntimeTrajectory();
             comparedJointRootSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformGroupLen];
             parentIndices = runtimeAnimationData.rig.GenerateParentIndices();
+
+            toPlayEventID = EventClipData.InvalidEventID;
 
             SetState(new IdleState());
 
@@ -109,21 +112,42 @@ namespace Momat.Runtime
             return runtimeAnimationData.GetPlayablePoseFeatureVectors(updateInterval + blendTime, EAnimationType.EMotion);
         }
         
-        private IEnumerable<FeatureVector> GetAllMotionIdleFeatureVectors()
+        private IEnumerable<FeatureVector> GetAllIdleAnimFeatureVectors()
         {
             return runtimeAnimationData.GetPlayablePoseFeatureVectors(blendTime, EAnimationType.EIdle);
         }
 
+        private IEnumerable<FeatureVector> GetEventBeginPhasePoseFeatureVectors(int eventID)
+        {
+            for (int i = 0; i < runtimeAnimationData.eventClipDatas.Length; i++)
+            {
+                if (runtimeAnimationData.eventClipDatas[i].eventID == eventID)
+                {
+                    var animationIndex = i + runtimeAnimationData.animationTypeOffset[(int)EAnimationType.EEvent];
+                    foreach (var featureVector in runtimeAnimationData.GetPlayablePoseFeatureVectors(animationIndex, 
+                                     runtimeAnimationData.eventClipDatas[i].prepareFrame, 
+                                     runtimeAnimationData.eventClipDatas[i].beginFrame))
+                    {
+                        yield return featureVector;
+                    }
+                }
+            }
+        }
+
         private bool IsIdle()
         {
-            var futureTrajPointDistance = 0f;
+            return IsIntendingToMove() == false && IsMoving() == false;
+        }
 
+        private bool IsIntendingToMove()
+        {
+            var futureTrajPointDistance = 0f;
             if (futureLocalTrajectory.trajectoryData == null 
                 || futureLocalTrajectory.trajectoryData.Count == 0
                 || pastLocalTrajectory.trajectoryData == null
                 || pastLocalTrajectory.trajectoryData.Count == 0)
             {
-                return true;
+                return false;
             }
             
             var trajectoryPoint = futureLocalTrajectory.trajectoryData.First;
@@ -134,8 +158,13 @@ namespace Momat.Runtime
             }
             futureTrajPointDistance += trajectoryPoint.Value.DistanceTo(Vector3.zero); // distance to local position
 
+            return futureTrajPointDistance > 0.05f;
+        }
+
+        private bool IsMoving()
+        {
             var pastTrajPointDistance = 0f;
-            trajectoryPoint = pastLocalTrajectory.trajectoryData.First;
+            var trajectoryPoint = pastLocalTrajectory.trajectoryData.First;
             pastTrajPointDistance += trajectoryPoint.Value.DistanceTo(Vector3.zero);
             while (trajectoryPoint.Next != null)
             {
@@ -143,22 +172,7 @@ namespace Momat.Runtime
                 trajectoryPoint = trajectoryPoint.Next;
             }
 
-            if (futureTrajPointDistance < 0.05f && pastTrajPointDistance < 0.2f)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void TriggerEvent(int eventID)
-        {
-            
-        }
-
-        private bool EventTriggered()
-        {
-            return false;
+            return pastTrajPointDistance > 0.2f;
         }
 
         private int GetAnimationFrameCnt(int animationID)
@@ -218,11 +232,6 @@ namespace Momat.Runtime
         {
             updateAnimationPoseJob.Dispose();
             playableGraph.Destroy();
-        }
-
-        public void SetFutureLocalTrajectory(RuntimeTrajectory futureTrajectory)
-        {
-            futureLocalTrajectory = futureTrajectory;
         }
     }
 }

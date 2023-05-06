@@ -10,12 +10,60 @@ using Object = UnityEngine.Object;
 
 namespace Momat.Editor
 {
+    public class EventEditElements
+    {
+        public AnimationPreProcessWindow mainWindow;
+        
+        public IntegerField eventIDField;
+        public IntegerField prepareFrameField;
+        public IntegerField beginFrameField;
+        public IntegerField beginRecoveryFrameField;
+        public IntegerField finishFrameField;
+
+        
+        public EventEditElements(AnimationPreProcessWindow window, VisualElement eventDataEditRootVE)
+        {
+            mainWindow = window;
+            
+            eventIDField = eventDataEditRootVE.Q<IntegerField>("EventID");
+            prepareFrameField = eventDataEditRootVE.Q<IntegerField>("PrepareFrame");
+            beginFrameField = eventDataEditRootVE.Q<IntegerField>("BeginFrame");
+            beginRecoveryFrameField = eventDataEditRootVE.Q<IntegerField>("BeginRecoveryFrame");
+            finishFrameField = eventDataEditRootVE.Q<IntegerField>("FinishFrame");
+
+            eventIDField.RegisterValueChangedCallback
+                (e => mainWindow.currAnimationClip.clipData.eventClipData.eventID = e.newValue);
+            prepareFrameField.RegisterValueChangedCallback
+                (e => mainWindow.currAnimationClip.clipData.eventClipData.prepareFrame = e.newValue);
+            beginFrameField.RegisterValueChangedCallback
+                (e => mainWindow.currAnimationClip.clipData.eventClipData.beginFrame = e.newValue);
+            beginRecoveryFrameField.RegisterValueChangedCallback
+                (e => mainWindow.currAnimationClip.clipData.eventClipData.beginRecoveryFrame = e.newValue);
+            finishFrameField.RegisterValueChangedCallback
+                (e => mainWindow.currAnimationClip.clipData.eventClipData.finishFrame = e.newValue);
+        }
+
+        public void Show()
+        {
+            mainWindow.currAnimationClip.clipData.eventClipData ??= new EventClipData();
+                
+            eventIDField.value = mainWindow.currAnimationClip.clipData.eventClipData.eventID;
+            prepareFrameField.value = mainWindow.currAnimationClip.clipData.eventClipData.prepareFrame;
+            beginFrameField.value = mainWindow.currAnimationClip.clipData.eventClipData.beginFrame;
+            beginRecoveryFrameField.value = mainWindow.currAnimationClip.clipData.eventClipData.beginRecoveryFrame;
+            finishFrameField.value = mainWindow.currAnimationClip.clipData.eventClipData.finishFrame;
+        }
+    }
+    
     public class AnimationPreProcessWindow : EditorWindow
     {
         // visual elements
         private AnimationClipListView animationClipListView;
         private Label animationClipNameLabel;
         private VisualElement animationPropertyEditView;
+
+        private VisualElement eventDataEditView;
+        private EventEditElements eventEditElements;
         
         private DropdownField animationTypeDropdown;
         private string[] typeStrings;
@@ -23,7 +71,8 @@ namespace Momat.Editor
         private ObjectField retargetMapAssetField;
 
         private AnimationPreProcessAsset animationPreProcessAsset;
-        private ProcessingAnimationClip currAnimationClip;
+        
+        public ProcessingAnimationClip currAnimationClip;
 
         [MenuItem("Window/Momat/Animation Pre Process Window %q")]
         public static void ShowWindow()
@@ -55,6 +104,10 @@ namespace Momat.Editor
 
             animationPropertyEditView = rootVisualElement.Q<VisualElement>("AnimationPropertyEditView");
             animationPropertyEditView.visible = false;
+            
+            eventDataEditView = rootVisualElement.Q<VisualElement>("EventDataEditView");
+            eventDataEditView.visible = false;
+            eventEditElements = new EventEditElements(this, eventDataEditView);
 
             animationTypeDropdown = rootVisualElement.Q<DropdownField>("AnimationTypeDropdown");
             animationTypeDropdown.RegisterValueChangedCallback(OnAnimationTypeChanged);
@@ -62,7 +115,8 @@ namespace Momat.Editor
             
             retargetMapAssetField = rootVisualElement.Q<ObjectField>("RetargetMap");
             retargetMapAssetField.objectType = typeof(AvatarRetargetMap);
-            retargetMapAssetField.RegisterValueChangedCallback(OnRetargetMapChanged);
+            retargetMapAssetField.RegisterValueChangedCallback
+                (e => currAnimationClip.avatarRetargetMap = e.newValue as AvatarRetargetMap);
         }
         
         // callback
@@ -84,13 +138,10 @@ namespace Momat.Editor
         {
             currAnimationClip.animationType = (EAnimationType)
                 Array.IndexOf(typeStrings, e.newValue);
+
+            UpdateAnimationTypeDataEditView();
         }
 
-        void OnRetargetMapChanged(ChangeEvent<Object> e)
-        {
-            currAnimationClip.avatarRetargetMap = e.newValue as AvatarRetargetMap;
-        }
-        
         internal void OnBuildButtonClicked()
         {
             animationPreProcessAsset.BuildRuntimeData();
@@ -124,6 +175,30 @@ namespace Momat.Editor
                 animationPropertyEditView.visible = true;
                 animationTypeDropdown.value = typeStrings[(int)currAnimationClip.animationType];
                 retargetMapAssetField.value = currAnimationClip.avatarRetargetMap;
+
+                UpdateAnimationTypeDataEditView();
+            }
+        }
+
+        private void UpdateAnimationTypeDataEditView()
+        {
+            switch (currAnimationClip.animationType)
+            {
+                case EAnimationType.EMotion:
+                    eventDataEditView.visible = false;
+                    break;
+                
+                case EAnimationType.EIdle:
+                    eventDataEditView.visible = false;
+                    break;
+                
+                case EAnimationType.EEvent:
+                    eventDataEditView.visible = true;
+                    eventEditElements.Show();
+                    break;
+                
+                default:
+                    break;
             }
         }
 

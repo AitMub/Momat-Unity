@@ -144,17 +144,6 @@ MonoBehaviour:
   blendTime: 0.1
   weight: 0
   runtimeAnimationData: {fileID: 11400000, guid: 7ddde82416de9df44bff0d42929ae132, type: 2}
-  animatorState: 
-  seg1:
-    playBeginPose:
-      animationID: 0
-      frameID: 0
-    timeFromPoseBegin: 0
-  seg2:
-    playBeginPose:
-      animationID: 0
-      frameID: 0
-    timeFromPoseBegin: 0
 --- !u!1001 &164944955
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9608,17 +9597,6 @@ MonoBehaviour:
   blendTime: 0.12
   weight: 0.45
   runtimeAnimationData: {fileID: 11400000, guid: 09810d3f44b2a014b9e34cb6b1471e5c, type: 2}
-  animatorState: 
-  seg1:
-    playBeginPose:
-      animationID: 0
-      frameID: 0
-    timeFromPoseBegin: 0
-  seg2:
-    playBeginPose:
-      animationID: 0
-      frameID: 0
-    timeFromPoseBegin: 0
 --- !u!114 &1817191158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9652,20 +9630,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updateInterval: 0.15
-  blendTime: 0.13
-  weight: 0.5
+  blendTime: 0.14
+  weight: 0.45
   runtimeAnimationData: {fileID: 11400000, guid: 6255208dc3aa0e84b9d42cbe07e7e769, type: 2}
-  animatorState: 
-  seg1:
-    playBeginPose:
-      animationID: 0
-      frameID: 0
-    timeFromPoseBegin: 0
-  seg2:
-    playBeginPose:
-      animationID: 0
-      frameID: 0
-    timeFromPoseBegin: 0
 --- !u!114 &1933243364
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -30,7 +30,7 @@ namespace Momat.Runtime
     }
     
     [PreferBinarySerialization]
-    public class RuntimeAnimationData : ScriptableObject
+    public partial class RuntimeAnimationData : ScriptableObject
     {
         public float frameRate;
 
@@ -64,6 +64,20 @@ namespace Momat.Runtime
             comparedJointRootSpaceT = new List<AffineTransform>();
         }
 
+        public EAnimationType GetAnimationType(int animationID)
+        {
+            for (int i = 0; i < animationTypeOffset.Length - 1; i++)
+            {
+                if (animationID >= animationTypeOffset[i]
+                    && animationID < animationTypeOffset[i + 1])
+                {
+                    return (EAnimationType)i;
+                }
+            }
+
+            throw new Exception("Wrong Animation ID");
+        }
+
         public AffineTransform GetPoseTransform(PoseIdentifier poseIdentifier, int jointIndex)
         {
             if (jointIndexOfTransformsGroup[jointIndex] == -1)
@@ -91,31 +105,48 @@ namespace Momat.Runtime
 
             return AffineTransform.Interpolate(transform1, transform2, weight);
         }
-
+        
+        // get all feature vectors of pose that can still play "playTime"
         public IEnumerable<FeatureVector> GetPlayablePoseFeatureVectors(float playTime, EAnimationType animationType)
         {
             for (int animationIndex = animationTypeOffset[(int)animationType]; 
                  animationIndex < animationTypeOffset[(int)animationType + 1]; 
                  animationIndex++)
             {
-                for (int frameIndex = 0; 
-                     frameIndex + Mathf.FloorToInt(playTime * frameRate) < animationFrameNum[animationIndex]; 
-                     frameIndex++)
+                foreach(var featureVector in GetPlayablePoseFeatureVectors(animationIndex, 
+                            0, animationFrameNum[animationIndex] - Mathf.FloorToInt(playTime * frameRate)))
                 {
-                    var featureVector = new FeatureVector();
-                    featureVector.poseIdentifier = new PoseIdentifier
-                        { animationID = animationIndex, frameID = frameIndex };
-
-                    int rangeBegin = TrajectoryPointGroupLen * animationFrameOffset[animationIndex]
-                                     + frameIndex * TrajectoryPointGroupLen;
-                    featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, TrajectoryPointGroupLen);
-
-                    rangeBegin = ComparedJointTransformGroupLen * animationFrameOffset[animationIndex]
-                                 + frameIndex * ComparedJointTransformGroupLen;
-                    featureVector.jointRootSpaceT = comparedJointRootSpaceT.GetRange(rangeBegin, ComparedJointTransformGroupLen);
-                    
                     yield return featureVector;
                 }
+            }
+        }
+
+        public IEnumerable<FeatureVector> GetPlayablePoseFeatureVectors(int animationIndex, float beginTime, float endTime)
+        {
+            int beginFrame = Mathf.CeilToInt(beginTime / frameRate);
+            int endFrame = Mathf.FloorToInt(endTime / frameRate);
+            return GetPlayablePoseFeatureVectors(animationIndex, beginFrame, endFrame);
+        }
+
+        public IEnumerable<FeatureVector> GetPlayablePoseFeatureVectors(int animationIndex, int beginFrame, int endFrame)
+        {
+            for (int frameIndex = beginFrame;
+                 frameIndex < endFrame && frameIndex < animationFrameNum[animationIndex]; 
+                 frameIndex++)
+            {
+                var featureVector = new FeatureVector();
+                featureVector.poseIdentifier = new PoseIdentifier
+                    { animationID = animationIndex, frameID = frameIndex };
+
+                int rangeBegin = TrajectoryPointGroupLen * animationFrameOffset[animationIndex]
+                                 + frameIndex * TrajectoryPointGroupLen;
+                featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, TrajectoryPointGroupLen);
+
+                rangeBegin = ComparedJointTransformGroupLen * animationFrameOffset[animationIndex]
+                             + frameIndex * ComparedJointTransformGroupLen;
+                featureVector.jointRootSpaceT = comparedJointRootSpaceT.GetRange(rangeBegin, ComparedJointTransformGroupLen);
+                
+                yield return featureVector;
             }
         }
 

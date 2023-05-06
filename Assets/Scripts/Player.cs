@@ -51,6 +51,15 @@ public class Player : MonoBehaviour
         desiredLocalDirection = new Vector3(x, 0, z) * currSpeed;
         desiredLocalDirection = transform.worldToLocalMatrix * new Vector4
             (desiredLocalDirection.x, desiredLocalDirection.y, desiredLocalDirection.z, 0f);
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            momatAnimator.TryTriggerEvent(1);
+        }
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            momatAnimator.TryTriggerEvent(2);
+        }
     }
 
     private void UpdateFutureTrajectory()

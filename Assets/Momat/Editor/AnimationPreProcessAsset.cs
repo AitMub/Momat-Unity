@@ -22,27 +22,27 @@ namespace Momat.Editor
         public Avatar avatar;
 
         public List<ProcessingAnimationClip> animSet;
-
+        
         public AnimationFeatureDefinition featureDefinition;
         
         public float sampleRate = 30f;
         
         public void BuildRuntimeData()
         {
-            var targetRig = AnimationRig.Create(avatar);
-            
             int totalFrame = 0;
+            var targetRig = AnimationRig.Create(avatar);
             var animatedJointIndices = new HashSet<int>();
-            
-            animSet.Sort((clip1, clip2) => (int)clip1.animationType - (int)clip2.animationType);
-
             var animationFrameOffset = new List<int>();
             var animationFrameNum = new List<int>();
+            
+            animSet.Sort((clip1, clip2) => (int)clip1.animationType - (int)clip2.animationType);
             
             var runtimeData = CreateInstance<RuntimeAnimationData>();
 
             for (int i = 0; i < animSet.Count; i++)
             {
+                EditorUtility.DisplayProgressBar("Building...", $"{animSet[i].Name}", i / (float)animSet.Count);
+                
                 var jointTransforms = GenerateClipRuntimeJointTransform
                     (animSet[i], targetRig, ref animatedJointIndices);
                 var featureVectors = GenerateClipFeatureVector
@@ -56,7 +56,7 @@ namespace Momat.Editor
                 runtimeData.transforms.AddRange(jointTransforms);
                 runtimeData.trajectoryPoints.AddRange(featureVectors.trajectories);
                 runtimeData.comparedJointRootSpaceT.AddRange(featureVectors.jointRootSpaceT);
-
+                
                 jointTransforms.Dispose();
                 featureVectors.Dispose();
             }
@@ -68,6 +68,8 @@ namespace Momat.Editor
             runtimeData.animationTypeOffset = GenerateAnimationTypeOffset();
             runtimeData.animationTypeNum = GenerateAnimationTypeNum(runtimeData.animationTypeOffset);
 
+            runtimeData.eventClipDatas = GenerateEventClipData(runtimeData.animationTypeOffset);
+
             runtimeData.animatedJointIndices = animatedJointIndices.ToArray();
             runtimeData.jointIndexOfTransformsGroup =
                 GenerateJointIndexOfTransformsGroup(runtimeData.animatedJointIndices, targetRig);
@@ -78,6 +80,8 @@ namespace Momat.Editor
             runtimeData.poseFeatureDefinition = featureDefinition.poseFeatureDefinition;
             
             SaveRuntimeDataToAsset(runtimeData);
+            
+            EditorUtility.ClearProgressBar();
         }
 
         private NativeArray<AffineTransform> GenerateClipRuntimeJointTransform
@@ -166,6 +170,19 @@ namespace Momat.Editor
             }
 
             return outFeatureVectors;
+        }
+
+        private EventClipData[] GenerateEventClipData(int[] animationTypeOffset)
+        {
+            var clipDatas = new List<EventClipData>();
+            for (int i = animationTypeOffset[(int)EAnimationType.EEvent];
+                 i < animationTypeOffset[(int)EAnimationType.EEvent + 1];
+                 i++)
+            {
+                clipDatas.Add(animSet[i].clipData.eventClipData);
+            }
+
+            return clipDatas.ToArray();
         }
 
         private List<AffineTransform> RemoveUnanimatedTransform(List<AffineTransform> transforms, in HashSet<int> animatedJointIndices, AnimationRig rig)

@@ -13,6 +13,14 @@
                 <ui:DropdownField label="Type" index="-1" choices="Motion, Idle, Event" name="AnimationTypeDropdown" style="width: 220px;" />
                 <uie:ObjectField label="Retarget Map" name="RetargetMap" style="width: 319px;" />
             </ui:VisualElement>
+            <ui:VisualElement name="EventDataEditView" style="width: 194px; opacity: 1; visibility: visible;">
+                <uie:IntegerField label="Event ID" value="42" name="EventID" style="margin-top: 10px;" />
+                <ui:VisualElement style="height: 23px;" />
+                <uie:IntegerField label="Prepare Frame" value="42" readonly="false" name="PrepareFrame" />
+                <uie:IntegerField label="Begin Frame" value="42" name="BeginFrame" />
+                <uie:IntegerField label="Begin Recovery Frame" value="42" name="BeginRecoveryFrame" />
+                <uie:IntegerField label="Finish Frame" value="42" name="FinishFrame" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

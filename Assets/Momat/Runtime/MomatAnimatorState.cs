@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
@@ -32,27 +33,34 @@ namespace Momat.Runtime
         private class MotionState : IMomatAnimatorState
         {
             private MomatAnimator momatAnimator;
+            private float enterBlendTime;
 
             public void Enter(MomatAnimator momatAnimator)
             {
                 this.momatAnimator = momatAnimator;
                 this.momatAnimator.animatorClock.SetTimeStamp();
+
+                enterBlendTime = 0.5f;
+                
+                var motionBeginPose = this.momatAnimator.SearchPoseInFeatureSet
+                    (momatAnimator.GetAllMotionAnimFeatureVectors());
+                this.momatAnimator.BeginPlayPose(motionBeginPose, enterBlendTime, EBlendMode.BlendWithLastFrame);
             }
 
             public void Update()
             {
-                if (momatAnimator.IsIdle())
-                {
-                    momatAnimator.SetState(new IdleState());
-                    return;
-                }
-
                 if (momatAnimator.EventTriggered())
                 {
                     momatAnimator.SetState(new EventState());
                     return;
                 }
-
+                
+                if (momatAnimator.IsIdle())
+                {
+                    momatAnimator.SetState(new IdleState());
+                    return;
+                }
+                
                 if (CheckNeedUpdateMotionPose())
                 {
                     SwitchToNextMotionPose();
@@ -66,6 +74,12 @@ namespace Momat.Runtime
 
             private bool CheckNeedUpdateMotionPose()
             {
+                if (momatAnimator.animatorClock.TimeFromLastTimeStamp < enterBlendTime)
+                {
+                    return false;
+                }
+                enterBlendTime = 0f;
+                
                 if (momatAnimator.animatorClock.TimeFromLastTimeStamp > momatAnimator.updateInterval)
                 {
                     momatAnimator.animatorClock.SetTimeStamp();
@@ -91,23 +105,23 @@ namespace Momat.Runtime
             public void Enter(MomatAnimator momatAnimator)
             {
                 this.momatAnimator = momatAnimator;
-                momatAnimator.animatorClock.SetTimeStamp();
+                this.momatAnimator.animatorClock.SetTimeStamp();
                 
-                idleBeginPose = momatAnimator.SearchPoseInFeatureSet(momatAnimator.GetAllMotionIdleFeatureVectors());
+                idleBeginPose = this.momatAnimator.SearchPoseInFeatureSet(momatAnimator.GetAllIdleAnimFeatureVectors());
                 this.momatAnimator.BeginPlayPose(idleBeginPose, 1.0f, EBlendMode.BlendWithLastFrame);
             }
 
             public void Update()
             {
-                if (momatAnimator.IsIdle() == false)
-                {
-                    momatAnimator.SetState(new MotionState());
-                    return;
-                }
-
                 if (momatAnimator.EventTriggered())
                 {
                     momatAnimator.SetState(new EventState());
+                    return;
+                }
+                
+                if (momatAnimator.IsIdle() == false)
+                {
+                    momatAnimator.SetState(new MotionState());
                     return;
                 }
 
@@ -171,16 +185,32 @@ namespace Momat.Runtime
         private class EventState : IMomatAnimatorState
         {
             private MomatAnimator momatAnimator;
+            private PoseIdentifier eventBeginPose;
+            private EventClipData eventClipData;
+            
             public void Enter(MomatAnimator momatAnimator)
             {
                 this.momatAnimator = momatAnimator;
+                this.momatAnimator.animatorClock.SetTimeStamp();
+
+                eventBeginPose = this.momatAnimator.SearchPoseInFeatureSet(
+                        momatAnimator.GetEventBeginPhasePoseFeatureVectors(momatAnimator.toPlayEventID));
+                this.momatAnimator.BeginPlayPose(eventBeginPose, momatAnimator.blendTime);
+
+                eventClipData = momatAnimator.runtimeAnimationData.GetEventClipData(eventBeginPose.animationID);
             }
 
             public void Update()
             {
                 if (EventFinished())
                 {
-                    momatAnimator.SetState(new IdleState());
+                    ReturnToMotionOrIdle();
+                    return;
+                }
+
+                if (EventBeginRecovery() && momatAnimator.IsIntendingToMove())
+                {
+                    ReturnToMotionOrIdle();
                 }
             }
 
@@ -191,7 +221,32 @@ namespace Momat.Runtime
 
             private bool EventFinished()
             {
-                return true;
+                float currFrame = momatAnimator.FrameRate * momatAnimator.animatorClock.TimeFromLastTimeStamp +
+                                  eventBeginPose.frameID;
+
+                return currFrame >= eventClipData.finishFrame;
+            }
+
+            private bool EventBeginRecovery()
+            {
+                float currFrame = momatAnimator.FrameRate * momatAnimator.animatorClock.TimeFromLastTimeStamp +
+                                  eventBeginPose.frameID;
+
+                return currFrame >= eventClipData.beginRecoveryFrame;
+            }
+
+            private void ReturnToMotionOrIdle()
+            {
+                if (momatAnimator.IsIdle())
+                {
+                    momatAnimator.SetState(new IdleState());
+                }
+                else
+                {
+                    momatAnimator.SetState(new MotionState());
+                }
+
+                momatAnimator.toPlayEventID = EventClipData.InvalidEventID;
             }
         }
     }
