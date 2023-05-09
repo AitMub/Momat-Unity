@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 namespace Momat.Editor
 {
-    public class EventEditElements
+    internal class EventEditElements
     {
         public AnimationPreProcessWindow mainWindow;
         
@@ -55,30 +55,38 @@ namespace Momat.Editor
         }
     }
     
-    public class AnimationPreProcessWindow : EditorWindow
+    internal class AnimationPreProcessWindow : EditorWindow
     {
+        private static AnimationPreProcessWindow instance;
+
         // visual elements
-        private AnimationClipListView animationClipListView;
-        private Label animationClipNameLabel;
-        private VisualElement animationPropertyEditView;
+        private static AnimationClipListView animationClipListView;
+        private static Label animationClipNameLabel;
+        private static VisualElement animationPropertyEditView;
 
-        private VisualElement eventDataEditView;
-        private EventEditElements eventEditElements;
+        private static VisualElement eventDataEditView;
+        private static EventEditElements eventEditElements;
         
-        private DropdownField animationTypeDropdown;
-        private string[] typeStrings;
+        private static DropdownField animationTypeDropdown;
+        private static string[] typeStrings;
         
-        private ObjectField retargetMapAssetField;
+        private static ObjectField retargetMapAssetField;
 
-        private AnimationPreProcessAsset animationPreProcessAsset;
-        
+        private static AnimationPreProcessAsset animationPreProcessAsset;
+
+        private static Timeline timeline;
+
         public ProcessingAnimationClip currAnimationClip;
 
         [MenuItem("Window/Momat/Animation Pre Process Window %q")]
         public static void ShowWindow()
         {
-            var wnd = GetWindow<AnimationPreProcessWindow>();
-            wnd.titleContent = new GUIContent("Momat AnimPreProcessWindow");
+            if (instance == null)
+            {
+                var wnd = GetWindow<AnimationPreProcessWindow>();
+                wnd.titleContent = new GUIContent("Momat AnimPreProcessWindow");
+                instance = wnd;
+            }
         }
 
         protected void OnEnable()
@@ -117,8 +125,21 @@ namespace Momat.Editor
             retargetMapAssetField.objectType = typeof(AvatarRetargetMap);
             retargetMapAssetField.RegisterValueChangedCallback
                 (e => currAnimationClip.avatarRetargetMap = e.newValue as AvatarRetargetMap);
+            
+            var timelineArea = rootVisualElement.Q<VisualElement>("TimelineArea");
+            timeline = new Timeline(this, timelineArea);
+            
+            timelineArea.RegisterCallback<MouseDownEvent>(timeline.OnMouseDown, TrickleDown.TrickleDown);
+            timelineArea.RegisterCallback<MouseUpEvent>(timeline.OnMouseUp, TrickleDown.TrickleDown);
+            timelineArea.RegisterCallback<MouseMoveEvent>(timeline.OnMouseMove, TrickleDown.TrickleDown);
+            timelineArea.RegisterCallback<WheelEvent>(timeline.OnMouseWheel, TrickleDown.TrickleDown);
         }
-        
+
+        private void OnGUI()
+        {
+            timeline.Draw();
+        }
+
         // callback
         void OnAnimationPreProcessAssetSelectionChanged(ChangeEvent<Object> e)
         {

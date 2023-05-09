@@ -1,19 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <ui:VisualElement style="flex-direction: row; align-items: center; justify-content: flex-start;">
+    <ui:VisualElement style="flex-direction: row; align-items: center; justify-content: flex-start; background-color: rgb(53, 53, 53);">
         <uie:ObjectField label="Animation PreProcess Asset" allow-scene-objects="false" name="AnimationPreProcessAsset" style="width: 411px; flex-direction: row; align-items: auto; justify-content: center; opacity: 1; display: flex; visibility: visible; overflow: hidden; flex-wrap: nowrap; margin-left: 0;" />
         <ui:Label display-tooltip-when-elided="true" name="AnimationClipName" style="width: 244px; justify-content: flex-start; align-items: stretch;" />
         <ui:Button text="Save" display-tooltip-when-elided="true" name="SaveButton" />
         <ui:Button text="Build" display-tooltip-when-elided="true" name="BuildButton" style="white-space: nowrap; position: relative; top: 0; left: 0; right: 0;" />
     </ui:VisualElement>
     <ui:VisualElement style="width: 200px; max-width: 200px; min-width: 130px; flex-direction: row;">
-        <Momat.Editor.AnimationClipListView focusable="true" name="AnimationClipListView" style="height: 455px; width: 200px; opacity: 1; border-left-color: rgb(153, 153, 153); border-right-color: rgb(153, 153, 153); border-top-color: rgb(153, 153, 153); border-bottom-color: rgb(153, 153, 153); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; position: relative; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; max-width: 200px; min-width: 200px; align-items: flex-start; flex-direction: column; visibility: visible; overflow: visible; flex-shrink: 0; flex-grow: 0; border-left-color: rgb(153, 153, 153);" />
+        <Momat.Editor.AnimationClipListView focusable="true" name="AnimationClipListView" style="height: 455px; width: 200px; opacity: 1; border-left-color: rgb(153, 153, 153); border-right-color: rgb(153, 153, 153); border-top-color: rgb(153, 153, 153); border-bottom-color: rgb(153, 153, 153); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; position: relative; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px; max-width: 200px; min-width: 200px; align-items: flex-start; flex-direction: column; visibility: visible; overflow: visible; flex-shrink: 0; flex-grow: 0; border-left-color: rgb(153, 153, 153); background-color: rgb(51, 51, 51);" />
         <ui:VisualElement name="AnimationPropertyEditView" style="flex-direction: column; visibility: visible;">
             <ui:Label text="Animation Property" display-tooltip-when-elided="true" style="width: 40px;" />
             <ui:VisualElement style="flex-direction: row;">
                 <ui:DropdownField label="Type" index="-1" choices="Motion, Idle, Event" name="AnimationTypeDropdown" style="width: 220px;" />
                 <uie:ObjectField label="Retarget Map" name="RetargetMap" style="width: 319px;" />
             </ui:VisualElement>
-            <ui:VisualElement name="EventDataEditView" style="width: 194px; opacity: 1; visibility: visible;">
+            <ui:VisualElement name="EventDataEditView" style="width: 194px; opacity: 0.8; visibility: visible; display: flex; overflow: visible; -unity-font-style: normal; color: rgb(0, 211, 241); -unity-text-align: upper-left; white-space: normal; -unity-font: initial; -unity-text-outline-color: rgb(255, 27, 27); -unity-text-outline-width: 0; background-color: rgb(56, 56, 56);">
                 <uie:IntegerField label="Event ID" value="42" name="EventID" style="margin-top: 10px;" />
                 <ui:VisualElement style="height: 23px;" />
                 <uie:IntegerField label="Prepare Frame" value="42" readonly="false" name="PrepareFrame" />
@@ -22,5 +22,9 @@
                 <uie:IntegerField label="Finish Frame" value="42" name="FinishFrame" />
             </ui:VisualElement>
         </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="TimelineArea" focusable="false" tabindex="0" style="position: absolute; left: 410px; top: 94px; height: 385px; width: 340px; right: 4px; bottom: 0; visibility: visible; border-left-color: rgb(153, 153, 153); border-right-color: rgb(153, 153, 153); border-top-color: rgb(153, 153, 153); border-bottom-color: rgb(153, 153, 153); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; background-color: rgba(51, 51, 51, 0); overflow: visible; opacity: 1; display: flex; cursor: initial;">
+        <ui:Label text="Time: 0s" display-tooltip-when-elided="true" name="CurrTimeLabel" style="opacity: 0.5; position: absolute; top: -27px; left: 4px; overflow: visible; width: 60px;" />
+        <ui:Label text="Frame: 0" display-tooltip-when-elided="true" name="CurrFrameLabel" style="opacity: 0.5; position: absolute; top: -27px; left: 80px; overflow: visible; width: 76px;" />
     </ui:VisualElement>
 </ui:UXML>
