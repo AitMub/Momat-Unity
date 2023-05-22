@@ -128,11 +128,6 @@ namespace Momat.Editor
             
             var timelineArea = rootVisualElement.Q<VisualElement>("TimelineArea");
             timeline = new Timeline(this, timelineArea);
-            
-            timelineArea.RegisterCallback<MouseDownEvent>(timeline.OnMouseDown, TrickleDown.TrickleDown);
-            timelineArea.RegisterCallback<MouseUpEvent>(timeline.OnMouseUp, TrickleDown.TrickleDown);
-            timelineArea.RegisterCallback<MouseMoveEvent>(timeline.OnMouseMove, TrickleDown.TrickleDown);
-            timelineArea.RegisterCallback<WheelEvent>(timeline.OnMouseWheel, TrickleDown.TrickleDown);
         }
 
         private void OnGUI()
@@ -151,6 +146,9 @@ namespace Momat.Editor
                 animationClipListView.UpdateSource(null);
                 return;
             }
+            
+            var tagDropdown = rootVisualElement.Q<DropdownField>("TagDropDown");
+            tagDropdown.choices = animationPreProcessAsset.tags;
             
             animationClipListView.UpdateSource(animationPreProcessAsset.animSet);
         }

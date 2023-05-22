@@ -13,18 +13,20 @@
                 <ui:DropdownField label="Type" index="-1" choices="Motion, Idle, Event" name="AnimationTypeDropdown" style="width: 220px;" />
                 <uie:ObjectField label="Retarget Map" name="RetargetMap" style="width: 319px;" />
             </ui:VisualElement>
-            <ui:VisualElement name="EventDataEditView" style="width: 194px; opacity: 0.8; visibility: visible; display: flex; overflow: visible; -unity-font-style: normal; color: rgb(0, 211, 241); -unity-text-align: upper-left; white-space: normal; -unity-font: initial; -unity-text-outline-color: rgb(255, 27, 27); -unity-text-outline-width: 0; background-color: rgb(56, 56, 56);">
-                <uie:IntegerField label="Event ID" value="42" name="EventID" style="margin-top: 10px;" />
+            <ui:VisualElement name="EventDataEditView" style="width: 213px; opacity: 0.8; visibility: visible; display: flex; overflow: visible; -unity-font-style: normal; color: rgb(0, 211, 241); -unity-text-align: upper-left; white-space: normal; -unity-font: initial; -unity-text-outline-color: rgb(255, 27, 27); -unity-text-outline-width: 0; background-color: rgb(56, 56, 56); flex-direction: column; align-items: stretch; justify-content: flex-start; height: 102px;">
+                <uie:IntegerField label="Event ID" value="42" name="EventID" style="margin-top: 10px; width: 188px;" />
                 <ui:VisualElement style="height: 23px;" />
-                <uie:IntegerField label="Prepare Frame" value="42" readonly="false" name="PrepareFrame" />
-                <uie:IntegerField label="Begin Frame" value="42" name="BeginFrame" />
-                <uie:IntegerField label="Begin Recovery Frame" value="42" name="BeginRecoveryFrame" />
-                <uie:IntegerField label="Finish Frame" value="42" name="FinishFrame" />
+                <uie:IntegerField label="Prepare Frame" value="42" readonly="false" name="PrepareFrame" style="width: 188px;" />
+                <uie:IntegerField label="Begin Frame" value="42" name="BeginFrame" style="width: 188px;" />
+                <uie:IntegerField label="Begin Recovery Frame" value="42" name="BeginRecoveryFrame" style="width: 188px;" />
+                <uie:IntegerField label="Finish Frame" value="42" name="FinishFrame" style="width: 188px;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="TimelineArea" focusable="false" tabindex="0" style="position: absolute; left: 410px; top: 94px; height: 385px; width: 340px; right: 4px; bottom: 0; visibility: visible; border-left-color: rgb(153, 153, 153); border-right-color: rgb(153, 153, 153); border-top-color: rgb(153, 153, 153); border-bottom-color: rgb(153, 153, 153); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; background-color: rgba(51, 51, 51, 0); overflow: visible; opacity: 1; display: flex; cursor: initial;">
+    <ui:VisualElement name="TimelineArea" focusable="false" tabindex="0" style="position: absolute; left: 220px; top: 200px; height: 275px; width: 520px; right: 4px; bottom: 0; visibility: visible; border-left-color: rgb(153, 153, 153); border-right-color: rgb(153, 153, 153); border-top-color: rgb(153, 153, 153); border-bottom-color: rgb(153, 153, 153); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; background-color: rgba(51, 51, 51, 0); overflow: visible; opacity: 1; display: flex; cursor: initial;">
         <ui:Label text="Time: 0s" display-tooltip-when-elided="true" name="CurrTimeLabel" style="opacity: 0.5; position: absolute; top: -27px; left: 4px; overflow: visible; width: 60px;" />
         <ui:Label text="Frame: 0" display-tooltip-when-elided="true" name="CurrFrameLabel" style="opacity: 0.5; position: absolute; top: -27px; left: 80px; overflow: visible; width: 76px;" />
+        <ui:DropdownField index="-1" choices="System.Collections.Generic.List`1[System.String]" name="TagDropDown" style="position: absolute; top: -27px; left: 189px; width: 69px;" />
+        <ui:Button text="Add Tag" display-tooltip-when-elided="true" name="AddTagButton" style="position: absolute; top: -27px; left: 269px;" />
     </ui:VisualElement>
 </ui:UXML>

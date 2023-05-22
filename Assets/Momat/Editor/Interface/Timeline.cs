@@ -8,21 +8,39 @@ using UnityEngine.UIElements;
 
 namespace Momat.Editor
 {
+    internal class EditorTag
+    {
+        public int tagID;
+        public string tagName;
+
+        public float beginTime;
+        public float endTime;
+
+        public Color color;
+    }
+    
     internal class Timeline
     {
         private AnimationPreProcessWindow mainWindow;
         private VisualElement timelineArea;
         private Label timeLabel;
         private Label frameLabel;
+        private DropdownField tagDropdownField;
         
         private Vector2 timelineScrollPos;
         private Vector2 dataScrollPos;
 
         private float tickSpacing = 7.5f;
         private float timelineZoom = 1f;
+        
         private float currTime;
         private int currFrame;
         private bool isDraggingCurrTimeAxis;
+        private bool isDraggingTagBoundary;
+        private bool isDraggingBegin;
+        private int draggingTagIndex;
+
+        private List<EditorTag> editorTags;
         
         private static Texture2D TimelineTexActive;
         private static Texture2D TimelineTexInActive;
@@ -35,6 +53,17 @@ namespace Momat.Editor
 
             timeLabel = this.timelineArea.Q<Label>("CurrTimeLabel");
             frameLabel = this.timelineArea.Q<Label>("CurrFrameLabel");
+            tagDropdownField = this.timelineArea.Q<DropdownField>("TagDropDown");
+            
+            timelineArea.RegisterCallback<MouseDownEvent>(OnMouseDown, TrickleDown.TrickleDown);
+            timelineArea.RegisterCallback<MouseUpEvent>(OnMouseUp, TrickleDown.TrickleDown);
+            timelineArea.RegisterCallback<MouseMoveEvent>(OnMouseMove, TrickleDown.TrickleDown);
+            timelineArea.RegisterCallback<WheelEvent>(OnMouseWheel, TrickleDown.TrickleDown);
+
+            var addTagButton = timelineArea.Q<Button>("AddTagButton");
+            addTagButton.clickable.clicked += AddTag;
+
+            editorTags = new List<EditorTag>();
         }
 
         internal void Draw()
@@ -131,15 +160,55 @@ namespace Momat.Editor
             Handles.DrawLine(new Vector3(currTime * tickSpacing * timelineZoom * 10f, 0f, 0f),
                 new Vector3(currTime * tickSpacing * timelineZoom * 10f, areaRect.height, 0f));
             Handles.EndGUI();
+        
+            DrawTags();
 
             EditorGUILayout.EndScrollView();
             GUILayout.EndArea();
 
             timeLabel.text = $"Time: {currTime:F2}s";
             frameLabel.text = $"Frame: {currFrame}";
+            
         }
 
-        internal void OnMouseWheel(WheelEvent evt)
+        private void DrawTags()
+        {
+            for (int i = 0; i < editorTags.Count; i++)
+            {
+                Handles.BeginGUI();
+                Handles.color = editorTags[i].color;
+
+                float x1 = editorTags[i].beginTime * tickSpacing * timelineZoom * 10f;
+                float x2 = editorTags[i].endTime * tickSpacing * timelineZoom * 10f;
+                
+                EditorGUI.LabelField(new Rect
+                    ((x1 + x2)/2 - 15f, 40f + i * 20, 35f, 15f), $"{editorTags[i].tagName}");
+                
+                Handles.DrawLine(new Vector3(x1, 40f + i * 20, 0f),
+                    new Vector3(x2, 40f + i * 20, 0f));
+                
+                Handles.color = Color.white;
+                Handles.DrawSolidDisc(new Vector3(x1, 40f + i * 20, 0f), Vector3.forward, 5);
+                Handles.DrawSolidDisc(new Vector3(x2, 40f + i * 20, 0f), Vector3.forward, 5);
+                
+                Handles.EndGUI();
+            }
+        }
+
+        private void AddTag()
+        {
+            var newTag = new EditorTag
+            {
+                tagID = tagDropdownField.index,
+                tagName = tagDropdownField.value,
+                beginTime = 0,
+                endTime = mainWindow.currAnimationClip.sourceAnimClip.length,
+                color = new Color(Random.Range(0,1f),Random.Range(0,1f),Random.Range(0,1f))
+            };
+            editorTags.Add(newTag);
+        }
+
+        private void OnMouseWheel(WheelEvent evt)
         {
             float zoomDelta = -evt.delta.y * (0.1f * timelineZoom);
             timelineZoom += zoomDelta;
@@ -148,23 +217,51 @@ namespace Momat.Editor
             mainWindow.Repaint();
         }
 
-        internal void OnMouseDown(MouseDownEvent evt)
+        private void OnMouseDown(MouseDownEvent evt)
         {
-            var area = new Rect(timelineArea.layout.x, timelineArea.layout.y,
-                timelineArea.layout.width, 40);
+            var area = new Rect(timelineArea.layout.x, timelineArea.layout.y + 20,
+                timelineArea.layout.width, timelineArea.layout.height);
 
             if (area.Contains(evt.mousePosition))
             {
                 isDraggingCurrTimeAxis = true;
             }
+            
+            for (int i = 0; i < editorTags.Count; i++)
+            {
+                float x1 = editorTags[i].beginTime * tickSpacing * timelineZoom * 10f;
+                float x2 = editorTags[i].endTime * tickSpacing * timelineZoom * 10f;
+
+                var beginDiscArea = new Rect(timelineArea.layout.x + x1 - 5, timelineArea.layout.y + 55f + i * 20,
+                    10, 10);
+                var endDiscArea = new Rect(timelineArea.layout.x + x2 - 5, timelineArea.layout.y + 55f + i * 20,
+                    10, 10);
+
+                if (beginDiscArea.Contains(evt.mousePosition))
+                {
+                    isDraggingBegin = true;
+                    draggingTagIndex = i;
+                    isDraggingTagBoundary = true;
+                    return;
+                }
+                
+                if (endDiscArea.Contains(evt.mousePosition))
+                {
+                    isDraggingBegin = false;
+                    draggingTagIndex = i;
+                    isDraggingTagBoundary = true;
+                    return;
+                }
+            }
         }
 
-        internal void OnMouseUp(MouseUpEvent evt)
+        private void OnMouseUp(MouseUpEvent evt)
         {
             isDraggingCurrTimeAxis = false;
+            isDraggingTagBoundary = false;
         }
 
-        internal void OnMouseMove(MouseMoveEvent evt)
+        private void OnMouseMove(MouseMoveEvent evt)
         {
             if (isDraggingCurrTimeAxis)
             {
@@ -177,30 +274,50 @@ namespace Momat.Editor
                 
                 mainWindow.Repaint();
             }
+            
+            if (isDraggingTagBoundary)
+            {
+                 var boundaryTime = (timelineScrollPos.x + evt.mousePosition.x -
+                            timelineArea.layout.x) / (tickSpacing * timelineZoom * 10f);
+
+                 if (isDraggingBegin)
+                 {
+                     boundaryTime = Mathf.Clamp(boundaryTime, 0, editorTags[draggingTagIndex].endTime);
+                     editorTags[draggingTagIndex].beginTime = boundaryTime;
+                 }
+                 else
+                 {
+                     boundaryTime = Mathf.Clamp(boundaryTime, editorTags[draggingTagIndex].beginTime,
+                         mainWindow.currAnimationClip.sourceAnimClip.length);
+                     editorTags[draggingTagIndex].endTime = boundaryTime;
+                 }
+                 
+                 mainWindow.Repaint();
+            }
         }
 
-        public Texture2D GetTimelineTexActive()
+        private Texture2D GetTimelineTexActive()
         {
             if (TimelineTexActive == null)
                 TimelineTexActive = MakeTex(1, 1, new Color(0.825f, 0.825f, 0.825f, 1f));
 
             return TimelineTexActive;
         }
-        public Texture2D GetTimelineTexInActive()
+        private Texture2D GetTimelineTexInActive()
         {
             if (TimelineTexInActive == null)
                 TimelineTexInActive = MakeTex(1, 1, new Color(0.725f, 0.725f, 0.725f, 1f));
 
             return TimelineTexInActive;
         }
-        public Texture2D GetTimelineTexEvent()
+        private Texture2D GetTimelineTexEvent()
         {
             if (TimelineTexEvent == null)
                 TimelineTexEvent = MakeTex(1, 1, new Color(0.4f, 0.4f, 0.4f, 1f));
 
             return TimelineTexEvent;
         }
-        public Texture2D MakeTex(int width, int height, Color col)
+        private Texture2D MakeTex(int width, int height, Color col)
         {
             Color[] pix = new Color[width * height];
             for (int i = 0; i < pix.Length; ++i)

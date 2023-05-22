@@ -24,7 +24,9 @@ namespace Momat.Editor
         public List<ProcessingAnimationClip> animSet;
         
         public AnimationFeatureDefinition featureDefinition;
-        
+
+        public List<string> tags;
+
         public float sampleRate = 30f;
         
         public void BuildRuntimeData()
