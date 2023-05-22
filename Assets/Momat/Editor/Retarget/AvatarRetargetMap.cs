@@ -210,48 +210,13 @@ namespace Momat.Editor
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-
+            
             var avatarRetargetMap = target as AvatarRetargetMap;
             
             bool avatarChanged = false;
+            avatarChanged |= ShowAvatarProperty(sourceAvatarProperty, "Source Avatar");
+            avatarChanged |= ShowAvatarProperty(targetAvatarProperty, "Target Avatar");
 
-            
-            var newSourceAvatar = EditorGUILayout.ObjectField("Source Avatar", 
-                sourceAvatarProperty.objectReferenceValue, typeof(Avatar), false);
-            if (newSourceAvatar != sourceAvatarProperty.objectReferenceValue)
-            {
-                sourceAvatarProperty.objectReferenceValue = newSourceAvatar;
-                avatarChanged = true;
-            }
-            if (newSourceAvatar != null)
-            {
-                // readonly
-                GUI.enabled = false;
-                EditorGUILayout.Toggle("Is Humanoid", ((Avatar)sourceAvatarProperty.objectReferenceValue).isHuman);
-                GUI.enabled = true;
-            }
-            
-            var newTargetAvatar = EditorGUILayout.ObjectField("Target Avatar", 
-                targetAvatarProperty.objectReferenceValue, typeof(Avatar), false);
-            if (newTargetAvatar != targetAvatarProperty.objectReferenceValue)
-            {
-                targetAvatarProperty.objectReferenceValue = newTargetAvatar;
-                avatarChanged = true;
-            }
-            if (newTargetAvatar != null)
-            {
-                // readonly
-                GUI.enabled = false;
-                EditorGUILayout.Toggle("Is Humanoid", ((Avatar)targetAvatarProperty.objectReferenceValue).isHuman);
-                GUI.enabled = true;
-            }
-            
-            if (avatarChanged)
-            {
-                avatarRetargetMap.OnAvatarChanged();
-            }
-            
-            
             if (avatarRetargetMap.sourceAvatar != null && avatarRetargetMap.targetAvatar != null)
             {
                 GUILayout.Space(20);
@@ -282,21 +247,48 @@ namespace Momat.Editor
                     EditorGUILayout.EndHorizontal();
                 }
             }
-            
-            
+
             serializedObject.ApplyModifiedProperties();
+            
+            if (avatarChanged)
+            {
+                avatarRetargetMap.OnAvatarChanged();
+            }
             
             if (GUILayout.Button("Save Asset"))
             {
                 SaveAsset();
             }
         }
-
+        
+        // target is edited in OnInspectorGUI so we should save asset manually
         private void SaveAsset()
         {
             EditorUtility.SetDirty(serializedObject.targetObject);
             AssetDatabase.SaveAssetIfDirty(serializedObject.targetObject);
             AssetDatabase.Refresh();
+        }
+
+        private bool ShowAvatarProperty(SerializedProperty avatarProperty, string labelStr)
+        {
+            var newSourceAvatar = EditorGUILayout.ObjectField(labelStr,
+                avatarProperty.objectReferenceValue, typeof(Avatar), false);
+            
+            if (newSourceAvatar != null)
+            {
+                // readonly
+                GUI.enabled = false;
+                EditorGUILayout.Toggle("Is Humanoid", ((Avatar)avatarProperty.objectReferenceValue).isHuman);
+                GUI.enabled = true;
+            }
+            
+            if (newSourceAvatar != avatarProperty.objectReferenceValue)
+            {
+                avatarProperty.objectReferenceValue = newSourceAvatar;
+                return true;
+            }
+
+            return false;
         }
     }
     
