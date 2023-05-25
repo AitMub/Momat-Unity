@@ -539,6 +539,11 @@ namespace Unity.Mathematics
         {
             return new AffineTransform(t, q);
         }
+        
+        public static AffineTransform Create(Transform transform)
+        {
+            return new AffineTransform(transform.localPosition, transform.localRotation);
+        }
 
         public static AffineTransform CreateGlobal(Transform transform)
         {

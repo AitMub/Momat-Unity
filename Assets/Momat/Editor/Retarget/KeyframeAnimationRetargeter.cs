@@ -182,11 +182,13 @@ namespace Momat.Editor
                 AffineTransform sJointWorldTransformInAnim = 
                     sourceRigBindTransforms[sourceParentIndex] * sourceTransform;
             
-                AffineTransform sJointRelativeTransformWorldSpace =
-                    sJointWorldTransformInAnim * sourceRigInverseBindTransforms[sourceJointIndex];
+                AffineTransform sJointRelativeTransformWorldSpace = AffineTransform.Create
+                    (sJointWorldTransformInAnim.t - sourceRigBindTransforms[sourceJointIndex].t,
+                        sJointWorldTransformInAnim.q * Quaternion.Inverse(sourceRigBindTransforms[sourceJointIndex].q));
 
-                AffineTransform tJointWorldTransformInAnim =
-                    sJointRelativeTransformWorldSpace * targetRigBindTransforms[targetJointIndex];
+                AffineTransform tJointWorldTransformInAnim = AffineTransform.Create
+                (sJointRelativeTransformWorldSpace.t + targetRigBindTransforms[targetJointIndex].t,
+                    sJointRelativeTransformWorldSpace.q * (Quaternion)targetRigBindTransforms[targetJointIndex].q);
 
                 AffineTransform tJointLocalTransformInAnim =
                     targetRigParentInverseBindTransforms[targetJointIndex] * tJointWorldTransformInAnim;
