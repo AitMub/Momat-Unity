@@ -19,7 +19,6 @@ namespace Momat.Runtime
             currentState?.Exit();
 
             newState.Enter(this);
-            Debug.Log(newState.ToString());
             currentState = newState;
         }
         

@@ -295,7 +295,7 @@ namespace Momat.Runtime
                     
                     fadeOutPrevRootTransform = fadeOutCurrRootTransform;
                 }
-                
+
                 var deltaT = NLerp
                     (deltaFadeOutRootTransform.t, deltaFadeInRootTransform.t, weight);
                 animationGenerator.rootVelocity = deltaT / clock.DeltaTime;

@@ -192,53 +192,17 @@ namespace Unity.Mathematics
             return value * value;
         }
 
-        public static float3 zero
-        {
-            get
-            {
-                return new float3(0.0f);
-            }
-        }
+        public static float3 zero => new float3(0.0f);
 
-        internal static float3 half
-        {
-            get
-            {
-                return new float3(0.5f);
-            }
-        }
+        internal static float3 half => new float3(0.5f);
 
-        public static float3 right
-        {
-            get
-            {
-                return new float3(1.0f, 0.0f, 0.0f);
-            }
-        }
+        public static float3 right => new float3(1.0f, 0.0f, 0.0f);
 
-        public static float3 up
-        {
-            get
-            {
-                return new float3(0.0f, 1.0f, 0.0f);
-            }
-        }
+        public static float3 up => new float3(0.0f, 1.0f, 0.0f);
 
-        public static float3 forward
-        {
-            get
-            {
-                return new float3(0.0f, 0.0f, 1.0f);
-            }
-        }
+        public static float3 forward => new float3(0.0f, 0.0f, 1.0f);
 
-        public static float3 NaN
-        {
-            get
-            {
-                return new float3(float.NaN, float.NaN, float.NaN);
-            }
-        }
+        public static float3 NaN => new float3(float.NaN, float.NaN, float.NaN);
 
         public static bool IsNaN(float3 value)
         {
@@ -248,21 +212,9 @@ namespace Unity.Mathematics
                 float.IsNaN(value.y);
         }
 
-        internal static float3 min
-        {
-            get
-            {
-                return new float3(float.MinValue, float.MinValue, float.MinValue);
-            }
-        }
+        internal static float3 min => new float3(float.MinValue, float.MinValue, float.MinValue);
 
-        internal static float3 max
-        {
-            get
-            {
-                return new float3(float.MaxValue, float.MaxValue, float.MaxValue);
-            }
-        }
+        internal static float3 max => new float3(float.MaxValue, float.MaxValue, float.MaxValue);
 
         internal static float3 minimize(float3 lhs, float3 rhs)
         {
@@ -517,6 +469,8 @@ namespace Unity.Mathematics
         public float3 t;
         public quaternion q;
 
+        public float3 Euler => new Quaternion(q.value.x, q.value.y, q.value.z, q.value.w).eulerAngles;
+
         public AffineTransform(float3 t_, quaternion q_)
         {
             t = t_;
@@ -550,15 +504,10 @@ namespace Unity.Mathematics
             return Create(transform.position, transform.rotation);
         }
 
-        public static AffineTransform identity
-        {
-            get
-            {
-                return new AffineTransform(
-                    new float3(0.0f, 0.0f, 0.0f),
-                    quaternion.identity);
-            }
-        }
+        public static AffineTransform identity =>
+            new AffineTransform(
+                new float3(0.0f, 0.0f, 0.0f),
+                quaternion.identity);
 
         public float3 transform(float3 p)
         {

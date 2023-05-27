@@ -92,6 +92,7 @@ namespace Momat.Runtime
         private static (Vector3, Vector3) CalculateRootMotion
             (AffineTransform prevRootTransform, AffineTransform currRootTransform, float deltaTime)
         {
+            // can be seen as transforming currRootTransform to coord-sys of prevRootTransform
             var deltaRootTransform = prevRootTransform.inverse() * currRootTransform;
 
             var angularDisplacement = ConvertQuaternionMotionToEuler(deltaRootTransform.q);
@@ -120,7 +121,7 @@ namespace Momat.Runtime
             var velocity = v1 * (1 - weight) + v2 * weight;
             if (velocity.magnitude != 0)
             {
-                velocity = velocity / (v1 + v2).magnitude * scale;
+                velocity = velocity.normalized * scale;
             }
 
             return velocity;
