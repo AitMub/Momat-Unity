@@ -24,10 +24,16 @@ namespace Momat.Editor
     {
         internal string[] joints;
 
+        private SerializedProperty avatarProperty;
+        private SerializedProperty timeStampsListProperty;
+
         private void OnEnable()
         {
             var animationFeatureDefinition = target as AnimationFeatureDefinition;
             joints = animationFeatureDefinition.avatar.GetAvatarJointNames().ToArray();
+
+            avatarProperty = serializedObject.FindProperty("avatar");
+            timeStampsListProperty = serializedObject.FindProperty("trajectoryFeatureDefinition.trajectoryTimeStamps");
         }
         
         public override void OnInspectorGUI()
@@ -37,21 +43,15 @@ namespace Momat.Editor
             var animationFeatureDefinition = target as AnimationFeatureDefinition;
             
             var avatar = 
-                EditorGUILayout.ObjectField("Avatar", animationFeatureDefinition.avatar, 
+                EditorGUILayout.ObjectField("Avatar", avatarProperty.objectReferenceValue, 
                     typeof(Avatar), false) as Avatar;
-            if (avatar != animationFeatureDefinition.avatar)
+            if (avatar != avatarProperty.objectReferenceValue)
             {
+                avatarProperty.objectReferenceValue = avatar;
+                
                 animationFeatureDefinition.avatar = avatar;
                 animationFeatureDefinition.poseFeatureDefinition.comparedJoint = new List<string>();
-                
-                if (avatar != null)
-                {
-                    joints = avatar.GetAvatarJointNames().ToArray();
-                }
-                else
-                {
-                    joints = null;
-                }
+                joints = avatar != null ? avatar.GetAvatarJointNames().ToArray() : null;
             }
             
             GUILayout.Space(10);
@@ -59,8 +59,7 @@ namespace Momat.Editor
             EditorGUILayout.LabelField("Trajectory Feature");
             
             EditorGUI.indentLevel++;
-            SerializedProperty listProperty = serializedObject.FindProperty("trajectoryFeatureDefinition.trajectoryTimeStamps");
-            EditorGUILayout.PropertyField(listProperty, true);
+            EditorGUILayout.PropertyField(timeStampsListProperty, true);
             EditorGUI.indentLevel--;
 
             GUILayout.Space(10);

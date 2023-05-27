@@ -57,8 +57,6 @@ namespace Momat.Editor
     
     internal class AnimationPreProcessWindow : EditorWindow
     {
-        private static AnimationPreProcessWindow instance;
-
         // visual elements
         private static AnimationClipListView animationClipListView;
         private static Label animationClipNameLabel;
@@ -81,12 +79,8 @@ namespace Momat.Editor
         [MenuItem("Window/Momat/Animation Pre Process Window %q")]
         public static void ShowWindow()
         {
-            if (instance == null)
-            {
-                var wnd = GetWindow<AnimationPreProcessWindow>();
-                wnd.titleContent = new GUIContent("Momat AnimPreProcessWindow");
-                instance = wnd;
-            }
+            var wnd = GetWindow<AnimationPreProcessWindow>();
+            wnd.titleContent = new GUIContent("Momat AnimPreProcessWindow");
         }
 
         protected void OnEnable()
@@ -129,7 +123,7 @@ namespace Momat.Editor
             var timelineArea = rootVisualElement.Q<VisualElement>("TimelineArea");
             timeline = new Timeline(this, timelineArea);
         }
-
+        
         private void OnGUI()
         {
             timeline.Draw();
