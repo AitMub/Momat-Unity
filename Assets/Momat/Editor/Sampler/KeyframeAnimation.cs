@@ -71,6 +71,19 @@ namespace Momat.Editor
                             zeroHeightCurve.AddKey(anim.duration, 0);
                             anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", zeroHeightCurve);
                         }
+                        else if (curveBinding.propertyName is "MotionQ.x" or "MotionQ.z")
+                        {
+                            var motionYIndex = 
+                                Array.FindIndex(curveBindings, cb => cb.propertyName == "MotionQ.y");
+                            var motionYCurve = AnimationUtility.GetEditorCurve(animClip, curveBindings[motionYIndex]);
+
+                            var zeroCurve = new AnimationCurve();
+                            for (int i = 0; i < motionYCurve.length; i++)
+                            {
+                                zeroCurve.AddKey(motionYCurve[i].time, 0);
+                            }
+                            anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", zeroCurve);
+                        }
                         else if (curveBinding.propertyName.Contains("Motion"))
                         {
                             anim.MapEditorCurve(jointIndex, curveBinding.propertyName, "MotionT", "MotionQ", curve);

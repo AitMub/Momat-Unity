@@ -214,6 +214,7 @@ namespace Momat.Runtime
             // the transform we set would be modified by unity animator
             for (int i = 0; i < comparedJointRootSpaceT.Length; i++)
             {
+                // to-do: Cache jointIndex in Start()
                 var jointName = runtimeAnimationData.poseFeatureDefinition.comparedJoint[i];
                 var jointIndex = runtimeAnimationData.rig.GetJointIndexFromName(jointName);
 
