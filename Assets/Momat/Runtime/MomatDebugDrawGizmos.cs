@@ -9,6 +9,7 @@ namespace Momat.Runtime
     public partial class MomatAnimator : MonoBehaviour
     {
         private Vector3[] positions = new Vector3[10];
+        private Vector3[] directions = new Vector3[10];
         
         private void OnDrawGizmos()
         {
@@ -26,13 +27,19 @@ namespace Momat.Runtime
         {
             int length = trajectory.trajectoryData.Count + 1;
             positions[0] = transform.position;
+            directions[0] = transform.forward;
             
             int index = 1;
             foreach (var trajectoryPoint in trajectory.trajectoryData)
             {
                 var localPosition = new Vector4
                     (trajectoryPoint.transform.t.x, trajectoryPoint.transform.t.y, trajectoryPoint.transform.t.z, 1.0f);
-                positions[index] =  transform.localToWorldMatrix * localPosition;
+
+                var localToWorldMatrix = transform.localToWorldMatrix;
+                positions[index] =  localToWorldMatrix * localPosition;
+                directions[index] = localToWorldMatrix * new Vector4(
+                    trajectoryPoint.transform.Forward.x, trajectoryPoint.transform.Forward.y, trajectoryPoint.transform.Forward.z, 0.0f);
+                
                 index++;
             }
             
@@ -40,6 +47,7 @@ namespace Momat.Runtime
             for (int i = 0; i < length; i++)
             {
                 Gizmos.DrawSphere(positions[i], 0.05f);
+                GizmosEx.DrawArrow(positions[i], directions[i]);
             }
 
             for (int i = 0; i < length - 1; i++)
@@ -48,7 +56,7 @@ namespace Momat.Runtime
             }
         }
         
-        private void DrawTrajectory(List<float3> trajectory, Color color)
+        private void DrawTrajectory(List<AffineTransform> trajectory, Color color)
         {
             var timeStamps = runtimeAnimationData.trajectoryFeatureDefinition.trajectoryTimeStamps;
 
@@ -58,13 +66,18 @@ namespace Momat.Runtime
                 if (i > 0 && timeStamps[i - 1] > 0 && timeStamps[i] < 0)
                 {
                     positions[i] = transform.position;
+                    directions[i] = transform.forward;
                     continue;
                 }
 
                 var trajectoryPoint = trajectory[tIndex];
                 var localPosition = new Vector4
-                    (trajectoryPoint.x, trajectoryPoint.y, trajectoryPoint.z, 1.0f);
-                positions[i] =  transform.localToWorldMatrix * localPosition;
+                    (trajectoryPoint.t.x, trajectoryPoint.t.y, trajectoryPoint.t.z, 1.0f);
+                
+                var localToWorldMatrix = transform.localToWorldMatrix;
+                positions[i] =  localToWorldMatrix * localPosition;
+                directions[i] = localToWorldMatrix * new Vector4(
+                    trajectoryPoint.Forward.x, trajectoryPoint.Forward.y, trajectoryPoint.Forward.z, 0.0f);
                 
                 tIndex++;
             }
@@ -75,6 +88,7 @@ namespace Momat.Runtime
             for (int i = 0; i < length; i++)
             {
                 Gizmos.DrawSphere(positions[i], 0.05f);
+                GizmosEx.DrawArrow(positions[i], directions[i]);
             }
 
             for (int i = 0; i < length - 1; i++)
