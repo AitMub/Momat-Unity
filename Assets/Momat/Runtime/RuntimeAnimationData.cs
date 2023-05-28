@@ -134,19 +134,8 @@ namespace Momat.Runtime
                  frameIndex < endFrame && frameIndex < animationFrameNum[animationIndex]; 
                  frameIndex++)
             {
-                var featureVector = new FeatureVector();
-                featureVector.poseIdentifier = new PoseIdentifier
-                    { animationID = animationIndex, frameID = frameIndex };
-
-                int rangeBegin = TrajectoryPointGroupLen * animationFrameOffset[animationIndex]
-                                 + frameIndex * TrajectoryPointGroupLen;
-                featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, TrajectoryPointGroupLen);
-
-                rangeBegin = ComparedJointTransformGroupLen * animationFrameOffset[animationIndex]
-                             + frameIndex * ComparedJointTransformGroupLen;
-                featureVector.jointRootSpaceT = comparedJointRootSpaceT.GetRange(rangeBegin, ComparedJointTransformGroupLen);
-                
-                yield return featureVector;
+                yield return GetFeatureVector(new PoseIdentifier
+                    { animationID = animationIndex, frameID = frameIndex });
             }
         }
 
@@ -158,6 +147,10 @@ namespace Momat.Runtime
             int rangeBegin = TrajectoryPointGroupLen * animationFrameOffset[poseIdentifier.animationID]
                              + poseIdentifier.frameID * TrajectoryPointGroupLen;
             featureVector.trajectory = trajectoryPoints.GetRange(rangeBegin, TrajectoryPointGroupLen);
+            
+            rangeBegin = ComparedJointTransformGroupLen * animationFrameOffset[poseIdentifier.animationID]
+                         + poseIdentifier.frameID * ComparedJointTransformGroupLen;
+            featureVector.jointRootSpaceT = comparedJointRootSpaceT.GetRange(rangeBegin, ComparedJointTransformGroupLen);
 
             return featureVector;
         }

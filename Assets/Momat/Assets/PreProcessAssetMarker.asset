@@ -74,16 +74,6 @@ MonoBehaviour:
         beginFrame: 0
         beginRecoveryFrame: 0
         finishFrame: 0
-  - sourceAnimClip: {fileID: 7400084, guid: 035b863670603944796d2e247eb472f4, type: 3}
-    animationType: 0
-    avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}
-    clipData:
-      eventClipData:
-        eventID: 0
-        prepareFrame: 0
-        beginFrame: 0
-        beginRecoveryFrame: 0
-        finishFrame: 0
   - sourceAnimClip: {fileID: 7400060, guid: 035b863670603944796d2e247eb472f4, type: 3}
     animationType: 0
     avatarRetargetMap: {fileID: 11400000, guid: e4eff1cbe6b28d645a998b94962f524e, type: 2}

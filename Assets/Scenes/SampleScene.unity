@@ -243,6 +243,7 @@ MonoBehaviour:
   updateInterval: 0.5
   blendTime: 0.1
   weight: 0
+  couldContinuePlayCost: 0.3
   runtimeAnimationData: {fileID: 11400000, guid: 7ddde82416de9df44bff0d42929ae132, type: 2}
 --- !u!1 &115482791
 GameObject:
@@ -10007,9 +10008,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d83e9bba2f81bd47afaddba1a813f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateInterval: 0.3
-  blendTime: 0.25
+  updateInterval: 0.2
+  blendTime: 0.16
   weight: 0.45
+  couldContinuePlayCost: 0.5
   runtimeAnimationData: {fileID: 11400000, guid: 9a2addfcb33cace4a9d44e7f643aa699, type: 2}
 --- !u!114 &1817191158
 MonoBehaviour:
@@ -10145,6 +10147,7 @@ MonoBehaviour:
   updateInterval: 0.2
   blendTime: 0.16
   weight: 0.45
+  couldContinuePlayCost: 0.6
   runtimeAnimationData: {fileID: 11400000, guid: 6255208dc3aa0e84b9d42cbe07e7e769, type: 2}
 --- !u!114 &1933243364
 MonoBehaviour:

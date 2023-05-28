@@ -33,6 +33,7 @@ namespace Momat.Runtime
         {
             private MomatAnimator momatAnimator;
             private float enterBlendTime;
+            private PoseIdentifier currPose;
 
             public void Enter(MomatAnimator momatAnimator)
             {
@@ -73,15 +74,40 @@ namespace Momat.Runtime
 
             private bool CheckNeedUpdateMotionPose()
             {
+                // when entering the motion state, make sure to complete blending with other states before performing regular updates
                 if (momatAnimator.animatorClock.TimeFromLastTimeStamp < enterBlendTime)
                 {
                     return false;
                 }
                 enterBlendTime = 0f;
                 
-                if (momatAnimator.animatorClock.TimeFromLastTimeStamp > momatAnimator.updateInterval)
+                if (momatAnimator.animatorClock.TimeFromLastTimeStamp > momatAnimator.updateInterval 
+                    && ContinuePlayEligible() == false)
                 {
                     momatAnimator.animatorClock.SetTimeStamp();
+                    return true;
+                }
+
+                return false;
+            }
+
+            private bool ContinuePlayEligible()
+            {
+                var continuePlayPose = currPose;
+                continuePlayPose.frameID = Mathf.FloorToInt(momatAnimator.animatorClock.TimeFromLastTimeStamp * momatAnimator.FrameRate) +
+                                           continuePlayPose.frameID;
+                
+                if (continuePlayPose.frameID + Mathf.FloorToInt(momatAnimator.updateInterval * momatAnimator.FrameRate)
+                    >= momatAnimator.runtimeAnimationData.animationFrameNum[currPose.animationID])
+                {
+                    return false;
+                }
+
+                var featureVector = momatAnimator.runtimeAnimationData.GetFeatureVector(continuePlayPose);
+                var cost = momatAnimator.costComputeFunc(featureVector);
+                
+                if (cost < momatAnimator.couldContinuePlayCost)
+                {
                     return true;
                 }
 
@@ -92,6 +118,7 @@ namespace Momat.Runtime
             {
                 var nextPose = momatAnimator.SearchPoseInFeatureSet(momatAnimator.GetAllMotionAnimFeatureVectors());
                 momatAnimator.BeginPlayPose(nextPose, momatAnimator.blendTime);
+                currPose = nextPose;
             }
         }
         
