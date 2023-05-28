@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ef8d0f87ae9bcd48a26a15ac34e0d18, type: 3}
+  m_Name: AnimationFeatureDefinitionWas
+  m_EditorClassIdentifier: 
+  avatar: {fileID: 9000000, guid: 6f61576e1f0e6c6438c29601f0f2def9, type: 3}
+  trajectoryFeatureDefinition:
+    trajectoryTimeStamps:
+    - 1
+    - 0.5
+    - -0.5
+    - -1
+  poseFeatureDefinition:
+    comparedPastFuturePoseNum: 0
+    comparePosition: 1
+    compareVelocity: 0
+    comparedJoint:
+    - def_l_ankle
+    - def_r_ankle
+    - def_l_wrist
+    - def_r_wrist

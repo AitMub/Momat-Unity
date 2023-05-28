@@ -71,7 +71,7 @@ namespace Momat.Runtime
             }
         }
 
-        private void DrawTrajectory(List<float3> trajectory, Color color)
+        private void DrawTrajectory(List<AffineTransform> trajectory, Color color)
         {
             var timeStamps = runtimeAnimationData.trajectoryFeatureDefinition.trajectoryTimeStamps;
 
@@ -86,7 +86,7 @@ namespace Momat.Runtime
 
                 var trajectoryPoint = trajectory[tIndex];
                 var localPosition = new Vector4
-                    (trajectoryPoint.x, trajectoryPoint.y, trajectoryPoint.z, 1.0f);
+                    (trajectoryPoint.t.x, trajectoryPoint.t.z, trajectoryPoint.t.z, 1.0f);
                 positions[i] =  transform.localToWorldMatrix * localPosition;
                 
                 tIndex++;

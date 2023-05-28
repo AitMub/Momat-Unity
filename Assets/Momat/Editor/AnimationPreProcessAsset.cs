@@ -138,7 +138,7 @@ namespace Momat.Editor
 
             var outFeatureVectors = new ClipFeatureVectors
             {
-                trajectories = new NativeArray<float3>
+                trajectories = new NativeArray<AffineTransform>
                 (numFrames * featureDefinition.trajectoryFeatureDefinition.trajectoryTimeStamps.Count,
                     Allocator.Persistent),
                 jointRootSpaceT = new NativeArray<AffineTransform>

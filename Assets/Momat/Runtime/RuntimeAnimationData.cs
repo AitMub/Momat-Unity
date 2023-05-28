@@ -25,7 +25,7 @@ namespace Momat.Runtime
     public struct FeatureVector
     {
         public PoseIdentifier poseIdentifier;
-        public List<float3> trajectory;
+        public List<AffineTransform> trajectory;
         public List<AffineTransform> jointRootSpaceT;
     }
     
@@ -52,7 +52,7 @@ namespace Momat.Runtime
         [HideInInspector]  public List<AffineTransform> transforms;
 
         public int TrajectoryPointGroupLen => trajectoryFeatureDefinition.trajectoryTimeStamps.Count;
-        [HideInInspector] public List<float3> trajectoryPoints;
+        [HideInInspector] public List<AffineTransform> trajectoryPoints;
         
         public int ComparedJointTransformGroupLen => poseFeatureDefinition.comparedJoint.Count;
         [HideInInspector] public List<AffineTransform> comparedJointRootSpaceT;
@@ -60,7 +60,7 @@ namespace Momat.Runtime
         public RuntimeAnimationData()
         {
             transforms = new List<AffineTransform>();
-            trajectoryPoints = new List<float3>();
+            trajectoryPoints = new List<AffineTransform>();
             comparedJointRootSpaceT = new List<AffineTransform>();
         }
 

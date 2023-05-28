@@ -14,11 +14,6 @@ namespace Momat.Runtime
 {
     public partial class MomatAnimator : MonoBehaviour
     {
-        public void SetFutureLocalTrajectory(RuntimeTrajectory futureTrajectory)
-        {
-            futureLocalTrajectory = futureTrajectory;
-        }
-
         public bool EventTriggered()
         {
             return toPlayEventID != EventClipData.InvalidEventID;
@@ -34,5 +29,18 @@ namespace Momat.Runtime
             toPlayEventID = eventID;
             return true;
         }
+        
+        public void SetFutureLocalTrajectory(RuntimeTrajectory futureTrajectory)
+        {
+            futureLocalTrajectory = futureTrajectory;
+        }
+
+        public void SetCostComputeFunc(CostComputeFunc overrideFunc)
+        {
+            costComputeFunc = overrideFunc;
+        }
+
+        public RuntimeTrajectory PastLocalTrajectory => pastLocalTrajectory;
+        public AffineTransform[] ComparedJointRootSpaceT => comparedJointRootSpaceT;
     }
 }

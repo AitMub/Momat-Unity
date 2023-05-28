@@ -13,23 +13,87 @@ MonoBehaviour:
   m_Name: PreProcessAssetWas
   m_EditorClassIdentifier: 
   avatar: {fileID: 9000000, guid: 6f61576e1f0e6c6438c29601f0f2def9, type: 3}
-  motionAnimSet:
-  - sourceAnimClip: {fileID: -203655887218126122, guid: 764658affd570ff49b3b51edcbe91981, type: 3}
-    avatarRetargetMap: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400086, guid: 309af69b5650d5a46989017668cf39a9, type: 3}
-    avatarRetargetMap: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400064, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
-    avatarRetargetMap: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: 551471f6001f64c4ca0404cc6dd4dbb9, type: 2}
-    avatarRetargetMap: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: 61397ac7d44670d4da6204a53f34ddd8, type: 2}
-    avatarRetargetMap: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: d94f7ac879976044fa2b58ec29dd8d2d, type: 2}
-    avatarRetargetMap: {fileID: 0}
-  - sourceAnimClip: {fileID: 7400000, guid: 72b5ed80d897d574f823365bb4ec9faf, type: 2}
-    avatarRetargetMap: {fileID: 0}
-  idleAnimSet:
-  - sourceAnimClip: {fileID: 7400000, guid: f5589feb81050bc4ca0def6972ffb4a7, type: 2}
-    avatarRetargetMap: {fileID: 0}
-  featureDefinition: {fileID: 11400000, guid: 71f45b8468bbd884088b46368707b0c8, type: 2}
+  animSet:
+  - sourceAnimClip: {fileID: 7400024, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  - sourceAnimClip: {fileID: 7400044, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  - sourceAnimClip: {fileID: 7400018, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  - sourceAnimClip: {fileID: 7400016, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  - sourceAnimClip: {fileID: 7400034, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  - sourceAnimClip: {fileID: 7400022, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 0
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  - sourceAnimClip: {fileID: 7400002, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 1
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  - sourceAnimClip: {fileID: 7400068, guid: d9b2ee02710f70746b6aa2acbe11a1f7, type: 3}
+    animationType: 1
+    avatarRetargetMap: {fileID: 11400000, guid: f4034b261212e74408237cb1851d0a76, type: 2}
+    clipData:
+      eventClipData:
+        eventID: 0
+        prepareFrame: 0
+        beginFrame: 0
+        beginRecoveryFrame: 0
+        finishFrame: 0
+  featureDefinition: {fileID: 11400000, guid: 5bd1dc0eaf256504589be36adc2e73f5, type: 2}
+  tags: []
   sampleRate: 30

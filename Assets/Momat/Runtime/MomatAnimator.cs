@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
+using Quaternion = System.Numerics.Quaternion;
 using Random = System.Random;
 
 
@@ -41,6 +43,10 @@ namespace Momat.Runtime
         private PoseIdentifier nextPose;
         private int toPlayEventID;
         
+        public delegate float CostComputeFunc(in FeatureVector featureVector);
+
+        private CostComputeFunc costComputeFunc;
+
         private void Start()
         {
             animationGenerator = new AnimationGenerator(runtimeAnimationData, blendTime);
@@ -51,6 +57,8 @@ namespace Momat.Runtime
             parentIndices = runtimeAnimationData.rig.GenerateParentIndices();
 
             toPlayEventID = EventClipData.InvalidEventID;
+            
+            costComputeFunc = ComputeCost;
 
             SetState(new IdleState());
 
@@ -96,7 +104,7 @@ namespace Momat.Runtime
             
             foreach (var featureVector in featureVectors)
             {
-                var cost = ComputeCost(featureVector);
+                var cost = costComputeFunc(featureVector);
                 if (cost < minCost)
                 {
                     poseIdentifier = featureVector.poseIdentifier;
@@ -172,7 +180,7 @@ namespace Momat.Runtime
                 trajectoryPoint = trajectoryPoint.Next;
             }
 
-            return pastTrajPointDistance > 0.2f;
+            return pastTrajPointDistance > 0.1f;
         }
 
         private int GetAnimationFrameCnt(int animationID)
@@ -188,13 +196,15 @@ namespace Momat.Runtime
 
             foreach (var trajectoryPoint in futureLocalTrajectory.trajectoryData)
             {
-                futureTrajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                futureTrajCost += Vector3.Distance(featureVector.trajectory[i].t, trajectoryPoint.transform.t);
+                var angleCost = Vector3.Angle(featureVector.trajectory[i].Forward, trajectoryPoint.transform.Forward) / 180f;
+                futureTrajCost += angleCost;
                 i++;
             }
 
             foreach (var trajectoryPoint in pastLocalTrajectory.trajectoryData)
             {
-                pastTrajCost += Vector3.Distance(featureVector.trajectory[i], trajectoryPoint.transform.t);
+                pastTrajCost += Vector3.Distance(featureVector.trajectory[i].t, trajectoryPoint.transform.t);
                 i++;
             }
 
@@ -203,7 +213,7 @@ namespace Momat.Runtime
             {
                 poseCost += Vector3.Distance(featureVector.jointRootSpaceT[j].t, comparedJointRootSpaceT[j].t);
             }
-
+            
             return (futureTrajCost * 0.8f + pastTrajCost * 0.2f) * weight + poseCost * (1 - weight);
         }
 

@@ -12,7 +12,7 @@ namespace Momat.Editor
 {
     internal struct ClipFeatureVectors : IDisposable
     {
-        public NativeArray<float3> trajectories;
+        public NativeArray<AffineTransform> trajectories;
         public NativeArray<AffineTransform> jointRootSpaceT;
 
         public void Dispose()
@@ -39,7 +39,7 @@ namespace Momat.Editor
             var currWorldTransform = localPoses[frameIndex * numJoints];
             var timeStampNum = trajectoryTimeStamps.Length;
             
-            var frameTrajectoryPoints = new MemoryArray<float3>
+            var frameTrajectoryPoints = new MemoryArray<AffineTransform>
                 (featureVectors.trajectories, frameIndex * timeStampNum, timeStampNum);
 
             for (int i = 0; i < timeStampNum; i++)
@@ -47,7 +47,7 @@ namespace Momat.Editor
                 var timeStamp = trajectoryTimeStamps[i];
                 var worldTransform = SampleTransform(frameIndex, timeStamp);
                 var localTransform = currWorldTransform.inverse() * worldTransform;
-                frameTrajectoryPoints[i] = localTransform.t;
+                frameTrajectoryPoints[i] = new AffineTransform(localTransform.t, localTransform.q);
             }
 
             var jointNum = jointIndices.Length;
