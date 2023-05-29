@@ -194,11 +194,11 @@ namespace Momat.Runtime
             float futureTrajCost = 0;
             float pastTrajCost = 0;
             int i = 0;
-
+            
             foreach (var trajectoryPoint in futureLocalTrajectory.trajectoryData)
             {
                 futureTrajCost += Vector3.Distance(featureVector.trajectory[i].t, trajectoryPoint.transform.t);
-                var angleCost = Vector3.Angle(featureVector.trajectory[i].Forward, trajectoryPoint.transform.Forward) / 180f;
+                var angleCost = UnityEngine.Quaternion.Angle(featureVector.trajectory[i].q, trajectoryPoint.transform.q)  / 180f;
                 futureTrajCost += angleCost;
                 i++;
             }

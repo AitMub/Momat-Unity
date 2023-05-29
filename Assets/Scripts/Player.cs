@@ -1,10 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Momat.Runtime;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -49,10 +53,22 @@ public class Player : MonoBehaviour
         }
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
-        desiredLocalDirection = new Vector3(x, 0, z) * currSpeed;
+        if (x == 0 && z == 0)
+        {
+            desiredLocalDirection = Vector3.zero;
+        }
+        else
+        {
+            var xMagnitude = Mathf.Abs(x);
+            var zMagnitude = Mathf.Abs(z);
+            var xWeight =  xMagnitude / (xMagnitude + zMagnitude);
+            var magnitude = xMagnitude * xWeight + zMagnitude * (1f - xWeight);
+            
+            desiredLocalDirection = new Vector3(x, 0, z).normalized * (magnitude * currSpeed);
+        }
+
         desiredLocalDirection = transform.worldToLocalMatrix * new Vector4
             (desiredLocalDirection.x, desiredLocalDirection.y, desiredLocalDirection.z, 0f);
-
 
         if (Input.GetKeyDown(KeyCode.J))
         {
@@ -66,8 +82,10 @@ public class Player : MonoBehaviour
 
     private void UpdateFutureTrajectory()
     {
-        var q = Quaternion.FromToRotation(Vector3.forward, desiredLocalDirection);
-
+        Quaternion q = desiredLocalDirection.magnitude == 0 ? 
+            Quaternion.identity : 
+            Quaternion.FromToRotation(Vector3.forward, desiredLocalDirection);
+        
         foreach (var tp in futureTrajectory.trajectoryData)
         {
             tp.transform = new AffineTransform
