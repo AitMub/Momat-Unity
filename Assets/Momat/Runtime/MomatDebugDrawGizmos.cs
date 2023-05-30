@@ -11,15 +11,24 @@ namespace Momat.Runtime
         private Vector3[] positions = new Vector3[10];
         private Vector3[] directions = new Vector3[10];
         
+        private bool showCurrTraj = true;
+        private bool showNextPoseTraj = true;
+        
         private void OnDrawGizmos()
         {
             if (Application.isPlaying && enabled)
             {
-                DrawTrajectory(pastLocalTrajectory, Color.blue);
-                DrawTrajectory(futureLocalTrajectory, Color.cyan);
+                if (showCurrTraj)
+                {
+                    DrawTrajectory(pastLocalTrajectory, Color.blue);
+                    DrawTrajectory(futureLocalTrajectory, Color.cyan);
+                }
 
-                var debugNextPoseFeatureVector = runtimeAnimationData.GetFeatureVector(nextPose);
-                DrawTrajectory(debugNextPoseFeatureVector.trajectory, Color.yellow);
+                if (showNextPoseTraj)
+                {
+                    var debugNextPoseFeatureVector = runtimeAnimationData.GetFeatureVector(nextPose);
+                    DrawTrajectory(debugNextPoseFeatureVector.trajectory, Color.yellow);
+                }
             }
         }
 

@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Transforms;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
@@ -80,7 +82,10 @@ namespace Momat.Runtime
         private void CreatePlayableGraph()
         {
             updateAnimationPoseJob = new UpdateAnimationPoseJob();
-            updateAnimationPoseJob.Setup(animator, GetComponentsInChildren<Transform>(), runtimeAnimationData, animationGenerator);
+            
+            // user may add child gameobjects to this gameobject, but updateAnimationPoseJob doesn't need them
+            var transforms =  CollectPrefabContainTransform();
+            updateAnimationPoseJob.Setup(animator, transforms, runtimeAnimationData, animationGenerator);
             
             playableGraph = PlayableGraph.Create($"Momat_{transform.name}_Graph");
             var output = AnimationPlayableOutput.Create(playableGraph, "output", animator);
@@ -88,6 +93,40 @@ namespace Momat.Runtime
             output.SetSourcePlayable(playable);
 
             playableGraph.Play();
+        }
+
+        private Transform[] CollectPrefabContainTransform()
+        {
+            var allTransformsInGameobjects = new LinkedList<Transform>(GetComponentsInChildren<Transform>());
+            var array = runtimeAnimationData.rig.joints;
+            
+            LinkedListNode<Transform> linkedListNode = allTransformsInGameobjects.First;
+            int arrayIndex = 0;
+
+            while (linkedListNode != null && arrayIndex < array.Length)
+            {
+                if (linkedListNode.Value.name.Equals(array[arrayIndex].name))
+                {
+                    linkedListNode = linkedListNode.Next;
+                    arrayIndex++;
+                }
+                else
+                {
+                    var nextNode = linkedListNode.Next;
+                    allTransformsInGameobjects.Remove(linkedListNode);
+                    linkedListNode = nextNode;
+                }
+            }
+
+            // remove remaining node
+            while (linkedListNode != null)
+            {
+                var nextNode = linkedListNode.Next;
+                allTransformsInGameobjects.Remove(linkedListNode);
+                linkedListNode = nextNode;
+            }
+
+            return allTransformsInGameobjects.ToArray();
         }
 
         private void BeginPlayPose(PoseIdentifier poseIdentifier, float blendTime, EBlendMode blendMode = EBlendMode.TwoAnimPlayingBlend)
