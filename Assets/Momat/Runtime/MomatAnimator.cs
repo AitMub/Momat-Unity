@@ -22,10 +22,11 @@ namespace Momat.Runtime
         [SerializeField] private float blendTime = 0.1f;
         [SerializeField] [Range(0,1)] private float weight;
         [SerializeField] [Range(0,2)] private float couldContinuePlayCost = 0.3f;
-
+        
+        // animation data
         [SerializeField] private RuntimeAnimationData runtimeAnimationData;
         private float FrameRate => runtimeAnimationData.frameRate;
-        
+
         private Animator animator;
         private PlayableGraph playableGraph;
         private UpdateAnimationPoseJob updateAnimationPoseJob;
@@ -35,7 +36,10 @@ namespace Momat.Runtime
         private AnimationGenerator animationGenerator;
 
         private Clock animatorClock;
-
+        
+        private PoseIdentifier nextPose;
+        
+        // runtime feature vector
         private PastTrajectoryRecorder pastTrajectoryRecorder;
         private RuntimeTrajectory pastLocalTrajectory => pastTrajectoryRecorder.PastLocalTrajectory;
         private RuntimeTrajectory futureLocalTrajectory;
@@ -43,11 +47,9 @@ namespace Momat.Runtime
         private AffineTransform[] comparedJointRootSpaceT;
         private List<int> parentIndices;
         
-        private PoseIdentifier nextPose;
         private int toPlayEventID;
-        
-        public delegate float CostComputeFunc(in FeatureVector featureVector);
 
+        public delegate float CostComputeFunc(in FeatureVector featureVector1, in FeatureVector featureVector2);
         private CostComputeFunc costComputeFunc;
 
         private void Start()
@@ -58,6 +60,8 @@ namespace Momat.Runtime
             futureLocalTrajectory = new RuntimeTrajectory();
             comparedJointRootSpaceT = new AffineTransform[runtimeAnimationData.ComparedJointTransformGroupLen];
             parentIndices = runtimeAnimationData.rig.GenerateParentIndices();
+
+            PrepareSearchPoseJob();
 
             toPlayEventID = EventClipData.InvalidEventID;
             
@@ -135,53 +139,6 @@ namespace Momat.Runtime
             animationGenerator.BeginPlayPose(poseIdentifier, blendTime, blendMode);
         }
 
-        private PoseIdentifier SearchPoseInFeatureSet(IEnumerable<FeatureVector> featureVectors)
-        {
-            var poseIdentifier = new PoseIdentifier();
-            float minCost = float.MaxValue;
-
-            ComputeComparedJointTransform();
-            
-            foreach (var featureVector in featureVectors)
-            {
-                var cost = costComputeFunc(featureVector);
-                if (cost < minCost)
-                {
-                    poseIdentifier = featureVector.poseIdentifier;
-                    minCost = cost;
-                }
-            }
-            
-            return poseIdentifier;
-        }
-
-        private IEnumerable<FeatureVector> GetAllMotionAnimFeatureVectors()
-        {
-            return runtimeAnimationData.GetPlayablePoseFeatureVectors(updateInterval + blendTime, EAnimationType.EMotion);
-        }
-        
-        private IEnumerable<FeatureVector> GetAllIdleAnimFeatureVectors()
-        {
-            return runtimeAnimationData.GetPlayablePoseFeatureVectors(blendTime, EAnimationType.EIdle);
-        }
-
-        private IEnumerable<FeatureVector> GetEventBeginPhasePoseFeatureVectors(int eventID)
-        {
-            for (int i = 0; i < runtimeAnimationData.eventClipDatas.Length; i++)
-            {
-                if (runtimeAnimationData.eventClipDatas[i].eventID == eventID)
-                {
-                    var animationIndex = i + runtimeAnimationData.animationTypeOffset[(int)EAnimationType.EEvent];
-                    foreach (var featureVector in runtimeAnimationData.GetPlayablePoseFeatureVectors(animationIndex, 
-                                     runtimeAnimationData.eventClipDatas[i].prepareFrame, 
-                                     runtimeAnimationData.eventClipDatas[i].beginFrame))
-                    {
-                        yield return featureVector;
-                    }
-                }
-            }
-        }
-
         private bool IsIdle()
         {
             return IsIntendingToMove() == false && IsMoving() == false;
@@ -228,32 +185,58 @@ namespace Momat.Runtime
             return runtimeAnimationData.animationFrameNum[animationID];
         }
 
-        private float ComputeCost(in FeatureVector featureVector)
+        private FeatureVector GetCurrFeatureVector()
+        {
+            ComputeComparedJointTransform();
+            
+            var featureVector = new FeatureVector
+            {
+                trajectory = new List<AffineTransform>
+                    (futureLocalTrajectory.trajectoryData.Count + pastLocalTrajectory.trajectoryData.Count),
+                jointRootSpaceT = new List<AffineTransform>(comparedJointRootSpaceT)
+            };
+
+            foreach (var trajectoryPoint in futureLocalTrajectory.trajectoryData)
+            {
+                featureVector.trajectory.Add(trajectoryPoint.transform);
+            }
+            foreach (var trajectoryPoint in pastLocalTrajectory.trajectoryData)
+            {
+                featureVector.trajectory.Add(trajectoryPoint.transform);
+            }
+            
+            return featureVector;
+        }
+
+        private static float ComputeCost(in FeatureVector featureVector1, in FeatureVector featureVector2)
         {
             float futureTrajCost = 0;
             float pastTrajCost = 0;
-            int i = 0;
-            
-            foreach (var trajectoryPoint in futureLocalTrajectory.trajectoryData)
-            {
-                futureTrajCost += Vector3.Distance(featureVector.trajectory[i].t, trajectoryPoint.transform.t);
-                var angleCost = UnityEngine.Quaternion.Angle(featureVector.trajectory[i].q, trajectoryPoint.transform.q)  / 180f;
-                futureTrajCost += angleCost;
-                i++;
-            }
 
-            foreach (var trajectoryPoint in pastLocalTrajectory.trajectoryData)
+            for (int i = 0; i < featureVector1.trajectory.Count / 2; i++)
             {
-                pastTrajCost += Vector3.Distance(featureVector.trajectory[i].t, trajectoryPoint.transform.t);
-                i++;
+                futureTrajCost += Vector3.Distance(
+                        featureVector1.trajectory[i].t, featureVector2.trajectory[i].t);
+                var angleCost = UnityEngine.Quaternion.Angle(
+                    featureVector1.trajectory[i].q, featureVector2.trajectory[i].q)  / 180f;
+                futureTrajCost += angleCost;
             }
+            
+            for (int i = featureVector1.trajectory.Count / 2; i < featureVector1.trajectory.Count; i++)
+            {
+                pastTrajCost += Vector3.Distance(
+                        featureVector1.trajectory[i].t, featureVector2.trajectory[i].t);
+            }
+            
 
             float poseCost = 0;
-            for (int j = 0; j < featureVector.jointRootSpaceT.Count; j++)
+            for (int i = 0; i < featureVector1.jointRootSpaceT.Count; i++)
             {
-                poseCost += Vector3.Distance(featureVector.jointRootSpaceT[j].t, comparedJointRootSpaceT[j].t);
+                poseCost += Vector3.Distance(
+                    featureVector1.jointRootSpaceT[i].t, featureVector2.jointRootSpaceT[i].t);
             }
-            
+
+            var weight = 0.45f;
             return (futureTrajCost * 0.8f + pastTrajCost * 0.2f) * weight + poseCost * (1 - weight);
         }
 
@@ -283,6 +266,12 @@ namespace Momat.Runtime
         {
             updateAnimationPoseJob.Dispose();
             playableGraph.Destroy();
+
+            poseIDs.Dispose();
+            trajectoryPoints.Dispose();
+            jointRootSpaceT.Dispose();
+            minCostForEachJob.Dispose();
+            minCostPose.Dispose();
         }
     }
 }

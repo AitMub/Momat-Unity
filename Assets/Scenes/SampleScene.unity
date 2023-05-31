@@ -245,6 +245,7 @@ MonoBehaviour:
   weight: 0
   couldContinuePlayCost: 0.3
   runtimeAnimationData: {fileID: 11400000, guid: 7ddde82416de9df44bff0d42929ae132, type: 2}
+  jobLoopCount: 128
 --- !u!1 &115482791
 GameObject:
   m_ObjectHideFlags: 0
@@ -10157,7 +10158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6f61576e1f0e6c6438c29601f0f2def9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2389270656498577246, guid: 6f61576e1f0e6c6438c29601f0f2def9, type: 3}
       propertyPath: m_UpdateWhenOffscreen
@@ -10227,6 +10228,7 @@ MonoBehaviour:
   weight: 0.45
   couldContinuePlayCost: 0.5
   runtimeAnimationData: {fileID: 11400000, guid: 9a2addfcb33cace4a9d44e7f643aa699, type: 2}
+  jobLoopCount: 128
 --- !u!114 &1817191158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10361,8 +10363,9 @@ MonoBehaviour:
   updateInterval: 0.2
   blendTime: 0.18
   weight: 0.45
-  couldContinuePlayCost: 0.6
+  couldContinuePlayCost: 0.3
   runtimeAnimationData: {fileID: 11400000, guid: 6255208dc3aa0e84b9d42cbe07e7e769, type: 2}
+  jobLoopCount: 128
 --- !u!114 &1933243364
 MonoBehaviour:
   m_ObjectHideFlags: 0

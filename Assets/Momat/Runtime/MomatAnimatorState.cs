@@ -42,7 +42,7 @@ namespace Momat.Runtime
 
                 enterBlendTime = 0.5f;
                 
-                var motionBeginPose = this.momatAnimator.SearchPoseInFeatureSet
+                var motionBeginPose = this.momatAnimator.SearchPose
                     (momatAnimator.GetAllMotionAnimFeatureVectors());
                 this.momatAnimator.BeginPlayPose(motionBeginPose, enterBlendTime, EBlendMode.BlendWithLastFrame);
             }
@@ -104,10 +104,11 @@ namespace Momat.Runtime
                 }
 
                 var featureVector = momatAnimator.runtimeAnimationData.GetFeatureVector(continuePlayPose);
-                var cost = momatAnimator.costComputeFunc(featureVector);
+                var cost = momatAnimator.costComputeFunc(momatAnimator.GetCurrFeatureVector(), featureVector);
                 
                 if (cost < momatAnimator.couldContinuePlayCost)
                 {
+                    momatAnimator.nextPose = continuePlayPose;
                     return true;
                 }
 
@@ -116,7 +117,7 @@ namespace Momat.Runtime
 
             private void SwitchToNextMotionPose()
             {
-                var nextPose = momatAnimator.SearchPoseInFeatureSet(momatAnimator.GetAllMotionAnimFeatureVectors());
+                var nextPose = momatAnimator.SearchPose(momatAnimator.GetAllMotionAnimFeatureVectors());
                 momatAnimator.BeginPlayPose(nextPose, momatAnimator.blendTime);
                 currPose = nextPose;
             }
@@ -133,7 +134,7 @@ namespace Momat.Runtime
                 this.momatAnimator = momatAnimator;
                 this.momatAnimator.animatorClock.SetTimeStamp();
                 
-                idleBeginPose = this.momatAnimator.SearchPoseInFeatureSet(momatAnimator.GetAllIdleAnimFeatureVectors());
+                idleBeginPose = this.momatAnimator.SearchPose(momatAnimator.GetAllIdleAnimFeatureVectors());
                 this.momatAnimator.BeginPlayPose(idleBeginPose, 1.0f, EBlendMode.BlendWithLastFrame);
             }
 
@@ -219,7 +220,7 @@ namespace Momat.Runtime
                 this.momatAnimator = momatAnimator;
                 this.momatAnimator.animatorClock.SetTimeStamp();
 
-                eventBeginPose = this.momatAnimator.SearchPoseInFeatureSet(
+                eventBeginPose = this.momatAnimator.SearchPose(
                         momatAnimator.GetEventBeginPhasePoseFeatureVectors(momatAnimator.toPlayEventID));
                 this.momatAnimator.BeginPlayPose(eventBeginPose, momatAnimator.blendTime);
 
