@@ -270,6 +270,8 @@ namespace Momat.Runtime
             poseIDs.Dispose();
             trajectoryPoints.Dispose();
             jointRootSpaceT.Dispose();
+            currTrajectory.Dispose();
+            currJointRootSpaceT.Dispose();
             minCostForEachJob.Dispose();
             minCostPose.Dispose();
         }

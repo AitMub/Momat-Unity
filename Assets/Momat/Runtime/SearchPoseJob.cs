@@ -13,9 +13,10 @@ namespace Momat.Runtime
 {
     public partial class MomatAnimator : MonoBehaviour
     {
-        // [BurstCompile(CompileSynchronously = true)]
+        [BurstCompile(CompileSynchronously = true)]
         internal struct SearchPoseJob : IJobParallelForBatch
         {
+            [ReadOnly] public int jobLoopCount;
             // all feature vectors that will be searched
             [ReadOnly] public NativeArray<PoseIdentifier> poseIDs;
             [ReadOnly] public NativeArray<AffineTransform> trajectoryPoints;
@@ -46,10 +47,10 @@ namespace Momat.Runtime
                     }
                 }
 
-                var minCostPtr = new MemoryArray<float>(minCostForEachJob, startIndex / count, 1);
+                var minCostPtr = new MemoryArray<float>(minCostForEachJob, startIndex / jobLoopCount, 1);
                 minCostPtr[0] = minCost;
 
-                var minPosePtr = new MemoryArray<PoseIdentifier>(minCostPose, startIndex / count, 1);
+                var minPosePtr = new MemoryArray<PoseIdentifier>(minCostPose, startIndex / jobLoopCount, 1);
                 minPosePtr[0] = poseIDs[poseIndex];
             }
 

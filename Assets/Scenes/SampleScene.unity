@@ -245,6 +245,7 @@ MonoBehaviour:
   weight: 0
   couldContinuePlayCost: 0.3
   runtimeAnimationData: {fileID: 11400000, guid: 7ddde82416de9df44bff0d42929ae132, type: 2}
+  searchPoseAsync: 0
   jobLoopCount: 128
 --- !u!1 &115482791
 GameObject:
@@ -10228,6 +10229,7 @@ MonoBehaviour:
   weight: 0.45
   couldContinuePlayCost: 0.5
   runtimeAnimationData: {fileID: 11400000, guid: 9a2addfcb33cace4a9d44e7f643aa699, type: 2}
+  searchPoseAsync: 0
   jobLoopCount: 128
 --- !u!114 &1817191158
 MonoBehaviour:
@@ -10365,6 +10367,7 @@ MonoBehaviour:
   weight: 0.45
   couldContinuePlayCost: 0.3
   runtimeAnimationData: {fileID: 11400000, guid: 6255208dc3aa0e84b9d42cbe07e7e769, type: 2}
+  searchPoseAsync: 0
   jobLoopCount: 128
 --- !u!114 &1933243364
 MonoBehaviour:

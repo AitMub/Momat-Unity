@@ -28,9 +28,14 @@ namespace Momat.Runtime
         private NativeArray<AffineTransform> trajectoryPoints;
         private NativeArray<AffineTransform> jointRootSpaceT;
 
+        private NativeArray<AffineTransform> currTrajectory;
+        private NativeArray<AffineTransform> currJointRootSpaceT;
+
         private NativeArray<float> minCostForEachJob;
         private NativeArray<PoseIdentifier> minCostPose;
         
+        [SerializeField]
+        private bool searchPoseAsync;
         [SerializeField]
         private int jobLoopCount = 128;
         
@@ -62,6 +67,11 @@ namespace Momat.Runtime
                 }
             }
 
+            currTrajectory = new NativeArray<AffineTransform>(
+                runtimeAnimationData.TrajectoryPointGroupLen, Allocator.Persistent);
+            currJointRootSpaceT = new NativeArray<AffineTransform>(
+                runtimeAnimationData.ComparedJointTransformGroupLen, Allocator.Persistent);
+
             var jobCount = Mathf.CeilToInt(featureVectorArray.Length / (float)jobLoopCount);
             minCostForEachJob = new NativeArray<float>(jobCount, Allocator.Persistent);
             minCostPose = new NativeArray<PoseIdentifier>(jobCount, Allocator.Persistent);
@@ -70,16 +80,27 @@ namespace Momat.Runtime
         private void BeginSearchPoseJob()
         {
             var currFeatureVector = GetCurrFeatureVector();
+            for (int i = 0; i < currFeatureVector.trajectory.Count; i++)
+            {
+                currTrajectory[i] = currFeatureVector.trajectory[i];
+            }
+            for (int i = 0; i < currFeatureVector.jointRootSpaceT.Count; i++)
+            {
+                currJointRootSpaceT[i] = currFeatureVector.jointRootSpaceT[i];
+            }
+            
             searchPoseJob = new SearchPoseJob
             {
+                jobLoopCount = jobLoopCount,
+                
                 poseIDs = poseIDs,
                 trajectoryPoints = trajectoryPoints,
                 trajectoryPointStride = runtimeAnimationData.TrajectoryPointGroupLen,
                 jointRootSpaceT = jointRootSpaceT,
                 jointTStride = runtimeAnimationData.ComparedJointTransformGroupLen,
                 
-                currTrajectory = new NativeArray<AffineTransform>(currFeatureVector.trajectory.ToArray(), Allocator.Persistent),
-                currJointRootSpaceT = new NativeArray<AffineTransform>(currFeatureVector.jointRootSpaceT.ToArray(), Allocator.Persistent),
+                currTrajectory = currTrajectory,
+                currJointRootSpaceT = currJointRootSpaceT,
                 
                 minCostForEachJob = minCostForEachJob,
                 minCostPose = minCostPose
@@ -94,6 +115,8 @@ namespace Momat.Runtime
 
         private PoseIdentifier GetSearchJobResult()
         {
+            jobHandle.Complete();
+            
             var min = float.MaxValue;
             int index = -1;
             for (int i = 0; i < minCostForEachJob.Length; i++)

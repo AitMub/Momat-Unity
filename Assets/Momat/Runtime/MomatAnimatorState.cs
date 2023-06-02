@@ -34,6 +34,7 @@ namespace Momat.Runtime
             private MomatAnimator momatAnimator;
             private float enterBlendTime;
             private PoseIdentifier currPose;
+            private bool waitingAsyncPoseSearch;
 
             public void Enter(MomatAnimator momatAnimator)
             {
@@ -60,10 +61,26 @@ namespace Momat.Runtime
                     momatAnimator.SetState(new IdleState());
                     return;
                 }
+
+                if (waitingAsyncPoseSearch && momatAnimator.IsSearchJobComplete())
+                {
+                    waitingAsyncPoseSearch = false;
+                    var nextPose = momatAnimator.GetSearchJobResult();
+                    momatAnimator.BeginPlayPose(nextPose, momatAnimator.blendTime);
+                    currPose = nextPose;
+                }
                 
                 if (CheckNeedUpdateMotionPose())
                 {
-                    SwitchToNextMotionPose();
+                    if (momatAnimator.searchPoseAsync)
+                    {
+                        momatAnimator.BeginSearchPoseJob();
+                        waitingAsyncPoseSearch = true;
+                    }
+                    else
+                    {
+                        SwitchToNextMotionPose();
+                    }
                 }
             }
 
